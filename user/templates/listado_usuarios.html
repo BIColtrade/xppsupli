@@ -1,0 +1,265 @@
+{% include "navbar.html" %}
+<section class="users">
+  <h1 class="users__title">Listado de usuarios</h1>
+  <p class="users__subtitle">Edita datos y grupos. Solo admin.</p>
+
+  <div class="users__create">
+    <h2 class="users__section-title">Crear usuario</h2>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create">
+      <div class="users__grid">
+        <div>
+          <label>Email</label>
+          <input type="email" name="email" required>
+        </div>
+        <div>
+          <label>Usuario</label>
+          <input type="text" name="username" required>
+        </div>
+        <div>
+          <label>Nombre</label>
+          <input type="text" name="nombre" required>
+        </div>
+        <div>
+          <label>Apellido</label>
+          <input type="text" name="apellido">
+        </div>
+        <div>
+          <label>Edad</label>
+          <input type="number" name="edad" min="0">
+        </div>
+        <div>
+          <label>Telefono</label>
+          <input type="text" name="telefono">
+        </div>
+        <div>
+          <label>Contraseña</label>
+          <input type="password" name="password" required>
+        </div>
+        <div>
+          <label>Grupos</label>
+          <select name="grupos" multiple size="4">
+            {% for grupo in grupos %}
+              <option value="{{ grupo.id }}">{{ grupo.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit">Crear usuario</button>
+    </form>
+  </div>
+
+  <div class="users__filters">
+    <input
+      id="userFilter"
+      type="text"
+      placeholder="Filtrar por email o nombre y apellido..."
+      aria-label="Filtrar usuarios"
+    >
+  </div>
+
+  {% if error %}
+    <div class="msg msg--error">{{ error }}</div>
+  {% endif %}
+  {% if success %}
+    <div class="msg msg--success">{{ success }}</div>
+  {% endif %}
+
+  <div class="users__table">
+    <table>
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Usuario</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Edad</th>
+          <th>Telefono</th>
+          <th>Grupos</th>
+          <th>Accion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+          <tr>
+            <form method="post">
+              {% csrf_token %}
+              <td>
+                <input type="hidden" name="user_id" value="{{ u.id }}">
+                <input type="email" name="email" value="{{ u.email }}" required data-filter="email">
+              </td>
+              <td><input type="text" name="username" value="{{ u.username }}" required></td>
+              <td><input type="text" name="nombre" value="{{ u.nombre }}" required data-filter="nombre"></td>
+              <td><input type="text" name="apellido" value="{{ u.apellido }}" data-filter="apellido"></td>
+              <td><input type="number" name="edad" value="{{ u.edad }}"></td>
+              <td><input type="text" name="telefono" value="{{ u.telefono }}"></td>
+              <td>
+                <select name="grupos" multiple size="3">
+                  {% for g in grupos %}
+                    <option value="{{ g.id }}" {% if g in u.groups.all %}selected{% endif %}>
+                      {{ g.name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button type="submit" name="action" value="save">Guardar</button>
+                  <button
+                    type="submit"
+                    name="action"
+                    value="delete"
+                    class="btn-danger"
+                    onclick="return confirm('¿Eliminar este usuario?');"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </form>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="8">No hay usuarios.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .users {
+    padding: 28px;
+  }
+  .users__title {
+    margin: 0 0 6px 0;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .users__subtitle {
+    margin: 0 0 18px 0;
+    color: #6c7a89;
+  }
+  .users__table {
+    overflow-x: auto;
+    background: #fff;
+    border: 1px solid #e6e9ef;
+    border-radius: 12px;
+  }
+  .users__create {
+    margin-bottom: 18px;
+    padding: 16px;
+    border: 1px solid #e6e9ef;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+  .users__section-title {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+  }
+  .users__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px 12px;
+    margin-bottom: 12px;
+  }
+  .users__create label {
+    display: block;
+    font-size: 12px;
+    color: #526070;
+    margin-bottom: 4px;
+  }
+  .users__filters {
+    margin-bottom: 14px;
+  }
+  #userFilter {
+    width: 100%;
+    max-width: 420px;
+    padding: 8px 10px;
+    border: 1px solid #d8dde6;
+    border-radius: 8px;
+    font-size: 14px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eef1f5;
+    vertical-align: middle;
+  }
+  th {
+    text-align: left;
+    background: #f8fafc;
+  }
+  input, select {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #d8dde6;
+    border-radius: 8px;
+    font-size: 13px;
+  }
+  button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background: #111827;
+    color: #fff;
+    cursor: pointer;
+  }
+  .btn-group {
+    display: flex;
+    gap: 8px;
+  }
+  .btn-danger {
+    background: #dc2626;
+  }
+  .msg {
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 14px;
+  }
+  .msg--error {
+    background: #fde2e2;
+    color: #7a1b1b;
+  }
+  .msg--success {
+    background: #dcfce7;
+    color: #166534;
+  }
+  @media (max-width: 900px) {
+    .users {
+      padding: 18px;
+    }
+  }
+</style>
+
+<script>
+  const filterInput = document.getElementById('userFilter');
+  const rows = Array.from(document.querySelectorAll('tbody tr'));
+
+  function normalizeText(value) {
+    return (value || '').toString().toLowerCase().trim();
+  }
+
+  filterInput.addEventListener('input', () => {
+    const q = normalizeText(filterInput.value);
+    rows.forEach((row) => {
+      const email = normalizeText(row.querySelector('[data-filter="email"]')?.value);
+      const nombre = normalizeText(row.querySelector('[data-filter="nombre"]')?.value);
+      const apellido = normalizeText(row.querySelector('[data-filter="apellido"]')?.value);
+      const fullName = (nombre + ' ' + apellido).trim();
+
+      const match = !q || email.includes(q) || fullName.includes(q);
+      row.style.display = match ? '' : 'none';
+    });
+  });
+</script>
+
+    </main>
+  </div>

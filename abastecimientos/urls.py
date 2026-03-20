@@ -93,4 +93,13 @@ urlpatterns = [
         views.serializar_ventas_process,
         name="serializar_ventas_process",
     ),
+    path(
+        "home_abastecimiento/",
+        views.home_abastecimiento,
+        name="home_abastecimiento",
+    ),
+
+
+    
 ]
+

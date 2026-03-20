@@ -3664,3 +3664,8 @@ def forecast_data(request):
             "total_pages": total_pages,
         }
     )
+
+
+
+def home_abastecimiento(request):
+    return render(request, "home_abastecimiento.html")

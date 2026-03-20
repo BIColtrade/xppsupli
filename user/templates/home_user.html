@@ -1,17 +1,16 @@
 {% include "navbar.html" %}
 <section class="home-cards">
-  <h1 class="home-cards__title">Panel principal</h1>
-  <p class="home-cards__subtitle">Elige una seccion para continuar.</p>
+  <h1 class="home-cards__title">Usuarios</h1>
+  <p class="home-cards__subtitle">Accesos rapidos a gestion de usuarios.</p>
 
   <div class="home-cards__grid">
-    <a class="home-card" href="{% url 'abastecimientos:home_abastecimiento' %}">
-      <div class="home-card__title">Abastecimientos</div>
-      <div class="home-card__text">Reportes, cruces y herramientas.</div>
+    <a class="home-card" href="{% url 'listado_usuarios' %}">
+      <div class="home-card__title">Listado de usuarios</div>
+      <div class="home-card__text">Editar datos y grupos.</div>
     </a>
-
-    <a class="home-card" href="{% url 'home_user' %}">
-      <div class="home-card__title">Usuarios</div>
-      <div class="home-card__text">Perfil y configuracion del usuario.</div>
+    <a class="home-card" href="{% url 'settings_user' %}">
+      <div class="home-card__title">Configuracion</div>
+      <div class="home-card__text">Perfil, datos y contrasena.</div>
     </a>
   </div>
 </section>
