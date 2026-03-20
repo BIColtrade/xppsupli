@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const selectCentro = document.getElementById('filter-id-puntoventa');
   const selectPunto = document.getElementById('filter-punto-venta');
   const selectCanal = document.getElementById('filter-canal-regional');
+  const selectCanalMain = document.getElementById('filter-canal');
   const selectMaterial = document.getElementById('filter-id-producto');
   const selectProducto = document.getElementById('filter-nombre-producto');
   const selectMarca = document.getElementById('filter-marca');
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     id_puntoventa: [],
     punto_venta: [],
     canal_regional: [],
+    canal: [],
     id_producto: [],
     nombre_producto: [],
     marca: []
@@ -156,6 +158,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const centros = getSelectValues(selectCentro);
     const puntos = getSelectValues(selectPunto);
     const canales = getSelectValues(selectCanal);
+    const canalesMain = getSelectValues(selectCanalMain);
     const materials = getSelectValues(selectMaterial);
     const productos = getSelectValues(selectProducto);
     const marcas = getSelectValues(selectMarca);
@@ -163,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (centros.length) params.set('id_puntoventa', centros.join(','));
     if (puntos.length) params.set('punto_venta', puntos.join(','));
     if (canales.length) params.set('canal_regional', canales.join(','));
+    if (canalesMain.length) params.set('canal', canalesMain.join(','));
     if (materials.length) params.set('id_producto', materials.join(','));
     if (productos.length) params.set('nombre_producto', productos.join(','));
     if (marcas.length) params.set('marca', marcas.join(','));
@@ -614,6 +618,7 @@ document.addEventListener('DOMContentLoaded', function () {
         id_puntoventa: getSelectValues(selectCentro),
         punto_venta: getSelectValues(selectPunto),
         canal_regional: getSelectValues(selectCanal),
+        canal: getSelectValues(selectCanalMain),
         id_producto: getSelectValues(selectMaterial),
         nombre_producto: getSelectValues(selectProducto),
         marca: getSelectValues(selectMarca)
@@ -634,6 +639,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setSelectValues(selectCentro, previousFilters.id_puntoventa || []);
     setSelectValues(selectPunto, previousFilters.punto_venta || []);
     setSelectValues(selectCanal, previousFilters.canal_regional || []);
+    setSelectValues(selectCanalMain, previousFilters.canal || []);
     setSelectValues(selectMaterial, previousFilters.id_producto || []);
     setSelectValues(selectProducto, previousFilters.nombre_producto || []);
     setSelectValues(selectMarca, previousFilters.marca || []);
@@ -764,6 +770,7 @@ document.addEventListener('DOMContentLoaded', function () {
       selectCentro.querySelectorAll('option').forEach(o => o.selected = false);
       selectPunto.querySelectorAll('option').forEach(o => o.selected = false);
       selectCanal.querySelectorAll('option').forEach(o => o.selected = false);
+      selectCanalMain.querySelectorAll('option').forEach(o => o.selected = false);
       selectMaterial.querySelectorAll('option').forEach(o => o.selected = false);
       selectProducto.querySelectorAll('option').forEach(o => o.selected = false);
       selectMarca.querySelectorAll('option').forEach(o => o.selected = false);
@@ -839,7 +846,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  [selectCentro, selectPunto, selectCanal, selectMaterial, selectProducto, selectMarca].forEach(sel => {
+  [selectCentro, selectPunto, selectCanal, selectCanalMain, selectMaterial, selectProducto, selectMarca].forEach(sel => {
     sel.addEventListener('change', function () {
       scheduleFilterApply();
     });
@@ -860,11 +867,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const centros = getSelectValues(selectCentro);
     const puntos = getSelectValues(selectPunto);
     const canales = getSelectValues(selectCanal);
+    const canalesMain = getSelectValues(selectCanalMain);
 
     if (marcas.length) params.set('marca', marcas.join(','));
     if (centros.length) params.set('id_puntoventa', centros.join(','));
     if (puntos.length) params.set('punto_venta', puntos.join(','));
     if (canales.length) params.set('canal_regional', canales.join(','));
+    if (canalesMain.length) params.set('canal', canalesMain.join(','));
 
     const url = params.toString() ? `${endpointOptions}?${params.toString()}` : endpointOptions;
 
@@ -877,6 +886,7 @@ document.addEventListener('DOMContentLoaded', function () {
         populateSelect(selectCentro, opts.id_puntoventa || []);
         populateSelect(selectPunto, opts.punto_venta || []);
         populateSelect(selectCanal, opts.canal_regional || []);
+        populateSelect(selectCanalMain, opts.canal || []);
         populateSelect(selectMaterial, opts.id_producto || []);
         populateSelect(selectProducto, opts.nombre_producto || []);
         populateSelect(selectMarca, opts.marcas || []);
@@ -894,6 +904,7 @@ document.addEventListener('DOMContentLoaded', function () {
     id_puntoventa: [],
     punto_venta: [],
     canal_regional: [],
+    canal: [],
     id_producto: [],
     nombre_producto: [],
     marca: []

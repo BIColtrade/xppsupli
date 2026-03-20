@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from io import BytesIO
 import re
+import unicodedata
 import uuid
 from statistics import median
 
@@ -3088,6 +3089,180 @@ def abastecimiento_coltrade_import(request):
         )
 
 
+DESIRED_COLS_UNIR = [
+    "centro_costos",
+    "punto_venta",
+    "material",
+    "producto",
+    "marca",
+    "ventas_actuales",
+    "transitos",
+    "inventario",
+    "envio_inventario_3_meses",
+    "sugerido_coltrade",
+]
+
+
+def _normalize_header(value):
+    if value is None:
+        return ""
+    text = str(value).strip().lower()
+    text = unicodedata.normalize("NFD", text)
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
+    text = text.replace("_", " ")
+    return " ".join(text.split())
+
+
+UNIR_ALIASES = {
+    "centro_costos": ["centro costos", "id_puntoventa", "id punto venta", "id_punto_venta"],
+    "punto_venta": ["punto de venta", "punto_venta"],
+    "material": ["material", "id_producto", "id producto"],
+    "producto": ["producto", "nombre_producto", "nombre producto"],
+    "marca": ["marca"],
+    "ventas_actuales": ["ventas actuales", "ventas_actuales"],
+    "transitos": ["transitos"],
+    "inventario": ["inventario"],
+    "envio_inventario_3_meses": [
+        "envio inventario 3 meses",
+        "envio_inventario_3_meses",
+        "env??o inventario 3 meses",
+    ],
+    "sugerido_coltrade": ["sugerido", "sugerido_coltrade"],
+}
+
+
+def _read_excel_table(file_obj):
+    try:
+        wb = load_workbook(file_obj, data_only=True)
+        ws = wb.active
+        rows = list(ws.iter_rows(values_only=True))
+        if not rows:
+            return [], []
+        headers = [str(h).strip() if h is not None else "" for h in rows[0]]
+        return headers, rows[1:]
+    except Exception:
+        try:
+            file_obj.seek(0)
+        except Exception:
+            pass
+        try:
+            import pandas as pd
+        except Exception as exc:
+            raise RuntimeError("No se pudo leer el archivo (requiere .xlsx o pandas)") from exc
+        df = pd.read_excel(file_obj, sheet_name=0)
+        headers = [str(c).strip() for c in df.columns]
+        return headers, df.values.tolist()
+
+
+def _concat_unir(files):
+    rows_out = []
+    for f in files:
+        headers, rows = _read_excel_table(f)
+        if not headers:
+            continue
+        header_index = {_normalize_header(h): i for i, h in enumerate(headers)}
+        header_keys = set(header_index.keys())
+        alias_keys = set()
+        for col, aliases in UNIR_ALIASES.items():
+            alias_keys.add(_normalize_header(col))
+            for alias in aliases:
+                alias_keys.add(_normalize_header(alias))
+        desired_map = []
+        for col in DESIRED_COLS_UNIR:
+            idx = header_index.get(_normalize_header(col))
+            if idx is None:
+                for alias in UNIR_ALIASES.get(col, []):
+                    idx = header_index.get(_normalize_header(alias))
+                    if idx is not None:
+                        break
+            desired_map.append(idx)
+
+        for row in rows:
+            if _row_is_empty(row):
+                continue
+            matches = 0
+            for cell in row:
+                val = _normalize_header(cell)
+                if val and (val in header_keys or val in alias_keys):
+                    matches += 1
+            if matches >= 3:
+                continue
+            out_row = []
+            for idx in desired_map:
+                val = _get_cell(row, idx) if idx is not None else ""
+                out_row.append("" if val is None else val)
+            rows_out.append(out_row)
+    return rows_out
+
+
+def unir_archivos_page(request):
+    user = get_user_from_request(request)
+    if user is None:
+        return redirect("login")
+    return render(request, "unir.html", {"jwt_user": user})
+
+
+def unir_archivos_preview(request):
+    user = get_user_from_request(request)
+    if user is None:
+        return redirect("login")
+    if request.method != "POST":
+        return JsonResponse({"error": "M?todo no permitido"}, status=405)
+
+    files = request.FILES.getlist("files[]") or request.FILES.getlist("files")
+    if not files:
+        return JsonResponse({"error": "No se subieron archivos"}, status=400)
+
+    try:
+        rows = _concat_unir(files)
+        preview_rows = []
+        for row in rows[:200]:
+            formatted = []
+            for val in row:
+                if isinstance(val, (datetime, date)):
+                    formatted.append(val.isoformat())
+                else:
+                    formatted.append("" if val is None else val)
+            preview_rows.append(formatted)
+        return JsonResponse({"columns": DESIRED_COLS_UNIR, "rows": preview_rows})
+    except Exception as exc:
+        return JsonResponse({"error": str(exc)}, status=500)
+
+
+def unir_archivos_merge(request):
+    user = get_user_from_request(request)
+    if user is None:
+        return redirect("login")
+    if request.method != "POST":
+        return JsonResponse({"error": "M?todo no permitido"}, status=405)
+
+    files = request.FILES.getlist("files[]") or request.FILES.getlist("files")
+    if not files:
+        return JsonResponse({"error": "No se subieron archivos"}, status=400)
+
+    try:
+        rows = _concat_unir(files)
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Unido"
+        ws.append(DESIRED_COLS_UNIR)
+        for row in rows:
+            ws.append(row)
+
+        output = BytesIO()
+        wb.save(output)
+        output.seek(0)
+
+        response = HttpResponse(
+            output.getvalue(),
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        response["Content-Disposition"] = "attachment; filename=unido.xlsx"
+        return response
+    except Exception as exc:
+        return JsonResponse({"error": str(exc)}, status=500)
+
+
 def forecast_page(request):
     user = get_user_from_request(request)
     if user is None:
@@ -3106,6 +3281,7 @@ def forecast_options(request):
     nombre_producto_filter = _parse_multi_param(request, "nombre_producto")
     marcas_filter = _parse_multi_param(request, "marca")
     canal_regional_filter = _parse_multi_param(request, "canal_regional")
+    canal_filter = _parse_multi_param(request, "canal")
 
     centros = set()
     puntos = set()
@@ -3113,21 +3289,35 @@ def forecast_options(request):
     productos = set()
     marcas = set()
     canales = set()
+    canales_nombres = set()
 
-    for punto in PuntoVentaAbastecimiento.objects.all():
+    canal_map = {
+        str(cid): _normalize_str(nombre)
+        for cid, nombre in Canal.objects.values_list("id_canal", "canal_nombre")
+    }
+    punto_canal_nombre = {}
+
+    for punto in PuntoVentaAbastecimiento.objects.select_related("id_canal").all():
         cc = _normalize_str(punto.id_puntoventa)
         pv = _normalize_str(punto.punto_venta)
         canal = _normalize_str(punto.canal_regional)
+        canal_nombre = _normalize_str(canal_map.get(str(punto.id_canal_id), ""))
         if id_puntoventa_filter and cc.lower() not in id_puntoventa_filter:
             continue
         if punto_venta_filter and pv.lower() not in punto_venta_filter:
             continue
         if canal_regional_filter and canal.lower() not in canal_regional_filter:
             continue
+        if canal_filter and (not canal_nombre or canal_nombre.lower() not in canal_filter):
+            continue
         centros.add(cc)
         puntos.add(pv)
         if canal:
             canales.add(canal)
+        if canal_nombre:
+            canales_nombres.add(canal_nombre)
+        if cc:
+            punto_canal_nombre[cc] = canal_nombre
 
     for cc in (
         InventarioAbastecimiento.objects.values_list(
@@ -3137,6 +3327,10 @@ def forecast_options(request):
         cc = _normalize_str(cc)
         if id_puntoventa_filter and cc.lower() not in id_puntoventa_filter:
             continue
+        if canal_filter:
+            canal_nombre = _normalize_str(punto_canal_nombre.get(cc, ""))
+            if not canal_nombre or canal_nombre.lower() not in canal_filter:
+                continue
         centros.add(cc)
 
     for cc in (
@@ -3147,6 +3341,10 @@ def forecast_options(request):
         cc = _normalize_str(cc)
         if id_puntoventa_filter and cc.lower() not in id_puntoventa_filter:
             continue
+        if canal_filter:
+            canal_nombre = _normalize_str(punto_canal_nombre.get(cc, ""))
+            if not canal_nombre or canal_nombre.lower() not in canal_filter:
+                continue
         centros.add(cc)
 
     for cc in (
@@ -3155,23 +3353,32 @@ def forecast_options(request):
         cc = _normalize_str(cc)
         if id_puntoventa_filter and cc.lower() not in id_puntoventa_filter:
             continue
+        if canal_filter:
+            canal_nombre = _normalize_str(punto_canal_nombre.get(cc, ""))
+            if not canal_nombre or canal_nombre.lower() not in canal_filter:
+                continue
         centros.add(cc)
 
     for prod in ProductoAbastecimiento.objects.all():
         mat = _normalize_str(prod.id_producto)
         prod_name = _normalize_str(prod.nombre_producto)
         marca = _normalize_str(prod.marca)
+        canal_nombre = _normalize_str(canal_map.get(str(prod.id_canal_id), ""))
         if id_producto_filter and mat.lower() not in id_producto_filter:
             continue
         if nombre_producto_filter and prod_name and prod_name.lower() not in nombre_producto_filter:
             continue
         if marcas_filter and marca != "" and marca.lower() not in marcas_filter:
             continue
+        if canal_filter and (not canal_nombre or canal_nombre.lower() not in canal_filter):
+            continue
         materiales.add(mat)
         if prod_name:
             productos.add(prod_name)
         if marca:
             marcas.add(marca)
+        if canal_nombre:
+            canales_nombres.add(canal_nombre)
 
     return JsonResponse(
         {
@@ -3181,6 +3388,7 @@ def forecast_options(request):
             "nombre_producto": sorted(list(productos)),
             "marcas": sorted(list(marcas)),
             "canal_regional": sorted(list(canales)),
+            "canal": sorted(list(canales_nombres)),
         }
     )
 
@@ -3196,6 +3404,7 @@ def forecast_data(request):
     nombre_producto_filter = _parse_multi_param(request, "nombre_producto")
     marcas_filter = _parse_multi_param(request, "marca")
     canal_regional_filter = _parse_multi_param(request, "canal_regional")
+    canal_filter = _parse_multi_param(request, "canal")
 
     try:
         page = max(1, int(request.GET.get("page", 1)))
@@ -3211,19 +3420,25 @@ def forecast_data(request):
         page_size = 1000
 
     prod_map = {}
-    for prod in ProductoAbastecimiento.objects.all():
+    for prod in ProductoAbastecimiento.objects.select_related("id_canal").all():
         mat = _normalize_str(prod.id_producto)
         prod_map[mat] = {
             "Producto": _normalize_str(prod.nombre_producto),
             "Marca": _normalize_str(prod.marca),
+            "Canal": _normalize_str(
+                prod.id_canal.canal_nombre if getattr(prod, "id_canal", None) else ""
+            ),
         }
 
     puntos_map = {}
-    for punto in PuntoVentaAbastecimiento.objects.all():
+    for punto in PuntoVentaAbastecimiento.objects.select_related("id_canal").all():
         cc = _normalize_str(punto.id_puntoventa)
         puntos_map[cc] = {
             "Punto de Venta": _normalize_str(punto.punto_venta),
             "Canal o Regional": _normalize_str(punto.canal_regional),
+            "Canal": _normalize_str(
+                punto.id_canal.canal_nombre if getattr(punto, "id_canal", None) else ""
+            ),
         }
 
     candidates = set()
@@ -3351,6 +3566,9 @@ def forecast_data(request):
             return False
         canal_val = puntos_map.get(cc, {}).get("Canal o Regional", "").lower()
         if canal_regional_filter and canal_val not in canal_regional_filter:
+            return False
+        canal_nombre = puntos_map.get(cc, {}).get("Canal", "").lower()
+        if canal_filter and canal_nombre not in canal_filter:
             return False
         return True
 
