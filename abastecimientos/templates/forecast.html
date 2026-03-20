@@ -1,0 +1,384 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/forecast.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<div class="container">
+  <div class="header-section">
+    <div class="header-content">
+      <div class="header-icon">
+        <i class="fas fa-chart-line"></i>
+      </div>
+      <div class="header-text">
+        <h1>Forecast Abastecimiento</h1>
+        <p class="subtitle">Resumen por id_puntoventa + id_producto - Promedio = últimos 3 meses (sin contar el mes actual)</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a href="{% url 'abastecimientos:canal_list' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Ir a Abastecimientos
+      </a>
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-label">Filas cargadas:</span>
+          <span id="total-rows" class="stat-value">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card filters-card">
+    <div class="card-header">
+      <div class="header-icon-small">
+        <i class="fas fa-filter"></i>
+      </div>
+      <h2>Filtros Avanzados</h2>
+      <div class="header-actions">
+        <button id="toggle-filters" class="btn-icon" title="Mostrar/ocultar filtros">
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="filters" class="filters">
+        <div class="filter-group">
+          <div class="filter-column">
+            <label class="filter-label">
+              <i class="fas fa-building filter-icon"></i>
+              id_puntoventa:
+              <select id="filter-id-puntoventa" multiple size="4"><option value="">(todos)</option></select>
+            </label>
+
+            <label class="filter-label">
+              <i class="fas fa-store filter-icon"></i>
+              punto_venta:
+              <select id="filter-punto-venta" multiple size="4"><option value="">(todos)</option></select>
+            </label>
+          </div>
+
+          <div class="filter-column">
+            <label class="filter-label">
+              <i class="fas fa-map-marker-alt filter-icon"></i>
+              canal_regional:
+              <select id="filter-canal-regional" multiple size="4"><option value="">(todos)</option></select>
+            </label>
+
+            <label class="filter-label">
+              <i class="fas fa-barcode filter-icon"></i>
+              id_producto:
+              <select id="filter-id-producto" multiple size="4"><option value="">(todos)</option></select>
+            </label>
+          </div>
+
+          <div class="filter-column">
+            <label class="filter-label">
+              <i class="fas fa-box filter-icon"></i>
+              nombre_producto:
+              <select id="filter-nombre-producto" multiple size="4"><option value="">(todos)</option></select>
+            </label>
+
+            <label class="filter-label">
+              <i class="fas fa-tag filter-icon"></i>
+              Marca:
+              <select id="filter-marca" multiple size="4"><option value="">(todos)</option></select>
+            </label>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button id="apply-filters" class="btn btn-primary" title="Aplicar filtros">
+            <i class="fas fa-check"></i> Aplicar filtros
+          </button>
+          <button id="clear-filters" class="btn btn-secondary">
+            <i class="fas fa-eraser"></i> Limpiar
+          </button>
+          <button id="refresh-data" class="btn btn-secondary">
+            <i class="fas fa-sync-alt"></i> Actualizar
+          </button>
+          <button id="export-page" class="btn btn-success" title="Exportar filas de la página actual">
+            <i class="fas fa-file-excel"></i> Exportar (Excel)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card table-controls-card">
+    <div class="card-body">
+      <div id="pagination-controls" class="pagination-controls">
+        <div class="page-info">
+          <button id="prev-page" class="btn btn-secondary">
+            <i class="fas fa-chevron-left"></i> Anterior
+          </button>
+          <span id="page-display" class="page-display">Página 1 / 1</span>
+          <button id="next-page" class="btn btn-secondary">
+            Siguiente <i class="fas fa-chevron-right"></i>
+          </button>
+          <button id="configure-columns" class="btn btn-secondary">
+            <i class="fas fa-columns"></i> Configurar Columnas
+          </button>
+          <div class="divide-controls">
+            <input type="number" id="divide-value" class="divide-input" placeholder="Número" min="1" step="1">
+            <button id="divide-envio-inventario" class="btn btn-warning">
+              <i class="fas fa-divide"></i> Dividir Envío Inv.
+            </button>
+            <button id="divide-envio-ventas" class="btn btn-warning">
+              <i class="fas fa-divide"></i> Dividir Envío Ventas
+            </button>
+          </div>
+        </div>
+        <div class="page-settings">
+          <i class="fas fa-list-ol settings-icon"></i>
+          Mostrar
+          <select id="page-size-select" class="page-size-select">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50" selected>50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+          </select>
+          registros por página
+        </div>
+
+        <div class="suma-sugerido-container">
+          <i class="fas fa-calculator suma-icon"></i>
+          <label class="suma-label">Suma del sugerido:</label>
+          <span id="suma-sugerido" class="suma-value">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-header">
+      <div class="header-icon-small">
+        <i class="fas fa-table"></i>
+      </div>
+      <h2>Datos de Forecast</h2>
+      <div class="header-actions">
+        <button id="toggle-columns" class="btn-icon" title="Configurar columnas">
+          <i class="fas fa-columns"></i>
+        </button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="table-container" class="table-container">
+        <table id="forecast-table" class="forecast-table">
+          <thead>
+            <tr>
+              <th data-column="centro-costos" class="resizable">
+                <span>id_puntoventa</span>
+              </th>
+              <th data-column="material" class="resizable">
+                <span>id_producto</span>
+              </th>
+              <th data-column="producto" class="resizable">
+                <span>nombre_producto</span>
+              </th>
+              <th data-column="marca" class="resizable hidden-column">
+                <span>Marca</span>
+              </th>
+              <th data-column="punto-venta" class="resizable">
+                <span>Punto de Venta</span>
+              </th>
+              <th data-column="canal-regional" class="resizable hidden-column">
+                <span>canal_regional</span>
+              </th>
+              <th data-column="ventas-actuales" class="resizable">
+                <span>Ventas Actuales</span>
+              </th>
+              <th data-column="ventas-mes-pasado" class="resizable">
+                <span>Ventas Mes pasado</span>
+              </th>
+              <th data-column="promedio-3-meses" class="resizable">
+                <span>Promedio 3 Meses</span>
+              </th>
+              <th data-column="maximo" class="resizable hidden-column">
+                <span>Maximo</span>
+              </th>
+              <th data-column="mediana" class="resizable hidden-column">
+                <span>Mediana</span>
+              </th>
+              <th data-column="inventario" class="resizable">
+                <span>Inventario</span>
+              </th>
+              <th data-column="transitos" class="resizable">
+                <span>Transitos</span>
+              </th>
+              <th data-column="indicador-3-meses" class="resizable">
+                <span>Indicador 3 Meses</span>
+              </th>
+              <th data-column="indicador-ventas-mes-pasado" class="resizable">
+                <span>Indicador Ventas Mes Pasado</span>
+              </th>
+              <th data-column="envio-inventario-3-meses" class="resizable sortable">
+                <span>Envío Inventario 3 meses</span>
+                <i class="fas fa-sort sort-icon"></i>
+              </th>
+              <th data-column="envio-ventas-actuales" class="resizable sortable">
+                <span>Envío Ventas Actuales</span>
+                <i class="fas fa-sort sort-icon"></i>
+              </th>
+              <th data-column="sugerido" class="resizable">
+                <span>Sugerido</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="forecast-body">
+            <tr><td colspan="18" class="loading">
+              <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i>
+              </div>
+              <div>Cargando datos...</div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-section">
+    <div class="footer-content">
+      <div class="footer-text">
+        <i class="fas fa-info-circle"></i>
+        Sistema de Forecast Abastecimiento - Cada fila es única por id_puntoventa + id_producto
+      </div>
+      <div class="footer-actions">
+        <button id="scroll-top" class="btn-icon" title="Ir al inicio">
+          <i class="fas fa-arrow-up"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="columns-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Configurar Columnas</h3>
+      <button class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="columns-list">
+        <div class="column-item" data-column="centro-costos">
+          <span class="column-name">id_puntoventa</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="material">
+          <span class="column-name">id_producto</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="producto">
+          <span class="column-name">nombre_producto</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="marca">
+          <span class="column-name">Marca</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye-slash"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="punto-venta">
+          <span class="column-name">Punto de Venta</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="canal-regional">
+          <span class="column-name">canal_regional</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye-slash"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="ventas-actuales">
+          <span class="column-name">Ventas Actuales</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="ventas-mes-pasado">
+          <span class="column-name">Ventas Mes pasado</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="promedio-3-meses">
+          <span class="column-name">Promedio 3 Meses</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="maximo">
+          <span class="column-name">Maximo</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye-slash"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="mediana">
+          <span class="column-name">Mediana</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye-slash"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="inventario">
+          <span class="column-name">Inventario</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="transitos">
+          <span class="column-name">Transitos</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="indicador-3-meses">
+          <span class="column-name">Indicador 3 Meses</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="indicador-ventas-mes-pasado">
+          <span class="column-name">Indicador Ventas Mes Pasado</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="envio-inventario-3-meses">
+          <span class="column-name">Envío Inventario 3 meses</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="envio-ventas-actuales">
+          <span class="column-name">Envío Ventas Actuales</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+        <div class="column-item" data-column="sugerido">
+          <span class="column-name">Sugerido</span>
+          <button class="column-toggle">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button id="apply-columns" class="btn btn-primary">Aplicar Cambios</button>
+      <button id="reset-columns" class="btn btn-secondary">Restablecer por Defecto</button>
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'js/forecast.js' %}"></script>
+
+    </main>
+  </div>

@@ -1,0 +1,97 @@
+{% include "navbar.html" %}
+
+<h2>Tránsitos</h2>
+
+{% if delete_error %}
+    <p style="color: #b00020;">{{ delete_error }}</p>
+{% endif %}
+{% if import_error %}
+    <p style="color: #b00020;">{{ import_error }}</p>
+{% endif %}
+
+<section>
+    <h3>Importar / Exportar</h3>
+    <form method="post" action="{% url 'abastecimientos:transito_import' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="archivo" accept=".xlsx">
+        <select name="canal_id">
+            <option value="">-- Seleccione canal para importar --</option>
+            {% for canal in canales %}
+                <option value="{{ canal.id_canal }}">{{ canal.canal_nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Importar Excel</button>
+    </form>
+    <form method="get" action="{% url 'abastecimientos:transito_export' %}">
+        <button type="submit">Exportar Excel</button>
+    </form>
+    <form method="post" action="{% url 'abastecimientos:transito_delete_by_canal' %}">
+        {% csrf_token %}
+        <select name="canal_id" required>
+            <option value="">-- Seleccione canal para eliminar --</option>
+            {% for canal in canales %}
+                <option value="{{ canal.id_canal }}">{{ canal.canal_nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" onclick="return confirm('¿Eliminar todos los registros de este canal?')">Eliminar registros</button>
+    </form>
+</section>
+
+<section>
+    {% if edit_transito %}
+        <h3>Editar tránsito</h3>
+        <form method="post" action="{% url 'abastecimientos:transito_update' edit_transito.id_transito %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar cambios</button>
+            <a href="{% url 'abastecimientos:transito_list' %}">Cancelar</a>
+        </form>
+    {% else %}
+        <h3>Crear tránsito</h3>
+        <form method="post" action="{% url 'abastecimientos:transito_create' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Crear</button>
+        </form>
+    {% endif %}
+</section>
+
+<hr>
+
+<section>
+    <h3>Listado</h3>
+    {% if transitos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Punto de venta</th>
+                    <th>Cantidad</th>
+                    <th>Canal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transito in transitos %}
+                    <tr>
+                        <td>{{ transito.id_transito }}</td>
+                        <td>{{ transito.id_producto }}</td>
+                        <td>{{ transito.id_puntoventa }}</td>
+                        <td>{{ transito.cantidad_transito }}</td>
+                        <td>{{ transito.id_canal }}</td>
+                        <td>
+                            <a href="{% url 'abastecimientos:transito_update' transito.id_transito %}">Editar</a>
+                            <form method="post" action="{% url 'abastecimientos:transito_delete' transito.id_transito %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('¿Eliminar este tránsito?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay tránsitos registrados.</p>
+    {% endif %}
+</section>

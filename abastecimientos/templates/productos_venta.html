@@ -1,0 +1,95 @@
+{% include "navbar.html" %}
+
+<h2>Productos de venta</h2>
+
+{% if delete_error %}
+    <p style="color: #b00020;">{{ delete_error }}</p>
+{% endif %}
+{% if import_error %}
+    <p style="color: #b00020;">{{ import_error }}</p>
+{% endif %}
+
+<section>
+    <h3>Importar / Exportar</h3>
+    <form method="post" action="{% url 'abastecimientos:producto_import' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="archivo" accept=".xlsx">
+        <select name="canal_id">
+            <option value="">-- Seleccione canal para importar --</option>
+            {% for canal in canales %}
+                <option value="{{ canal.id_canal }}">{{ canal.canal_nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Importar Excel</button>
+    </form>
+    <form method="get" action="{% url 'abastecimientos:producto_export' %}">
+        <button type="submit">Exportar Excel</button>
+    </form>
+    <form method="post" action="{% url 'abastecimientos:producto_delete_by_canal' %}">
+        {% csrf_token %}
+        <select name="canal_id" required>
+            <option value="">-- Seleccione canal para eliminar --</option>
+            {% for canal in canales %}
+                <option value="{{ canal.id_canal }}">{{ canal.canal_nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" onclick="return confirm('¿Eliminar todos los registros de este canal?')">Eliminar registros</button>
+    </form>
+</section>
+
+<section>
+    {% if edit_producto %}
+        <h3>Editar producto</h3>
+        <form method="post" action="{% url 'abastecimientos:producto_update' edit_producto.id_producto %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar cambios</button>
+            <a href="{% url 'abastecimientos:producto_list' %}">Cancelar</a>
+        </form>
+    {% else %}
+        <h3>Crear producto</h3>
+        <form method="post" action="{% url 'abastecimientos:producto_create' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Crear</button>
+        </form>
+    {% endif %}
+</section>
+
+<hr>
+
+<section>
+    <h3>Listado</h3>
+    {% if productos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Marca</th>
+                    <th>Canal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.id_producto }}</td>
+                        <td>{{ producto.nombre_producto }}</td>
+                        <td>{{ producto.marca }}</td>
+                        <td>{{ producto.id_canal }}</td>
+                        <td>
+                            <a href="{% url 'abastecimientos:producto_update' producto.id_producto %}">Editar</a>
+                            <form method="post" action="{% url 'abastecimientos:producto_delete' producto.id_producto %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('¿Eliminar este producto?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay productos registrados.</p>
+    {% endif %}
+</section>

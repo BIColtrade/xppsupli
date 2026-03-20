@@ -1,0 +1,55 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/serializar_ventas.css' %}">
+
+<div class="serializar-container" data-preview-url="{% url 'abastecimientos:serializar_ventas_preview' %}">
+  <header class="serializar-header">
+    <div>
+      <h1>Serializar Ventas</h1>
+      <p>Genera el archivo serializado a partir del Excel de cruce.</p>
+    </div>
+  </header>
+
+  <form id="serial-form" method="post" enctype="multipart/form-data" action="{% url 'abastecimientos:serializar_ventas_process' %}">
+    {% csrf_token %}
+    <div class="form-card">
+      <div class="form-row">
+        <label class="file-label">
+          Archivo Excel (.xlsx)
+          <input type="file" name="file" id="file-input" accept=".xlsx" required>
+        </label>
+      </div>
+
+      <div class="preview-controls">
+        <button type="button" id="btn-preview" class="btn btn-secondary">Mostrar marcas importadas</button>
+      </div>
+
+      <div id="marcas-importadas" class="marcas-importadas" style="display:none;">
+        <div class="marcas-title">Marcas detectadas:</div>
+        <div id="marcas-list"></div>
+      </div>
+
+      <h3>Seriales iniciales por marca</h3>
+      <div class="serial-grid">
+        {% for marca in marcas_especificas %}
+          <div class="serial-group">
+            <label class="serial-label">{{ marca }}:</label>
+            <input type="text" name="serial_{{ marca|lower }}" placeholder="Ej: X100" class="serial-input">
+          </div>
+        {% endfor %}
+        <div class="serial-group serial-group-wide">
+          <label class="serial-label">Otros:</label>
+          <input type="text" name="otros_serial" placeholder="Ej: X100" class="serial-input">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary submit-btn">Serializar y Descargar Ventas</button>
+      <div id="msg" class="form-msg"></div>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'js/serializar_ventas.js' %}"></script>
+
+    </main>
+  </div>

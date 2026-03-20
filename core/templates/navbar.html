@@ -1,0 +1,14 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+{% if jwt_user %}
+  <div class="layout">
+    {% include "sidebar.html" %}
+    <main class="layout__content">
+{% else %}
+  <nav class="navbar">
+    <a class="navbar__brand" href="{% url 'home' %}">Inicio</a>
+    <div class="navbar__links">
+      <a href="{% url 'login' %}">Login</a>
+    </div>
+  </nav>
+{% endif %}

@@ -1,0 +1,97 @@
+{% include "navbar.html" %}
+
+<h2>Puntos de venta</h2>
+
+{% if delete_error %}
+    <p style="color: #b00020;">{{ delete_error }}</p>
+{% endif %}
+{% if import_error %}
+    <p style="color: #b00020;">{{ import_error }}</p>
+{% endif %}
+
+<section>
+    <h3>Importar / Exportar</h3>
+    <form method="post" action="{% url 'abastecimientos:punto_venta_import' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="archivo" accept=".xlsx">
+        <select name="canal_id">
+            <option value="">-- Seleccione canal para importar --</option>
+            {% for canal in canales %}
+                <option value="{{ canal.id_canal }}">{{ canal.canal_nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Importar Excel</button>
+    </form>
+    <form method="get" action="{% url 'abastecimientos:punto_venta_export' %}">
+        <button type="submit">Exportar Excel</button>
+    </form>
+    <form method="post" action="{% url 'abastecimientos:punto_venta_delete_by_canal' %}">
+        {% csrf_token %}
+        <select name="canal_id" required>
+            <option value="">-- Seleccione canal para eliminar --</option>
+            {% for canal in canales %}
+                <option value="{{ canal.id_canal }}">{{ canal.canal_nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" onclick="return confirm('¿Eliminar todos los registros de este canal?')">Eliminar registros</button>
+    </form>
+</section>
+
+<section>
+    {% if edit_punto_venta %}
+        <h3>Editar punto de venta</h3>
+        <form method="post" action="{% url 'abastecimientos:punto_venta_update' edit_punto_venta.id_puntoventa %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar cambios</button>
+            <a href="{% url 'abastecimientos:punto_venta_list' %}">Cancelar</a>
+        </form>
+    {% else %}
+        <h3>Crear punto de venta</h3>
+        <form method="post" action="{% url 'abastecimientos:punto_venta_create' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Crear</button>
+        </form>
+    {% endif %}
+</section>
+
+<hr>
+
+<section>
+    <h3>Listado</h3>
+    {% if puntos_venta %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Punto de venta</th>
+                    <th>Canal regional</th>
+                    <th>Tipo</th>
+                    <th>Canal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for punto in puntos_venta %}
+                    <tr>
+                        <td>{{ punto.id_puntoventa }}</td>
+                        <td>{{ punto.punto_venta }}</td>
+                        <td>{{ punto.canal_regional }}</td>
+                        <td>{{ punto.tipo }}</td>
+                        <td>{{ punto.id_canal }}</td>
+                        <td>
+                            <a href="{% url 'abastecimientos:punto_venta_update' punto.id_puntoventa %}">Editar</a>
+                            <form method="post" action="{% url 'abastecimientos:punto_venta_delete' punto.id_puntoventa %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('¿Eliminar este punto de venta?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay puntos de venta registrados.</p>
+    {% endif %}
+</section>

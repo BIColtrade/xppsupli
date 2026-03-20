@@ -1,0 +1,148 @@
+:root {
+  --bg: #f4f1ec;
+  --panel: #ffffff;
+  --ink: #1f2a2e;
+  --muted: #65737e;
+  --brand: #0f6b6d;
+  --brand-strong: #0a4a4c;
+  --line: #e2e0db;
+  --pill: #efe7da;
+}
+
+body {
+  background: radial-gradient(circle at 10% 0%, #fcebd5 0%, #f4f1ec 40%, #eef2f0 100%);
+  color: var(--ink);
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+.serializar-container {
+  max-width: 980px;
+  margin: 24px auto 80px;
+  padding: 0 24px;
+}
+
+.serializar-header {
+  margin-bottom: 16px;
+  background: linear-gradient(120deg, #ffffff 0%, #f8f5ef 100%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 12px 24px rgba(15, 107, 109, 0.08);
+}
+
+.serializar-header h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+}
+
+.serializar-header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.form-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 24px rgba(31, 42, 46, 0.08);
+}
+
+.file-label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.preview-controls {
+  margin: 12px 0 10px;
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(15, 107, 109, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--brand-strong);
+}
+
+.btn-secondary {
+  background: #f0ede6;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.serial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.serial-group {
+  display: grid;
+  gap: 6px;
+}
+
+.serial-group-wide {
+  grid-column: span 2;
+}
+
+.serial-input {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.submit-btn {
+  margin-top: 16px;
+}
+
+.marcas-importadas {
+  margin: 10px 0 16px;
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: #fbfaf7;
+}
+
+.marcas-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.marca-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--pill);
+  margin: 3px 4px 3px 0;
+  font-size: 12px;
+}
+
+.form-msg {
+  margin-top: 12px;
+  color: #444444;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .serial-group-wide {
+    grid-column: span 1;
+  }
+}

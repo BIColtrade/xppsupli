@@ -1,0 +1,141 @@
+:root {
+  --bg: #f4f1ec;
+  --panel: #ffffff;
+  --ink: #1f2a2e;
+  --muted: #65737e;
+  --brand: #0f6b6d;
+  --brand-strong: #0a4a4c;
+  --accent: #e08e45;
+  --line: #e2e0db;
+  --positive: #1b7f5a;
+  --negative: #b44a3a;
+}
+
+body {
+  background: radial-gradient(circle at 10% 0%, #fcebd5 0%, #f4f1ec 40%, #eef2f0 100%);
+  color: var(--ink);
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+.cruzar-container {
+  max-width: 1400px;
+  margin: 24px auto 80px;
+  padding: 0 24px;
+}
+
+.cruzar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(120deg, #ffffff 0%, #f8f5ef 100%);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 12px 24px rgba(15, 107, 109, 0.08);
+}
+
+.cruzar-title h1 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  letter-spacing: 0.2px;
+}
+
+.cruzar-title p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.cruzar-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: #ffffff;
+  box-shadow: 0 10px 20px rgba(15, 107, 109, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--brand-strong);
+}
+
+.btn-secondary {
+  background: #f0ede6;
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.cruzar-status {
+  margin: 16px 4px 10px;
+  color: var(--muted);
+}
+
+.table-wrap {
+  overflow: auto;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 10px 24px rgba(31, 42, 46, 0.08);
+}
+
+.cruzar-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1100px;
+}
+
+.cruzar-table thead th {
+  position: sticky;
+  top: 0;
+  background: #f7f3eb;
+  text-align: left;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.cruzar-table tbody td {
+  padding: 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+
+.cruzar-table tbody tr:nth-child(even) {
+  background: #fbfaf7;
+}
+
+.cell-positive {
+  color: var(--positive);
+  font-weight: 700;
+}
+
+.cell-negative {
+  color: var(--negative);
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .cruzar-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,0 +1,46 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/cruzar_archivos.css' %}">
+
+<div id="cruzar-app" class="cruzar-container" data-url="{% url 'abastecimientos:cruzar_archivos_data' %}" data-export-url="{% url 'abastecimientos:cruzar_archivos_export' %}">
+  <header class="cruzar-header">
+    <div class="cruzar-title">
+      <h1>Cruce: Claro - Coltrade</h1>
+      <p>Llave unica: Material + Centro Costos</p>
+    </div>
+    <div class="cruzar-actions">
+      <button id="btn-refresh" class="btn btn-secondary" type="button">Actualizar</button>
+      <button id="btn-export" class="btn btn-primary" type="button">Exportar Excel</button>
+    </div>
+  </header>
+
+  <div id="status" class="cruzar-status">Cargando datos...</div>
+
+  <div class="table-wrap">
+    <table id="cruzar-table" class="cruzar-table">
+      <thead>
+        <tr>
+          <th>Material</th>
+          <th>Producto</th>
+          <th>Marca</th>
+          <th>Centro Costos</th>
+          <th>Punto de Venta</th>
+          <th>Sugerido Claro</th>
+          <th>Inventario</th>
+          <th>Transitos</th>
+          <th>Ventas Actuales</th>
+          <th>Envio Inventario 3 meses</th>
+          <th>Sugerido Coltrade</th>
+          <th>Promedio 3 Meses</th>
+          <th>Sugerido Final</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="{% static 'js/cruzar_archivos.js' %}"></script>
+
+    </main>
+  </div>

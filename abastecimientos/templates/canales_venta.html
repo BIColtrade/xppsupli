@@ -1,0 +1,75 @@
+{% include "navbar.html" %}
+
+<h2>Canales de venta</h2>
+
+{% if delete_error %}
+    <p style="color: #b00020;">{{ delete_error }}</p>
+{% endif %}
+{% if import_error %}
+    <p style="color: #b00020;">{{ import_error }}</p>
+{% endif %}
+
+<section>
+    <h3>Importar / Exportar</h3>
+    <form method="post" action="{% url 'abastecimientos:canal_import' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="archivo" accept=".xlsx">
+        <button type="submit">Importar Excel</button>
+    </form>
+    <form method="get" action="{% url 'abastecimientos:canal_export' %}">
+        <button type="submit">Exportar Excel</button>
+    </form>
+</section>
+
+<section>
+    {% if edit_canal %}
+        <h3>Editar canal</h3>
+        <form method="post" action="{% url 'abastecimientos:canal_update' edit_canal.id_canal %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar cambios</button>
+            <a href="{% url 'abastecimientos:canal_list' %}">Cancelar</a>
+        </form>
+    {% else %}
+        <h3>Crear canal</h3>
+        <form method="post" action="{% url 'abastecimientos:canal_create' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Crear</button>
+        </form>
+    {% endif %}
+</section>
+
+<hr>
+
+<section>
+    <h3>Listado</h3>
+    {% if canales %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for canal in canales %}
+                    <tr>
+                        <td>{{ canal.id_canal }}</td>
+                        <td>{{ canal.canal_nombre }}</td>
+                        <td>
+                            <a href="{% url 'abastecimientos:canal_update' canal.id_canal %}">Editar</a>
+                            <form method="post" action="{% url 'abastecimientos:canal_delete' canal.id_canal %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('¿Eliminar este canal?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay canales registrados.</p>
+    {% endif %}
+</section>

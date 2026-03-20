@@ -1,0 +1,91 @@
+{% include "navbar.html" %}
+
+<h2>Abastecimiento Coltrade</h2>
+
+{% if delete_error %}
+    <p style="color: #b00020;">{{ delete_error }}</p>
+{% endif %}
+{% if import_error %}
+    <p style="color: #b00020;">{{ import_error }}</p>
+{% endif %}
+
+<section>
+    <h3>Importar / Exportar</h3>
+    <form method="post" action="{% url 'abastecimientos:abastecimiento_coltrade_import' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="archivo" accept=".xlsx">
+        <button type="submit">Importar Excel</button>
+    </form>
+    <form method="get" action="{% url 'abastecimientos:abastecimiento_coltrade_export' %}">
+        <button type="submit">Exportar Excel</button>
+    </form>
+</section>
+
+<section>
+    {% if edit_coltrade %}
+        <h3>Editar registro</h3>
+        <form method="post" action="{% url 'abastecimientos:abastecimiento_coltrade_update' edit_coltrade.id %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Guardar cambios</button>
+            <a href="{% url 'abastecimientos:abastecimiento_coltrade_list' %}">Cancelar</a>
+        </form>
+    {% else %}
+        <h3>Crear registro</h3>
+        <form method="post" action="{% url 'abastecimientos:abastecimiento_coltrade_create' %}">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Crear</button>
+        </form>
+    {% endif %}
+</section>
+
+<hr>
+
+<section>
+    <h3>Listado</h3>
+    {% if coltrade %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Centro Costos</th>
+                    <th>Punto Venta</th>
+                    <th>Material</th>
+                    <th>Producto</th>
+                    <th>Marca</th>
+                    <th>Ventas Actuales</th>
+                    <th>Transitos</th>
+                    <th>Inventario</th>
+                    <th>Envio Inv 3 Meses</th>
+                    <th>Sugerido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in coltrade %}
+                    <tr>
+                        <td>{{ item.centro_costos }}</td>
+                        <td>{{ item.punto_venta }}</td>
+                        <td>{{ item.material }}</td>
+                        <td>{{ item.producto }}</td>
+                        <td>{{ item.marca }}</td>
+                        <td>{{ item.ventas_actuales }}</td>
+                        <td>{{ item.transitos }}</td>
+                        <td>{{ item.inventario }}</td>
+                        <td>{{ item.envio_inventario_3_meses }}</td>
+                        <td>{{ item.sugerido_coltrade }}</td>
+                        <td>
+                            <a href="{% url 'abastecimientos:abastecimiento_coltrade_update' item.id %}">Editar</a>
+                            <form method="post" action="{% url 'abastecimientos:abastecimiento_coltrade_delete' item.id %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('¿Eliminar este registro?')">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay registros.</p>
+    {% endif %}
+</section>
