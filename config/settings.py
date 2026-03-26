@@ -62,6 +62,9 @@ INSTALLED_APPS = [
     'core',
     'user',
     'abastecimientos',
+    'portafolio_mayoristas',
+    'malla_operaciones_trade',
+    'bienestar_coltrade',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,219 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/dashboard_horas.css' %}">
+
+<section class="dashboard">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Malla Operaciones</p>
+      <h1>Dashboard de horas</h1>
+      <p class="subtitle">Resumen de horas, headcount y estados por punto de venta.</p>
+    </div>
+    <div class="hero__meta">
+      <span class="hero__label">Rango</span>
+      <strong>{{ start_date|date:'Y-m-d' }} a {{ end_date|date:'Y-m-d' }}</strong>
+      {% if zona %}
+        <span class="chip">{{ zona }}</span>
+      {% else %}
+        <span class="chip chip--muted">Todas las zonas</span>
+      {% endif %}
+    </div>
+  </header>
+
+  <form class="filters" method="get">
+    <div class="filters__grid">
+      <div>
+        <label>Desde</label>
+        <input type="date" name="start" value="{{ start_date|date:'Y-m-d' }}">
+      </div>
+      <div>
+        <label>Hasta</label>
+        <input type="date" name="end" value="{{ end_date|date:'Y-m-d' }}">
+      </div>
+      <div>
+        <label>Zona</label>
+        <select name="zona">
+          <option value="">Todas</option>
+          {% for value, label in zonas %}
+            <option value="{{ value }}" {% if zona == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Punto de venta</label>
+        <select name="punto" multiple size="4">
+          {% for nombre in puntos_opciones %}
+            <option value="{{ nombre }}" {% if nombre in punto_nombres %}selected{% endif %}>
+              {{ nombre }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Asesor</label>
+        <select name="asesor" multiple size="4">
+          {% for nombre in asesores_opciones %}
+            <option value="{{ nombre }}" {% if nombre in asesor_nombres %}selected{% endif %}>
+              {{ nombre }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label>Coordinador</label>
+        <select name="coordinador" multiple size="4">
+          {% for nombre in coordinadores_opciones %}
+            <option value="{{ nombre }}" {% if nombre in coordinador_nombres %}selected{% endif %}>
+              {{ nombre }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="filters__actions">
+        <button type="submit" class="btn btn--primary">Actualizar</button>
+      </div>
+    </div>
+  </form>
+
+  <section class="stats">
+    <article class="stat-card">
+      <span class="stat-label">Horas trabajadas</span>
+      <span class="stat-value">{{ total_horas|floatformat:1 }}</span>
+      <span class="stat-help">Total en el rango</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Registros</span>
+      <span class="stat-value">{{ total_registros }}</span>
+      <span class="stat-help">Entradas cargadas</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Puntos activos</span>
+      <span class="stat-value">{{ total_puntos }}</span>
+      <span class="stat-help">Con actividad</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Asesores</span>
+      <span class="stat-value">{{ total_asesores }}</span>
+      <span class="stat-help">Distintos en el rango</span>
+    </article>
+    <article class="stat-card stat-card--accent">
+      <span class="stat-label">Asesores activos</span>
+      <span class="stat-value">{{ asesores_activos }}</span>
+      <span class="stat-help">Estado ACTIVO</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Vacantes</span>
+      <span class="stat-value">{{ vacantes }}</span>
+      <span class="stat-help">Registros vacantes</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Incapacidades</span>
+      <span class="stat-value">{{ incapacidades }}</span>
+      <span class="stat-help">En el rango</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Descansos</span>
+      <span class="stat-value">{{ descansos }}</span>
+      <span class="stat-help">En el rango</span>
+    </article>
+  </section>
+
+  <section class="panel">
+    <div class="panel__header">
+      <h2>Resumen por punto de venta</h2>
+      <p>Horas trabajadas, estados y cantidad de registros.</p>
+    </div>
+    <div class="table-wrap" data-filter-table>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Punto</th>
+            <th>Zona</th>
+            <th>Horas</th>
+            <th>Registros</th>
+            <th>Activos</th>
+            <th>Vacantes</th>
+            <th>Incapacidades</th>
+            <th>Descansos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in puntos_resumen %}
+            <tr>
+              <td>{{ p.punto_venta__nombre }}</td>
+              <td><span class="chip chip--muted">{{ p.punto_venta__zona }}</span></td>
+              <td>{{ p.total_horas|floatformat:1 }}</td>
+              <td>{{ p.registros }}</td>
+              <td>{{ p.activos }}</td>
+              <td>{{ p.vacantes }}</td>
+              <td>{{ p.incapacidades }}</td>
+              <td>{{ p.descansos }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="8">No hay datos en el rango seleccionado.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel__header panel__header--inline">
+      <div>
+        <h2>Detalle de registros</h2>
+        <p>Vista detallada por fecha y punto.</p>
+      </div>
+      <div class="search">
+        <label for="tableSearch">Buscar</label>
+        <input id="tableSearch" type="text" placeholder="Filtrar por punto, asesor o coordinador">
+      </div>
+    </div>
+    <div class="table-wrap" data-filter-table>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Punto</th>
+            <th>Zona</th>
+            <th>Coordinador</th>
+            <th>Asesor</th>
+            <th>Estado</th>
+            <th>Ingreso</th>
+            <th>Salida</th>
+            <th>Horas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in registros %}
+            <tr>
+              <td>{{ r.fecha|date:'Y-m-d' }}</td>
+              <td>{{ r.punto_venta.nombre }}</td>
+              <td><span class="chip chip--muted">{{ r.punto_venta.zona }}</span></td>
+              <td>{{ r.coordinador.nombre|default_if_none:'-' }}</td>
+              <td>{{ r.asesor.nombre|default_if_none:'-' }}</td>
+              <td>
+                <span class="badge badge--{{ r.estado|lower }}">
+                  {{ r.get_estado_display }}
+                </span>
+              </td>
+              <td>{{ r.hora_ingreso|default_if_none:'-' }}</td>
+              <td>{{ r.hora_salida|default_if_none:'-' }}</td>
+              <td>{{ r.horas_trabajadas|floatformat:1 }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="9">No hay registros para mostrar.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>
+
+<script src="{% static 'js/dashboard_horas.js' %}" defer></script>
+
+    </main>
+  </div>

@@ -170,7 +170,17 @@ def listado_usuarios(request):
     if request.method == "POST":
         action = request.POST.get("action", "").strip()
 
-        if action == "create":
+        if action == "create_group":
+            group_name = request.POST.get("group_name", "").strip()
+            if not group_name:
+                context["error"] = "El nombre del grupo es obligatorio."
+            else:
+                group_obj, created = Group.objects.get_or_create(name=group_name)
+                if created:
+                    context["success"] = "Grupo creado correctamente."
+                else:
+                    context["error"] = "El grupo ya existe."
+        elif action == "create":
             email = request.POST.get("email", "").strip()
             username = request.POST.get("username", "").strip()
             nombre = request.POST.get("nombre", "").strip()
@@ -261,5 +271,8 @@ def listado_usuarios(request):
                             context["success"] = "Usuario actualizado."
                         except IntegrityError:
                             context["error"] = "El email o usuario ya existe."
+
+        context["usuarios"] = Usuario.objects.order_by("email")
+        context["grupos"] = Group.objects.order_by("name")
 
     return render(request, "listado_usuarios.html", context)

@@ -46,6 +46,14 @@ class GroupAccessMiddleware:
             groups = {g.lower() for g in groups}
             return name.lower() in groups
 
+        def _in_any_group(names):
+            if user is None:
+                return False
+            groups = set(user.groups.values_list("name", flat=True))
+            groups = {g.lower() for g in groups}
+            names = {n.lower() for n in names}
+            return not groups.isdisjoint(names)
+
         # Crear usuarios y listado: solo admin
         if path.startswith("/coltrxde/crear-usuarios") or path.startswith("/coltrxde/listado-usuarios"):
             auth_resp = _require_auth()
@@ -54,12 +62,54 @@ class GroupAccessMiddleware:
             if not _is_admin():
                 return render(request, "acceso_no_permitido.html", status=403)
 
-        # Abastecimientos y settings_user: admin o abastecimiento
-        if path.startswith("/abastecimientos/") or path.startswith("/coltrxde/settings-user/"):
+        # Abastecimientos: admin o abastecimientos
+        if path.startswith("/abastecimientos/"):
             auth_resp = _require_auth()
             if auth_resp:
                 return auth_resp
-            if not (_is_admin() or _in_group("abastecimiento")):
+            if not (_is_admin() or _in_group("abastecimientos")):
+                return render(request, "acceso_no_permitido.html", status=403)
+
+        # Portafolio mayoristas: admin o portafoliomayoristas
+        if path.startswith("/portafolio/mayoristas/"):
+            auth_resp = _require_auth()
+            if auth_resp:
+                return auth_resp
+            if not (_is_admin() or _in_group("portafoliomayoristas")):
+                return render(request, "acceso_no_permitido.html", status=403)
+
+        # Bienestar Coltrade: admin o bienestarcoltrade
+        if path.startswith("/bienestar/coltrxde/"):
+            auth_resp = _require_auth()
+            if auth_resp:
+                return auth_resp
+            if not (_is_admin() or _in_group("bienestarcoltrade")):
+                return render(request, "acceso_no_permitido.html", status=403)
+
+        # Malla Operaciones: admin o mallaoperaciones
+        if path.startswith("/malla/operaciones/coltrxde/"):
+            auth_resp = _require_auth()
+            if auth_resp:
+                return auth_resp
+            if not (_is_admin() or _in_group("mallaoperaciones")):
+                return render(request, "acceso_no_permitido.html", status=403)
+
+        # home_user y settings_user: admin o cualquier grupo funcional
+        if path.startswith("/coltrxde/home_user/") or path.startswith("/coltrxde/settings-user/"):
+            auth_resp = _require_auth()
+            if auth_resp:
+                return auth_resp
+            if not (
+                _is_admin()
+                or _in_any_group(
+                    [
+                        "abastecimientos",
+                        "portafoliomayoristas",
+                        "bienestarcoltrade",
+                        "mallaoperaciones",
+                    ]
+                )
+            ):
                 return render(request, "acceso_no_permitido.html", status=403)
 
         return self.get_response(request)

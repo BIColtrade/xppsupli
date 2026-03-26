@@ -50,6 +50,33 @@
     </form>
   </div>
 
+  <div class="users__groups">
+    <h2 class="users__section-title">Grupos</h2>
+    <form method="post" class="users__group-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create_group">
+      <div class="users__group-grid">
+        <div>
+          <label>Nombre del grupo</label>
+          <input type="text" name="group_name" required>
+        </div>
+        <div class="users__group-actions">
+          <button type="submit">Crear grupo</button>
+        </div>
+      </div>
+    </form>
+    <div class="users__group-list">
+      <h3 class="users__section-subtitle">Listado de grupos</h3>
+      <ul>
+        {% for grupo in grupos %}
+          <li>{{ grupo.name }}</li>
+        {% empty %}
+          <li>No hay grupos.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
   <div class="users__filters">
     <input
       id="userFilter"
@@ -82,20 +109,20 @@
       </thead>
       <tbody>
         {% for u in usuarios %}
-          <tr>
+          <tr data-user-row>
             <form method="post">
               {% csrf_token %}
               <td>
                 <input type="hidden" name="user_id" value="{{ u.id }}">
-                <input type="email" name="email" value="{{ u.email }}" required data-filter="email">
+                <input type="email" name="email" value="{{ u.email }}" required data-filter="email" data-editable="1">
               </td>
-              <td><input type="text" name="username" value="{{ u.username }}" required></td>
-              <td><input type="text" name="nombre" value="{{ u.nombre }}" required data-filter="nombre"></td>
-              <td><input type="text" name="apellido" value="{{ u.apellido }}" data-filter="apellido"></td>
-              <td><input type="number" name="edad" value="{{ u.edad }}"></td>
-              <td><input type="text" name="telefono" value="{{ u.telefono }}"></td>
+              <td><input type="text" name="username" value="{{ u.username }}" required data-editable="1"></td>
+              <td><input type="text" name="nombre" value="{{ u.nombre }}" required data-filter="nombre" data-editable="1"></td>
+              <td><input type="text" name="apellido" value="{{ u.apellido }}" data-filter="apellido" data-editable="1"></td>
+              <td><input type="number" name="edad" value="{{ u.edad }}" data-editable="1"></td>
+              <td><input type="text" name="telefono" value="{{ u.telefono }}" data-editable="1"></td>
               <td>
-                <select name="grupos" multiple size="3">
+                <select name="grupos" multiple size="3" data-editable="1">
                   {% for g in grupos %}
                     <option value="{{ g.id }}" {% if g in u.groups.all %}selected{% endif %}>
                       {{ g.name }}
@@ -105,15 +132,18 @@
               </td>
               <td>
                 <div class="btn-group">
-                  <button type="submit" name="action" value="save">Guardar</button>
+                  <button type="button" class="btn-icon" data-action="edit" title="Editar" aria-label="Editar">✏️</button>
+                  <button type="submit" name="action" value="save" class="btn-icon btn-save" title="Guardar" aria-label="Guardar" disabled>💾</button>
                   <button
                     type="submit"
                     name="action"
                     value="delete"
-                    class="btn-danger"
+                    class="btn-icon btn-danger"
+                    title="Eliminar"
+                    aria-label="Eliminar"
                     onclick="return confirm('¿Eliminar este usuario?');"
                   >
-                    Eliminar
+                    🗑️
                   </button>
                 </div>
               </td>
@@ -155,9 +185,20 @@
     border-radius: 12px;
     background: #ffffff;
   }
+  .users__groups {
+    margin-bottom: 18px;
+    padding: 16px;
+    border: 1px solid #e6e9ef;
+    border-radius: 12px;
+    background: #ffffff;
+  }
   .users__section-title {
     margin: 0 0 12px 0;
     font-size: 18px;
+  }
+  .users__section-subtitle {
+    margin: 12px 0 8px 0;
+    font-size: 15px;
   }
   .users__grid {
     display: grid;
@@ -165,7 +206,28 @@
     gap: 10px 12px;
     margin-bottom: 12px;
   }
+  .users__group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px 12px;
+    align-items: end;
+  }
+  .users__group-actions {
+    display: flex;
+    align-items: flex-end;
+  }
+  .users__group-list ul {
+    margin: 0;
+    padding-left: 18px;
+    color: #526070;
+  }
   .users__create label {
+    display: block;
+    font-size: 12px;
+    color: #526070;
+    margin-bottom: 4px;
+  }
+  .users__groups label {
     display: block;
     font-size: 12px;
     color: #526070;
@@ -203,6 +265,10 @@
     border-radius: 8px;
     font-size: 13px;
   }
+  input.is-disabled, select.is-disabled {
+    background: #f8fafc;
+    color: #6b7280;
+  }
   button {
     padding: 8px 12px;
     border: none;
@@ -210,6 +276,18 @@
     background: #111827;
     color: #fff;
     cursor: pointer;
+  }
+  .btn-icon {
+    width: 38px;
+    height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .btn-icon:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   .btn-group {
     display: flex;
@@ -246,6 +324,35 @@
   function normalizeText(value) {
     return (value || '').toString().toLowerCase().trim();
   }
+
+  function setRowEditing(row, editing) {
+    const fields = Array.from(row.querySelectorAll('[data-editable="1"]'));
+    const saveBtn = row.querySelector('.btn-save');
+    const editBtn = row.querySelector('[data-action="edit"]');
+
+    fields.forEach((field) => {
+      field.disabled = !editing;
+      field.classList.toggle('is-disabled', !editing);
+    });
+    if (saveBtn) {
+      saveBtn.disabled = !editing;
+    }
+    if (editBtn) {
+      editBtn.disabled = editing;
+    }
+  }
+
+  rows.forEach((row) => {
+    if (row.hasAttribute('data-user-row')) {
+      setRowEditing(row, false);
+      const editBtn = row.querySelector('[data-action="edit"]');
+      if (editBtn) {
+        editBtn.addEventListener('click', () => {
+          setRowEditing(row, true);
+        });
+      }
+    }
+  });
 
   filterInput.addEventListener('input', () => {
     const q = normalizeText(filterInput.value);

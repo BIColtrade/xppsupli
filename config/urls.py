@@ -9,4 +9,7 @@ urlpatterns = [
     path("coltrxde/", include("core.urls")),
     path("coltrxde/", include("user.urls")),
     path("abastecimientos/", include("abastecimientos.urls")),
+    path("portafolio/mayoristas/", include("portafolio_mayoristas.urls")),
+    path("malla/operaciones/coltrxde/", include("malla_operaciones_trade.urls")),
+    path("bienestar/coltrxde/", include("bienestar_coltrade.urls")),
 ]
