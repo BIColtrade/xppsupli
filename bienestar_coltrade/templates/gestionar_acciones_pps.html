@@ -1,0 +1,67 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Gestionar Catalogo de Acciones</h1>
+    <p class="pps-page__subtitle">Crea, edita o elimina acciones del sistema.</p>
+  </div>
+
+  {% if success %}
+  <div class="pps-alert pps-alert--success">{{ success }}</div>
+  {% endif %}
+
+  <div style="margin-bottom:16px;">
+    <a href="{% url 'home_bienestar_coltrade:crear_accion_pps' %}" class="pps-btn pps-btn--primary">Crear accion</a>
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Acciones registradas</div>
+    {% if acciones %}
+    <div class="pps-table-wrap">
+      <table class="pps-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Nivel</th>
+            <th>Rango</th>
+            <th>Default</th>
+            <th>Solo lideres</th>
+            <th>Activa</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in acciones %}
+          <tr>
+            <td>{{ a.nombre }}</td>
+            <td><span class="nivel-badge nivel-badge--{{ a.nivel }}">{{ a.get_nivel_display }}</span></td>
+            <td>{{ a.puntos_min }}-{{ a.puntos_max }}</td>
+            <td>{{ a.puntos_default }}</td>
+            <td>{% if a.solo_lideres %}Si{% else %}No{% endif %}</td>
+            <td>{% if a.activa %}Si{% else %}No{% endif %}</td>
+            <td>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <a href="{% url 'home_bienestar_coltrade:editar_accion_pps' a.id %}" class="pps-btn pps-btn--secondary pps-btn--sm">Editar</a>
+                <form method="post" action="{% url 'home_bienestar_coltrade:eliminar_accion_pps' a.id %}" data-confirm="Eliminar esta accion-">
+                  {% csrf_token %}
+                  <button type="submit" class="pps-btn pps-btn--danger pps-btn--sm">Eliminar</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:#6c7a89;font-size:14px;">Aun no hay acciones registradas.</p>
+    {% endif %}
+  </div>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

@@ -1,0 +1,78 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Crear Accion</h1>
+    <p class="pps-page__subtitle">Define una nueva accion para el catalogo.</p>
+  </div>
+
+  {% if error %}
+  <div class="pps-alert pps-alert--error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" class="pps-card pps-form">
+    {% csrf_token %}
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="nombre">Nombre</label>
+      <input class="pps-form__input" type="text" id="nombre" name="nombre" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="descripcion">Descripcion</label>
+      <textarea class="pps-form__textarea" id="descripcion" name="descripcion" required></textarea>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="nivel">Nivel</label>
+      <select class="pps-form__select" id="nivel" name="nivel" required>
+        <option value="">Selecciona un nivel</option>
+        <option value="estrategico">Estrategico</option>
+        <option value="tactico">Tactico</option>
+        <option value="desarrollo">Desarrollo</option>
+        <option value="activacion_bienestar">Activacion & Bienestar</option>
+      </select>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="puntos_min">Puntos minimos</label>
+      <input class="pps-form__input" type="number" id="puntos_min" name="puntos_min" min="0" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="puntos_max">Puntos maximos</label>
+      <input class="pps-form__input" type="number" id="puntos_max" name="puntos_max" min="0" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="puntos_default">Puntos por defecto</label>
+      <input class="pps-form__input" type="number" id="puntos_default" name="puntos_default" min="0" required>
+      <div class="pps-form__hint">Este valor se propone al aprobar la accion.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__checkbox-group">
+        <input type="checkbox" name="solo_lideres">
+        Solo lideres
+      </label>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__checkbox-group">
+        <input type="checkbox" name="activa" checked>
+        Accion activa
+      </label>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button type="submit" class="pps-btn pps-btn--primary">Guardar</button>
+      <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="pps-btn pps-btn--secondary">Volver</a>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

@@ -1,0 +1,67 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Mis Beneficios</h1>
+    <p class="pps-page__subtitle">Historial y estado de tus beneficios reclamados.</p>
+  </div>
+
+  <div class="pps-stats">
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.pendientes }}</div>
+      <div class="pps-stat__label">Pendientes</div>
+    </div>
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.entregados }}</div>
+      <div class="pps-stat__label">Entregados</div>
+    </div>
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.cancelados }}</div>
+      <div class="pps-stat__label">Cancelados</div>
+    </div>
+  </div>
+
+  <div class="pps-tabs">
+    <a href="{% url 'home_bienestar_coltrade:mis_beneficios_pps' %}" class="pps-tab {% if not filtro %}pps-tab--active{% endif %}">Todos</a>
+    <a href="?estado=pendiente" class="pps-tab {% if filtro == 'pendiente' %}pps-tab--active{% endif %}">Pendientes</a>
+    <a href="?estado=entregado" class="pps-tab {% if filtro == 'entregado' %}pps-tab--active{% endif %}">Entregados</a>
+    <a href="?estado=cancelado" class="pps-tab {% if filtro == 'cancelado' %}pps-tab--active{% endif %}">Cancelados</a>
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Reclamos</div>
+    {% if reclamos %}
+    <div class="pps-table-wrap">
+      <table class="pps-table">
+        <thead>
+          <tr>
+            <th>Beneficio</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reclamos %}
+          <tr>
+            <td>{{ r.beneficio.nombre }}</td>
+            <td>{{ r.fecha_reclamo|date:"d/m/Y" }}</td>
+            <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+            <td>{{ r.puntos_descontados }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:#6c7a89;font-size:14px;">Aun no has reclamado beneficios. <a href="{% url 'home_bienestar_coltrade:catalogo_beneficios_pps' %}">Ver catalogo.</a></p>
+    {% endif %}
+  </div>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

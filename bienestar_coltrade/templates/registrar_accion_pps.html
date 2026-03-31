@@ -1,0 +1,57 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Registrar Accion</h1>
+    <p class="pps-page__subtitle">Reporta una accion realizada y acumula puntos.</p>
+  </div>
+
+  {% if success %}
+  <div class="pps-alert pps-alert--success">Accion registrada. Queda pendiente de aprobacion.</div>
+  {% endif %}
+  {% if error %}
+  <div class="pps-alert pps-alert--error">{{ error }}</div>
+  {% endif %}
+
+  {% if acciones %}
+  <form method="post" class="pps-card pps-form">
+    {% csrf_token %}
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="accion">Accion</label>
+      <select class="pps-form__select" id="accion" name="accion" required>
+        <option value="">Selecciona una accion</option>
+        {% for a in acciones %}
+          <option value="{{ a.id }}" {% if accion_seleccionada_id == a.id %}selected{% endif %}>
+            {{ a.nombre }} ({{ a.puntos_min }}-{{ a.puntos_max }} pts)
+          </option>
+        {% endfor %}
+      </select>
+      <div class="pps-form__hint">Los puntos finales dependen de la aprobacion del lider.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="evidencia">Evidencia / descripcion</label>
+      <textarea class="pps-form__textarea" id="evidencia" name="evidencia" required placeholder="Describe que hiciste, impacto, fechas, etc."></textarea>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button type="submit" class="pps-btn pps-btn--primary">Enviar registro</button>
+      <a href="{% url 'home_bienestar_coltrade:catalogo_acciones_pps' %}" class="pps-btn pps-btn--secondary">Ver catalogo</a>
+    </div>
+  </form>
+  {% else %}
+  <div class="pps-alert pps-alert--info">No hay acciones activas en el catalogo.</div>
+  {% if jwt_user and jwt_user.tipo_usuario == 'lider' %}
+    <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="pps-btn pps-btn--primary">Gestionar catalogo</a>
+  {% else %}
+    <p style="color:#6c7a89;font-size:14px;">Contacta a tu lider para habilitar acciones.</p>
+  {% endif %}
+  {% endif %}
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

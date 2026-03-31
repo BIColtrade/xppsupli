@@ -1,0 +1,70 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Crear Beneficio</h1>
+    <p class="pps-page__subtitle">Define un beneficio para el catalogo del sistema.</p>
+  </div>
+
+  {% if success %}
+  <div class="pps-alert pps-alert--success">{{ success }}</div>
+  {% endif %}
+  {% if error %}
+  <div class="pps-alert pps-alert--error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" class="pps-card pps-form">
+    {% csrf_token %}
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="nombre">Nombre</label>
+      <input class="pps-form__input" type="text" id="nombre" name="nombre" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="descripcion">Descripcion</label>
+      <textarea class="pps-form__textarea" id="descripcion" name="descripcion" required></textarea>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="categoria">Categoria</label>
+      <select class="pps-form__select" id="categoria" name="categoria" required>
+        <option value="">Selecciona una categoria</option>
+        <option value="reconocimiento">Reconocimiento</option>
+        <option value="tiempo">Tiempo Flexible</option>
+        <option value="certificado">Certificado / Medalla Digital</option>
+        <option value="sorteo">Sorteo / Experiencia</option>
+        <option value="desarrollo">Desarrollo</option>
+      </select>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="puntos_requeridos">Puntos requeridos</label>
+      <input class="pps-form__input" type="number" id="puntos_requeridos" name="puntos_requeridos" min="0" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="stock">Stock (opcional)</label>
+      <input class="pps-form__input" type="number" id="stock" name="stock" min="0">
+      <div class="pps-form__hint">Deja vacio si el beneficio es ilimitado.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__checkbox-group">
+        <input type="checkbox" name="disponible" checked>
+        Beneficio disponible
+      </label>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button type="submit" class="pps-btn pps-btn--primary">Guardar</button>
+      <a href="{% url 'home_bienestar_coltrade:catalogo_beneficios_pps' %}" class="pps-btn pps-btn--secondary">Ver catalogo</a>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

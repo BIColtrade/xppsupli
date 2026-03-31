@@ -1,0 +1,71 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Mis Acciones</h1>
+    <p class="pps-page__subtitle">Historial y estado de aprobacion de tus registros.</p>
+  </div>
+
+  <div class="pps-stats">
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.pendientes }}</div>
+      <div class="pps-stat__label">Pendientes</div>
+    </div>
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.aprobados }}</div>
+      <div class="pps-stat__label">Aprobadas</div>
+    </div>
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.rechazados }}</div>
+      <div class="pps-stat__label">Rechazadas</div>
+    </div>
+  </div>
+
+  <div class="pps-tabs">
+    <a href="{% url 'home_bienestar_coltrade:mis_acciones_pps' %}" class="pps-tab {% if not filtro %}pps-tab--active{% endif %}">Todas</a>
+    <a href="?estado=pendiente" class="pps-tab {% if filtro == 'pendiente' %}pps-tab--active{% endif %}">Pendientes</a>
+    <a href="?estado=aprobado" class="pps-tab {% if filtro == 'aprobado' %}pps-tab--active{% endif %}">Aprobadas</a>
+    <a href="?estado=rechazado" class="pps-tab {% if filtro == 'rechazado' %}pps-tab--active{% endif %}">Rechazadas</a>
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Registros</div>
+    {% if registros %}
+    <div class="pps-table-wrap">
+      <table class="pps-table">
+        <thead>
+          <tr>
+            <th>Accion</th>
+            <th>Nivel</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Puntos</th>
+            <th>Lider</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in registros %}
+          <tr>
+            <td>{{ r.accion.nombre }}</td>
+            <td><span class="nivel-badge nivel-badge--{{ r.accion.nivel }}">{{ r.accion.get_nivel_display }}</span></td>
+            <td>{{ r.fecha_registro|date:"d/m/Y" }}</td>
+            <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+            <td>{% if r.estado == 'aprobado' %}+{{ r.puntos_asignados }}{% else %}-{% endif %}</td>
+            <td>{% if r.aprobado_por %}{{ r.aprobado_por }}{% else %}-{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:#6c7a89;font-size:14px;">Aun no has registrado acciones. <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}">Registra tu primera accion.</a></p>
+    {% endif %}
+  </div>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

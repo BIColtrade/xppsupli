@@ -1,0 +1,111 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="profile-card">
+    <div class="profile-card__avatar">
+      {{ jwt_user.nombre|first|upper }}
+    </div>
+    <div>
+      <div class="profile-card__name">{{ jwt_user.nombre }} {{ jwt_user.apellido }}</div>
+      <div class="profile-card__role">
+        {% if jwt_user.tipo_usuario %}{{ jwt_user.get_tipo_usuario_display }}{% else %}Colaborador{% endif %}
+        {% if jwt_user.area %} - {{ jwt_user.get_area_display }}{% endif %}
+      </div>
+      <div class="profile-card__pts">{{ puntos.puntos_totales }} <small style="font-size:18px;opacity:.7">pts</small></div>
+      <div class="profile-card__pts-label">
+        Nivel: <span class="level-badge level-badge--{{ puntos.nivel }}">{{ puntos.get_nivel_display }}</span>
+      </div>
+    </div>
+  </div>
+
+  {% if siguiente_nivel %}
+  <div class="pps-card">
+    <div class="pps-card__title">Progreso hacia {{ siguiente_nivel }}</div>
+    <div class="pps-progress">
+      <div class="pps-progress__label">
+        <span>{{ puntos.puntos_totales }} pts</span>
+        <span>{{ puntos_siguiente }} pts</span>
+      </div>
+      <div class="pps-progress__bar">
+        <div class="pps-progress__fill" data-width="{{ progreso }}"></div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:#6c7a89;margin:8px 0 0;">
+      Te faltan <strong>{{ puntos_faltantes }}</strong> puntos para alcanzar {{ siguiente_nivel }}.
+    </p>
+  </div>
+  {% else %}
+  <div class="pps-alert pps-alert--success">Felicitaciones. Has alcanzado el nivel maximo: Diamante.</div>
+  {% endif %}
+
+  <div class="pps-card">
+    <div class="pps-card__title">Ultimas acciones registradas</div>
+    {% if registros %}
+    <div class="pps-table-wrap">
+      <table class="pps-table">
+        <thead>
+          <tr>
+            <th>Accion</th>
+            <th>Nivel</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Puntos</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in registros %}
+          <tr>
+            <td>{{ r.accion.nombre }}</td>
+            <td><span class="nivel-badge nivel-badge--{{ r.accion.nivel }}">{{ r.accion.get_nivel_display }}</span></td>
+            <td>{{ r.fecha_registro|date:"d/m/Y" }}</td>
+            <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+            <td>{% if r.estado == 'aprobado' %}+{{ r.puntos_asignados }}{% else %}-{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <a href="{% url 'home_bienestar_coltrade:mis_acciones_pps' %}" class="pps-btn pps-btn--secondary pps-btn--sm" style="margin-top:14px;">Ver todas mis acciones</a>
+    {% else %}
+    <p style="color:#6c7a89;font-size:14px;">No has registrado acciones aun. <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}">Registra tu primera accion.</a></p>
+    {% endif %}
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Beneficios reclamados</div>
+    {% if reclamos %}
+    <div class="pps-table-wrap">
+      <table class="pps-table">
+        <thead>
+          <tr>
+            <th>Beneficio</th>
+            <th>Fecha</th>
+            <th>Puntos</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for rc in reclamos %}
+          <tr>
+            <td>{{ rc.beneficio.nombre }}</td>
+            <td>{{ rc.fecha_reclamo|date:"d/m/Y" }}</td>
+            <td>{{ rc.puntos_descontados }}</td>
+            <td><span class="status-badge status-badge--{{ rc.estado }}">{{ rc.get_estado_display }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <a href="{% url 'home_bienestar_coltrade:mis_beneficios_pps' %}" class="pps-btn pps-btn--secondary pps-btn--sm" style="margin-top:14px;">Ver todos mis beneficios</a>
+    {% else %}
+    <p style="color:#6c7a89;font-size:14px;">Aun no has reclamado beneficios. <a href="{% url 'home_bienestar_coltrade:catalogo_beneficios_pps' %}">Ver catalogo.</a></p>
+    {% endif %}
+  </div>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

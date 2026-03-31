@@ -1,0 +1,143 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Catalogo de Acciones</h1>
+    <p class="pps-page__subtitle">Acciones disponibles para acumular puntos segun su nivel de impacto.</p>
+  </div>
+
+  {% with acciones_por_nivel.estrategico as lista %}
+  {% if lista %}
+  <div class="nivel-section">
+    <div class="nivel-section__header">
+      <span class="nivel-badge nivel-badge--estrategico">Estrategico</span>
+      <span class="nivel-section__pts">100 - 120 pts - Impacto directo en KPIs estrategicos</span>
+    </div>
+    <div class="nivel-acciones-grid">
+      {% for accion in lista %}
+      <div class="accion-card">
+        <div class="accion-card__nombre">
+          {{ accion.nombre }}
+          {% if accion.solo_lideres %}<span class="accion-card__lider-tag">Lider</span>{% endif %}
+        </div>
+        <div class="accion-card__desc">{{ accion.descripcion }}</div>
+        <div class="accion-card__pts">{{ accion.puntos_min }}-{{ accion.puntos_max }} puntos</div>
+        <div class="accion-card__actions">
+          {% if accion.id in acciones_registradas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion ya registrada</span>
+          {% else %}
+            <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}?accion={{ accion.id }}" class="pps-btn pps-btn--primary pps-btn--sm">Registrar</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  {% with acciones_por_nivel.tactico as lista %}
+  {% if lista %}
+  <div class="nivel-section">
+    <div class="nivel-section__header">
+      <span class="nivel-badge nivel-badge--tactico">Tactico</span>
+      <span class="nivel-section__pts">50 - 60 pts - Ejecucion, seguimiento y soporte al desempeno</span>
+    </div>
+    <div class="nivel-acciones-grid">
+      {% for accion in lista %}
+      <div class="accion-card">
+        <div class="accion-card__nombre">
+          {{ accion.nombre }}
+          {% if accion.solo_lideres %}<span class="accion-card__lider-tag">Lider</span>{% endif %}
+        </div>
+        <div class="accion-card__desc">{{ accion.descripcion }}</div>
+        <div class="accion-card__pts">{{ accion.puntos_min }}-{{ accion.puntos_max }} puntos</div>
+        <div class="accion-card__actions">
+          {% if accion.id in acciones_registradas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion ya registrada</span>
+          {% else %}
+            <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}?accion={{ accion.id }}" class="pps-btn pps-btn--primary pps-btn--sm">Registrar</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  {% with acciones_por_nivel.desarrollo as lista %}
+  {% if lista %}
+  <div class="nivel-section">
+    <div class="nivel-section__header">
+      <span class="nivel-badge nivel-badge--desarrollo">Desarrollo</span>
+      <span class="nivel-section__pts">30 - 50 pts - Formacion y crecimiento de capacidades</span>
+    </div>
+    <div class="nivel-acciones-grid">
+      {% for accion in lista %}
+      <div class="accion-card">
+        <div class="accion-card__nombre">
+          {{ accion.nombre }}
+          {% if accion.solo_lideres %}<span class="accion-card__lider-tag">Lider</span>{% endif %}
+        </div>
+        <div class="accion-card__desc">{{ accion.descripcion }}</div>
+        <div class="accion-card__pts">{{ accion.puntos_min }}-{{ accion.puntos_max }} puntos</div>
+        <div class="accion-card__actions">
+          {% if accion.id in acciones_registradas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion ya registrada</span>
+          {% else %}
+            <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}?accion={{ accion.id }}" class="pps-btn pps-btn--primary pps-btn--sm">Registrar</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  {% with acciones_por_nivel.activacion_bienestar as lista %}
+  {% if lista %}
+  <div class="nivel-section">
+    <div class="nivel-section__header">
+      <span class="nivel-badge nivel-badge--activacion_bienestar">Activacion & Bienestar</span>
+      <span class="nivel-section__pts">10 - 20 pts - Participacion, colaboracion y cultura</span>
+    </div>
+    <div class="nivel-acciones-grid">
+      {% for accion in lista %}
+      <div class="accion-card">
+        <div class="accion-card__nombre">
+          {{ accion.nombre }}
+          {% if accion.solo_lideres %}<span class="accion-card__lider-tag">Lider</span>{% endif %}
+        </div>
+        <div class="accion-card__desc">{{ accion.descripcion }}</div>
+        <div class="accion-card__pts">{{ accion.puntos_min }}-{{ accion.puntos_max }} puntos</div>
+        <div class="accion-card__actions">
+          {% if accion.id in acciones_registradas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion ya registrada</span>
+          {% else %}
+            <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}?accion={{ accion.id }}" class="pps-btn pps-btn--primary pps-btn--sm">Registrar</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  {% if not acciones_por_nivel.estrategico and not acciones_por_nivel.tactico and not acciones_por_nivel.desarrollo and not acciones_por_nivel.activacion_bienestar %}
+  <div class="pps-alert pps-alert--info">El catalogo de acciones aun no tiene entradas. Los lideres pueden crearlas desde Gestionar Catalogo.</div>
+  {% endif %}
+
+  <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}" class="pps-btn pps-btn--primary" style="margin-top:8px;">
+    Registrar una accion
+  </a>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

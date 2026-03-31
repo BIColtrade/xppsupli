@@ -1,0 +1,140 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Panel Lider</h1>
+    <p class="pps-page__subtitle">Aprueba acciones y beneficios pendientes del equipo.</p>
+  </div>
+
+  {% if success %}
+  <div class="pps-alert pps-alert--success">{{ success }}</div>
+  {% endif %}
+
+  <div class="pps-stats">
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.pendientes }}</div>
+      <div class="pps-stat__label">Pendientes</div>
+    </div>
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.aprobados }}</div>
+      <div class="pps-stat__label">Aprobadas</div>
+    </div>
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales.rechazados }}</div>
+      <div class="pps-stat__label">Rechazadas</div>
+    </div>
+    <div class="pps-stat">
+      <div class="pps-stat__value">{{ totales_reclamos.pendientes }}</div>
+      <div class="pps-stat__label">Beneficios pendientes</div>
+    </div>
+  </div>
+
+  <div class="pps-tabs">
+    <a href="?estado=pendiente" class="pps-tab {% if filtro == 'pendiente' %}pps-tab--active{% endif %}">Pendientes</a>
+    <a href="?estado=aprobado" class="pps-tab {% if filtro == 'aprobado' %}pps-tab--active{% endif %}">Aprobadas</a>
+    <a href="?estado=rechazado" class="pps-tab {% if filtro == 'rechazado' %}pps-tab--active{% endif %}">Rechazadas</a>
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Registros del equipo</div>
+    {% if registros %}
+    <div class="pps-table-wrap">
+      <table class="pps-table">
+        <thead>
+          <tr>
+            <th>Colaborador</th>
+            <th>Accion</th>
+            <th>Nivel</th>
+            <th>Fecha</th>
+            <th>Evidencia</th>
+            <th>Estado</th>
+            <th>Resolucion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in registros %}
+          <tr>
+            <td>{{ r.usuario.nombre }} {{ r.usuario.apellido }}</td>
+            <td>{{ r.accion.nombre }}</td>
+            <td><span class="nivel-badge nivel-badge--{{ r.accion.nivel }}">{{ r.accion.get_nivel_display }}</span></td>
+            <td>{{ r.fecha_registro|date:"d/m/Y" }}</td>
+            <td>{{ r.descripcion_evidencia|truncatechars:90 }}</td>
+            <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+            <td>
+              {% if r.estado == 'pendiente' %}
+              <form method="post" action="{% url 'home_bienestar_coltrade:resolver_accion_pps' r.id %}" class="resolucion-form">
+                {% csrf_token %}
+                <input class="pps-form__input" type="number" name="puntos_asignados" value="{{ r.accion.puntos_default }}" min="{{ r.accion.puntos_min }}" max="{{ r.accion.puntos_max }}" step="1">
+                <textarea class="pps-form__textarea" name="observacion" placeholder="Observacion (opcional)"></textarea>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button name="accion_resolucion" value="aprobar" class="pps-btn pps-btn--success pps-btn--sm">Aprobar</button>
+                  <button name="accion_resolucion" value="rechazar" class="pps-btn pps-btn--danger pps-btn--sm">Rechazar</button>
+                </div>
+              </form>
+              {% else %}
+              <div style="font-size:13px;">
+                {% if r.estado == 'aprobado' %}+{{ r.puntos_asignados }} pts{% endif %}
+                {% if r.aprobado_por %}<div style="color:#6c7a89;">Por: {{ r.aprobado_por }}</div>{% endif %}
+                {% if r.observacion_lider %}<div style="color:#6c7a89;">{{ r.observacion_lider }}</div>{% endif %}
+              </div>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:#6c7a89;font-size:14px;">No hay registros para este filtro.</p>
+    {% endif %}
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Reclamos de beneficios pendientes</div>
+    {% if reclamos_pendientes %}
+    <div class="pps-table-wrap">
+      <table class="pps-table">
+        <thead>
+          <tr>
+            <th>Colaborador</th>
+            <th>Beneficio</th>
+            <th>Puntos</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Resolucion</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in reclamos_pendientes %}
+          <tr>
+            <td>{{ r.usuario.nombre }} {{ r.usuario.apellido }}</td>
+            <td>{{ r.beneficio.nombre }}</td>
+            <td>{{ r.puntos_descontados }} pts</td>
+            <td>{{ r.fecha_reclamo|date:"d/m/Y" }}</td>
+            <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
+            <td>
+              <form method="post" action="{% url 'home_bienestar_coltrade:resolver_reclamo_beneficio_pps' r.id %}" class="resolucion-form">
+                {% csrf_token %}
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <button name="accion_resolucion" value="entregar" class="pps-btn pps-btn--success pps-btn--sm">Entregar</button>
+                  <button name="accion_resolucion" value="cancelar" class="pps-btn pps-btn--danger pps-btn--sm">Cancelar</button>
+                </div>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:#6c7a89;font-size:14px;">No hay reclamos pendientes.</p>
+    {% endif %}
+  </div>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

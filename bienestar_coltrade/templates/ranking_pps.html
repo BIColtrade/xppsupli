@@ -1,0 +1,63 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Ranking</h1>
+    <p class="pps-page__subtitle">Top 20 de puntos acumulados en el equipo.</p>
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Tu avance</div>
+    <div class="pps-stats">
+      <div class="pps-stat">
+        <div class="pps-stat__value">{{ puntos_user.puntos_totales }}</div>
+        <div class="pps-stat__label">Puntos</div>
+      </div>
+      <div class="pps-stat">
+        <div class="pps-stat__value">{{ puntos_user.get_nivel_display }}</div>
+        <div class="pps-stat__label">Nivel</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Tabla de posiciones</div>
+    {% if ranking %}
+    <div class="pps-table-wrap">
+      <table class="pps-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Colaborador</th>
+            <th>Area</th>
+            <th>Puntos</th>
+            <th>Nivel</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in ranking %}
+          {% with pos=forloop.counter %}
+          <tr class="{% if item.usuario_id == puntos_user.usuario_id %}ranking-me{% endif %}">
+            <td class="ranking-position {% if pos <= 3 %}ranking-position--{{ pos }}{% endif %}">{{ pos }}</td>
+            <td>{{ item.usuario.nombre }} {{ item.usuario.apellido }}</td>
+            <td>{% if item.usuario.area %}{{ item.usuario.get_area_display }}{% else %}Sin area{% endif %}</td>
+            <td>{{ item.puntos_totales }}</td>
+            <td><span class="level-badge level-badge--{{ item.nivel }}">{{ item.get_nivel_display }}</span></td>
+          </tr>
+          {% endwith %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p style="color:#6c7a89;font-size:14px;">Aun no hay datos de ranking.</p>
+    {% endif %}
+  </div>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

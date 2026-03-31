@@ -1,23 +1,84 @@
+{% load static %}
 {% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
 <section class="home-cards">
-  <h1 class="home-cards__title">Portafolio Mayoristas</h1>
-  <p class="home-cards__subtitle">Tarjetas y accesos principales.</p>
+  <div class="pps-home-banner">
+    <div>
+      <div class="pps-home-banner__pts">{{ puntos.puntos_totales }}</div>
+      <div class="pps-home-banner__label">Puntos acumulados</div>
+    </div>
+    <div class="pps-home-banner__divider"></div>
+    <div>
+      <div class="pps-home-banner__nivel">
+        Nivel actual
+        <span class="level-badge level-badge--{{ puntos.nivel }}">{{ puntos.get_nivel_display }}</span>
+      </div>
+    </div>
+  </div>
+
+  <h1 class="home-cards__title">People Performance System</h1>
+  <p class="home-cards__subtitle">Reconoce, mide y premia las acciones que impulsan los KPIs de People y Supli 2026.</p>
+
+  <div class="home-cards__grid">
+    <a href="{% url 'home_bienestar_coltrade:mi_perfil_pps' %}" class="home-card home-card--primary">
+      <div class="home-card__icon">MP</div>
+      <div class="home-card__title">Mi Perfil</div>
+      <div class="home-card__desc">Consulta tus puntos, nivel de progresion y actividad reciente.</div>
+    </a>
+
+    <a href="{% url 'home_bienestar_coltrade:catalogo_acciones_pps' %}" class="home-card home-card--info">
+      <div class="home-card__icon">CA</div>
+      <div class="home-card__title">Catalogo de Acciones</div>
+      <div class="home-card__desc">Explora las acciones disponibles y los puntos que generan por nivel.</div>
+    </a>
+
+    <a href="{% url 'home_bienestar_coltrade:ranking_pps' %}" class="home-card home-card--purple">
+      <div class="home-card__icon">RK</div>
+      <div class="home-card__title">Ranking</div>
+      <div class="home-card__desc">Ve tu posicion en el equipo y el desempeno de tus companeros.</div>
+    </a>
+
+    <a href="{% url 'home_bienestar_coltrade:catalogo_beneficios_pps' %}" class="home-card home-card--rose">
+      <div class="home-card__icon">BN</div>
+      <div class="home-card__title">Beneficios</div>
+      <div class="home-card__desc">Canjea tus puntos por reconocimientos, tiempo flexible y mas.</div>
+    </a>
+
+  </div>
+
+  {% if es_lider %}
+  <div class="pps-section-divider"></div>
+
+  <div class="home-cards__grid">
+    <a href="{% url 'home_bienestar_coltrade:panel_lider_pps' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">PL</div>
+      <div class="home-card__title">Panel Lider</div>
+      <div class="home-card__desc">Aprueba o rechaza las acciones registradas por tu equipo.</div>
+    </a>
+
+    <a href="{% url 'home_bienestar_coltrade:crear_accion_pps' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">CA</div>
+      <div class="home-card__title">Crear Accion</div>
+      <div class="home-card__desc">Crea nuevas acciones del catalogo sin registrar una accion personal.</div>
+    </a>
+
+    <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">GC</div>
+      <div class="home-card__title">Gestionar Catalogo</div>
+      <div class="home-card__desc">Crea, edita o desactiva acciones del catalogo del sistema.</div>
+    </a>
+
+    <a href="{% url 'home_bienestar_coltrade:crear_beneficio_pps' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">CB</div>
+      <div class="home-card__title">Crear Beneficio</div>
+      <div class="home-card__desc">Registra beneficios nuevos para que el equipo los pueda canjear.</div>
+    </a>
+  </div>
+  {% endif %}
 </section>
 
-<style>
-  .home-cards {
-    padding: 28px;
-  }
-  .home-cards__title {
-    margin: 0 0 6px 0;
-    font-size: 24px;
-    font-weight: 700;
-  }
-  .home-cards__subtitle {
-    margin: 0;
-    color: #6c7a89;
-  }
-</style>
+<script src="{% static 'js/pps.js' %}"></script>
 
     </main>
   </div>

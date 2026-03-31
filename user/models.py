@@ -5,7 +5,7 @@ from django.db import models
 class UserManager(BaseUserManager):
     def create_user(self, email, username, password=None):
         if not email:
-            raise ValueError('El usuario debe tener un correo electrónico')
+            raise ValueError('El usuario debe tener un correo electronico')
         email = self.normalize_email(email)
         user = self.model(email=email, username=username)
         user.set_password(password)
@@ -20,6 +20,24 @@ class UserManager(BaseUserManager):
         return user
 
 
+TIPO_USUARIO_CHOICES = [
+    ('colaborador', 'Colaborador'),
+    ('lider', 'Lider'),
+]
+
+AREA_CHOICES = [
+    ('trade', 'Trade Marketing'),
+    ('supli', 'Supply Chain'),
+    ('people', 'People & Cultura'),
+    ('comercial', 'Comercial'),
+    ('logistica', 'Logistica'),
+    ('tecnologia', 'Tecnologia'),
+    ('finanzas', 'Finanzas'),
+    ('administracion', 'Administracion'),
+    ('otra', 'Otra'),
+]
+
+
 class Usuario(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150, unique=True)
@@ -27,7 +45,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     apellido = models.CharField(max_length=150, null=True, blank=True)
     edad = models.PositiveIntegerField(null=True, blank=True)
     telefono = models.CharField(max_length=30, null=True, blank=True)
-
+    tipo_usuario = models.CharField(max_length=20, choices=TIPO_USUARIO_CHOICES, null=True, blank=True)
+    area = models.CharField(max_length=30, choices=AREA_CHOICES, null=True, blank=True)
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

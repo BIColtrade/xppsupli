@@ -1,0 +1,76 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Editar Accion</h1>
+    <p class="pps-page__subtitle">Actualiza la informacion de la accion.</p>
+  </div>
+
+  {% if error %}
+  <div class="pps-alert pps-alert--error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" class="pps-card pps-form">
+    {% csrf_token %}
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="nombre">Nombre</label>
+      <input class="pps-form__input" type="text" id="nombre" name="nombre" value="{{ accion.nombre }}" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="descripcion">Descripcion</label>
+      <textarea class="pps-form__textarea" id="descripcion" name="descripcion" required>{{ accion.descripcion }}</textarea>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="nivel">Nivel</label>
+      <select class="pps-form__select" id="nivel" name="nivel" required>
+        <option value="estrategico" {% if accion.nivel == 'estrategico' %}selected{% endif %}>Estrategico</option>
+        <option value="tactico" {% if accion.nivel == 'tactico' %}selected{% endif %}>Tactico</option>
+        <option value="desarrollo" {% if accion.nivel == 'desarrollo' %}selected{% endif %}>Desarrollo</option>
+        <option value="activacion_bienestar" {% if accion.nivel == 'activacion_bienestar' %}selected{% endif %}>Activacion & Bienestar</option>
+      </select>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="puntos_min">Puntos minimos</label>
+      <input class="pps-form__input" type="number" id="puntos_min" name="puntos_min" min="0" value="{{ accion.puntos_min }}" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="puntos_max">Puntos maximos</label>
+      <input class="pps-form__input" type="number" id="puntos_max" name="puntos_max" min="0" value="{{ accion.puntos_max }}" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="puntos_default">Puntos por defecto</label>
+      <input class="pps-form__input" type="number" id="puntos_default" name="puntos_default" min="0" value="{{ accion.puntos_default }}" required>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__checkbox-group">
+        <input type="checkbox" name="solo_lideres" {% if accion.solo_lideres %}checked{% endif %}>
+        Solo lideres
+      </label>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__checkbox-group">
+        <input type="checkbox" name="activa" {% if accion.activa %}checked{% endif %}>
+        Accion activa
+      </label>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <button type="submit" class="pps-btn pps-btn--primary">Guardar cambios</button>
+      <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="pps-btn pps-btn--secondary">Volver</a>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>

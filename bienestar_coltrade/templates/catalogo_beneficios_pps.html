@@ -1,0 +1,65 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">Catalogo de Beneficios</h1>
+    <p class="pps-page__subtitle">Canjea tus puntos por reconocimientos y experiencias.</p>
+  </div>
+
+  <div class="pps-card">
+    <div class="pps-card__title">Tus puntos disponibles</div>
+    <div class="pps-stats">
+      <div class="pps-stat">
+        <div class="pps-stat__value">{{ puntos.puntos_totales }}</div>
+        <div class="pps-stat__label">Puntos</div>
+      </div>
+      <div class="pps-stat">
+        <div class="pps-stat__value">{{ puntos.get_nivel_display }}</div>
+        <div class="pps-stat__label">Nivel</div>
+      </div>
+    </div>
+  </div>
+
+  {% if success %}
+  <div class="pps-alert pps-alert--success">{{ success }}</div>
+  {% endif %}
+  {% if error %}
+  <div class="pps-alert pps-alert--error">{{ error }}</div>
+  {% endif %}
+
+  {% if beneficios %}
+  <div class="beneficios-grid">
+    {% for b in beneficios %}
+    <div class="beneficio-card {% if puntos.puntos_totales < b.puntos_requeridos %}beneficio-card--sin-puntos{% endif %}">
+      <div class="beneficio-card__categoria">{{ b.get_categoria_display }}</div>
+      <div class="beneficio-card__nombre">{{ b.nombre }}</div>
+      <div class="beneficio-card__desc">{{ b.descripcion }}</div>
+      <div class="beneficio-card__pts">{{ b.puntos_requeridos }} <span>pts</span></div>
+      {% if b.stock is not None %}
+      <div style="font-size:12px;color:#6c7a89;">Stock: {{ b.stock }}</div>
+      {% endif %}
+
+      {% if b.stock is not None and b.stock <= 0 %}
+      <span style="font-size:12px;color:#ef4444;">Sin stock</span>
+      {% elif puntos.puntos_totales >= b.puntos_requeridos %}
+      <form method="post" action="{% url 'home_bienestar_coltrade:reclamar_beneficio_pps' b.id %}">
+        {% csrf_token %}
+        <button type="submit" class="pps-btn pps-btn--success">Reclamar</button>
+      </form>
+      {% else %}
+      <span style="font-size:12px;color:#6c7a89;">Puntos insuficientes</span>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="pps-alert pps-alert--info">Aun no hay beneficios disponibles.</div>
+  {% endif %}
+</div>
+
+<script src="{% static 'js/pps.js' %}"></script>
+
+    </main>
+  </div>
