@@ -1,10 +1,20 @@
 <aside class="sidebar">
+  <button
+    type="button"
+    class="sidebar__toggle"
+    aria-label="Contraer sidebar"
+    aria-expanded="true"
+    data-expanded-icon="&#x276E;"
+    data-collapsed-icon="&#x276F;"
+  >
+    <span class="sidebar__toggle-icon" aria-hidden="true">&#x276E;</span>
+  </button>
   <div class="sidebar__brand">Coltrade</div>
   <nav class="sidebar__nav">
-    <a href="{% url 'home_autenticado' %}">Inicio</a>
-    <a href="{% url 'abastecimientos:home_abastecimiento' %}">Abastecimiento</a>
-    <a href="{% url 'home_user' %}">User</a>
-    <a href="{% url 'portafolio_mayoristas:home_portafolio_mayoristas' %}">Portafolio Mayoristas</a>
+    <a href="{% url 'home_autenticado' %}">
+      <span class="sidebar__icon" aria-hidden="true">&#x1F3E0;</span>
+      <span class="sidebar__text">Inicio</span>
+    </a>
   </nav>
   {% if jwt_user %}
     <div class="sidebar__user">

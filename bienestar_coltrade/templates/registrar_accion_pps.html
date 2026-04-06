@@ -43,7 +43,7 @@
   </form>
   {% else %}
   <div class="pps-alert pps-alert--info">No hay acciones activas en el catalogo.</div>
-  {% if jwt_user and jwt_user.tipo_usuario == 'lider' %}
+  {% if es_lider %}
     <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="pps-btn pps-btn--primary">Gestionar catalogo</a>
   {% else %}
     <p style="color:#6c7a89;font-size:14px;">Contacta a tu lider para habilitar acciones.</p>

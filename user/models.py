@@ -23,6 +23,7 @@ class UserManager(BaseUserManager):
 TIPO_USUARIO_CHOICES = [
     ('colaborador', 'Colaborador'),
     ('lider', 'Lider'),
+    ('admin', 'Admin'),
 ]
 
 AREA_CHOICES = [

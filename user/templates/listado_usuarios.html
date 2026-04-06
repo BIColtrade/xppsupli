@@ -34,6 +34,24 @@
           <input type="text" name="telefono">
         </div>
         <div>
+          <label>Tipo usuario</label>
+          <select name="tipo_usuario">
+            <option value="">--</option>
+            {% for value, label in tipo_usuario_choices %}
+              <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label>Area</label>
+          <select name="area">
+            <option value="">--</option>
+            {% for value, label in area_choices %}
+              <option value="{{ value }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
           <label>Contraseña</label>
           <input type="password" name="password" required>
         </div>
@@ -103,6 +121,8 @@
           <th>Apellido</th>
           <th>Edad</th>
           <th>Telefono</th>
+          <th>Tipo usuario</th>
+          <th>Area</th>
           <th>Grupos</th>
           <th>Accion</th>
         </tr>
@@ -121,6 +141,26 @@
               <td><input type="text" name="apellido" value="{{ u.apellido }}" data-filter="apellido" data-editable="1"></td>
               <td><input type="number" name="edad" value="{{ u.edad }}" data-editable="1"></td>
               <td><input type="text" name="telefono" value="{{ u.telefono }}" data-editable="1"></td>
+              <td>
+                <select name="tipo_usuario" data-editable="1">
+                  <option value="" {% if not u.tipo_usuario %}selected{% endif %}>--</option>
+                  {% for value, label in tipo_usuario_choices %}
+                    <option value="{{ value }}" {% if u.tipo_usuario == value %}selected{% endif %}>
+                      {{ label }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
+              <td>
+                <select name="area" data-editable="1">
+                  <option value="" {% if not u.area %}selected{% endif %}>--</option>
+                  {% for value, label in area_choices %}
+                    <option value="{{ value }}" {% if u.area == value %}selected{% endif %}>
+                      {{ label }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </td>
               <td>
                 <select name="grupos" multiple size="3" data-editable="1">
                   {% for g in grupos %}
@@ -151,7 +191,7 @@
           </tr>
         {% empty %}
           <tr>
-            <td colspan="8">No hay usuarios.</td>
+            <td colspan="10">No hay usuarios.</td>
           </tr>
         {% endfor %}
       </tbody>

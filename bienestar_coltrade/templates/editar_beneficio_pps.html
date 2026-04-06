@@ -4,13 +4,10 @@
 
 <div class="pps-page">
   <div class="pps-page__header">
-    <h1 class="pps-page__title">Crear Beneficio</h1>
-    <p class="pps-page__subtitle">Define un beneficio para el catalogo del sistema.</p>
+    <h1 class="pps-page__title">Editar Beneficio</h1>
+    <p class="pps-page__subtitle">Actualiza la informacion del beneficio.</p>
   </div>
 
-  {% if success %}
-  <div class="pps-alert pps-alert--success">{{ success }}</div>
-  {% endif %}
   {% if error %}
   <div class="pps-alert pps-alert--error">{{ error }}</div>
   {% endif %}
@@ -19,45 +16,44 @@
     {% csrf_token %}
     <div class="pps-form__group">
       <label class="pps-form__label" for="nombre">Nombre</label>
-      <input class="pps-form__input" type="text" id="nombre" name="nombre" required>
+      <input class="pps-form__input" type="text" id="nombre" name="nombre" value="{{ beneficio.nombre }}" required>
     </div>
 
     <div class="pps-form__group">
       <label class="pps-form__label" for="descripcion">Descripcion</label>
-      <textarea class="pps-form__textarea" id="descripcion" name="descripcion" required></textarea>
+      <textarea class="pps-form__textarea" id="descripcion" name="descripcion" required>{{ beneficio.descripcion }}</textarea>
     </div>
 
     <div class="pps-form__group">
       <label class="pps-form__label" for="categoria">Categoria</label>
       <select class="pps-form__select" id="categoria" name="categoria" required>
-        <option value="">Selecciona una categoria</option>
         {% for value, label in categorias %}
-          <option value="{{ value }}">{{ label }}</option>
+          <option value="{{ value }}" {% if beneficio.categoria == value %}selected{% endif %}>{{ label }}</option>
         {% endfor %}
       </select>
     </div>
 
     <div class="pps-form__group">
       <label class="pps-form__label" for="puntos_requeridos">Puntos requeridos</label>
-      <input class="pps-form__input" type="number" id="puntos_requeridos" name="puntos_requeridos" min="0" required>
+      <input class="pps-form__input" type="number" id="puntos_requeridos" name="puntos_requeridos" min="0" value="{{ beneficio.puntos_requeridos }}" required>
     </div>
 
     <div class="pps-form__group">
       <label class="pps-form__label" for="stock">Stock (opcional)</label>
-      <input class="pps-form__input" type="number" id="stock" name="stock" min="0">
+      <input class="pps-form__input" type="number" id="stock" name="stock" min="0" value="{{ beneficio.stock }}">
       <div class="pps-form__hint">Deja vacio si el beneficio es ilimitado.</div>
     </div>
 
     <div class="pps-form__group">
       <label class="pps-form__checkbox-group">
-        <input type="checkbox" name="disponible" checked>
+        <input type="checkbox" name="disponible" {% if beneficio.disponible %}checked{% endif %}>
         Beneficio disponible
       </label>
     </div>
 
     <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <button type="submit" class="pps-btn pps-btn--primary">Guardar</button>
-      <a href="{% url 'home_bienestar_coltrade:catalogo_beneficios_pps' %}" class="pps-btn pps-btn--secondary">Ver catalogo</a>
+      <button type="submit" class="pps-btn pps-btn--primary">Guardar cambios</button>
+      <a href="{% url 'home_bienestar_coltrade:gestionar_beneficios_pps' %}" class="pps-btn pps-btn--secondary">Volver</a>
     </div>
   </form>
 </div>

@@ -31,7 +31,36 @@
         <option value="tactico" {% if accion.nivel == 'tactico' %}selected{% endif %}>Tactico</option>
         <option value="desarrollo" {% if accion.nivel == 'desarrollo' %}selected{% endif %}>Desarrollo</option>
         <option value="activacion_bienestar" {% if accion.nivel == 'activacion_bienestar' %}selected{% endif %}>Activacion & Bienestar</option>
+        <option value="capacitacion" {% if accion.nivel == 'capacitacion' %}selected{% endif %}>Capacitacion</option>
       </select>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="areas">Areas objetivo</label>
+      <select class="pps-form__select" id="areas" name="areas" multiple size="6">
+        <option value="empresa" {% if accion.aplica_empresa %}selected{% endif %}>Accion a Nivel Empresa</option>
+        {% for value, label in area_choices %}
+          <option value="{{ value }}" {% if value in accion.areas %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <div class="pps-form__hint">Si eliges Accion a Nivel Empresa, aplica para todas las areas.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="destinatarios">Dirigida a</label>
+      <select class="pps-form__select" id="destinatarios" name="destinatarios" required>
+        <option value="empresa" {% if accion.aplica_empresa %}selected{% endif %}>Accion a Nivel Empresa</option>
+        <option value="todos" {% if accion.destinatarios == 'todos' and not accion.aplica_empresa %}selected{% endif %}>Todos (lideres y colaboradores)</option>
+        <option value="lideres" {% if accion.destinatarios == 'lideres' %}selected{% endif %}>Solo lideres</option>
+        <option value="colaboradores" {% if accion.destinatarios == 'colaboradores' %}selected{% endif %}>Solo colaboradores</option>
+      </select>
+      <div class="pps-form__hint">Si eliges Accion a Nivel Empresa, aplica para todos los usuarios.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="youtube_url">Enlace YouTube</label>
+      <input class="pps-form__input" type="url" id="youtube_url" name="youtube_url" value="{{ accion.youtube_url }}">
+      <div class="pps-form__hint">Solo obligatorio si el nivel es Capacitacion.</div>
     </div>
 
     <div class="pps-form__group">
@@ -47,13 +76,6 @@
     <div class="pps-form__group">
       <label class="pps-form__label" for="puntos_default">Puntos por defecto</label>
       <input class="pps-form__input" type="number" id="puntos_default" name="puntos_default" min="0" value="{{ accion.puntos_default }}" required>
-    </div>
-
-    <div class="pps-form__group">
-      <label class="pps-form__checkbox-group">
-        <input type="checkbox" name="solo_lideres" {% if accion.solo_lideres %}checked{% endif %}>
-        Solo lideres
-      </label>
     </div>
 
     <div class="pps-form__group">

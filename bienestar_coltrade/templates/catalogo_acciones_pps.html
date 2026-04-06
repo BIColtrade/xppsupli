@@ -128,7 +128,32 @@
   {% endif %}
   {% endwith %}
 
-  {% if not acciones_por_nivel.estrategico and not acciones_por_nivel.tactico and not acciones_por_nivel.desarrollo and not acciones_por_nivel.activacion_bienestar %}
+  {% with acciones_por_nivel.capacitacion as lista %}
+  {% if lista %}
+  <div class="nivel-section">
+    <div class="nivel-section__header">
+      <span class="nivel-badge nivel-badge--capacitacion">Capacitacion</span>
+      <span class="nivel-section__pts">Video formativo con puntos automaticos</span>
+    </div>
+    <div class="nivel-acciones-grid">
+      {% for accion in lista %}
+      <div class="accion-card">
+        <div class="accion-card__nombre">
+          {{ accion.nombre }}
+        </div>
+        <div class="accion-card__desc">{{ accion.descripcion }}</div>
+        <div class="accion-card__pts">{{ accion.puntos_default }} puntos al completar</div>
+        <div class="accion-card__actions">
+          <a href="{% url 'home_bienestar_coltrade:ver_capacitacion_pps' accion.id %}" class="pps-btn pps-btn--primary pps-btn--sm">Ver capacitacion</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  {% if not acciones_por_nivel.estrategico and not acciones_por_nivel.tactico and not acciones_por_nivel.desarrollo and not acciones_por_nivel.activacion_bienestar and not acciones_por_nivel.capacitacion %}
   <div class="pps-alert pps-alert--info">El catalogo de acciones aun no tiene entradas. Los lideres pueden crearlas desde Gestionar Catalogo.</div>
   {% endif %}
 

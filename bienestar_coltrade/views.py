@@ -1,10 +1,22 @@
 from django.shortcuts import redirect, render, get_object_or_404
+from django.http import JsonResponse
 from django.utils import timezone
+from django.db import transaction
 from django.db.models import Count, Q
+from django.views.decorators.http import require_POST
+from urllib.parse import parse_qs, urlparse
+import re
 
 from user.jwt_utils import get_user_from_request
-from user.models import Usuario
-from .models import AccionPPS, PuntosUsuario, RegistroAccion, Beneficio, ReclamoBeneficio
+from user.models import AREA_CHOICES, Usuario
+from .models import (
+    AccionPPS,
+    PuntosUsuario,
+    RegistroAccion,
+    Beneficio,
+    ReclamoBeneficio,
+    ProgresoCapacitacion,
+)
 
 
 # ----------------------------------------
@@ -23,8 +35,78 @@ def _get_or_create_puntos(user):
     return puntos
 
 
+def _es_admin_global(user):
+    if user is None:
+        return False
+    if getattr(user, "is_staff", False) or getattr(user, "is_superuser", False):
+        return True
+    return getattr(user, "tipo_usuario", None) == "admin"
+
+
 def _es_lider(user):
-    return getattr(user, 'tipo_usuario', None) == 'lider' or user.is_staff
+    if _es_admin_global(user):
+        return True
+    return (
+        getattr(user, "tipo_usuario", None) == "lider"
+        and getattr(user, "area", None) == "people"
+    )
+
+
+def _accion_es_para_usuario(accion, user):
+    if _es_admin_global(user):
+        return True
+
+    if getattr(accion, "aplica_empresa", False):
+        return True
+
+    area_user = getattr(user, "area", None)
+    areas_accion = getattr(accion, "areas", None) or []
+    if areas_accion:
+        if not area_user or area_user not in areas_accion:
+            return False
+
+    tipo_user = getattr(user, "tipo_usuario", None) or "colaborador"
+    es_lider = tipo_user == "lider"
+
+    destinatarios = getattr(accion, "destinatarios", None) or "todos"
+    if destinatarios == "todos" and getattr(accion, "solo_lideres", False) and not es_lider:
+        return False
+    if destinatarios == "lideres" and not es_lider:
+        return False
+    if destinatarios == "colaboradores" and es_lider:
+        return False
+
+    return True
+
+
+def _extraer_youtube_id(url):
+    if not url:
+        return None
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return None
+
+    host = (parsed.netloc or "").lower()
+    path = parsed.path or ""
+
+    if "youtu.be" in host:
+        video_id = path.strip("/").split("/")[0]
+        return video_id or None
+
+    if "youtube.com" in host or "youtube-nocookie.com" in host:
+        if path == "/watch":
+            query = parse_qs(parsed.query)
+            return query.get("v", [None])[0]
+        if path.startswith("/embed/"):
+            parts = path.split("/")
+            return parts[2] if len(parts) > 2 else None
+        if path.startswith("/shorts/"):
+            parts = path.split("/")
+            return parts[2] if len(parts) > 2 else None
+
+    match = re.search(r"(?:v=|\/)([0-9A-Za-z_-]{11})", url)
+    return match.group(1) if match else None
 
 
 # ----------------------------------------
@@ -95,20 +177,21 @@ def catalogo_acciones_pps(request):
         return redir
 
     lider = _es_lider(user)
-    acciones = AccionPPS.objects.filter(activa=True)
-    if not lider:
-        acciones = acciones.filter(solo_lideres=False)
+    acciones_qs = AccionPPS.objects.filter(activa=True)
+    acciones = [a for a in acciones_qs if _accion_es_para_usuario(a, user)]
 
+    acciones_ids = [a.id for a in acciones]
     acciones_registradas_ids = set(
-        RegistroAccion.objects.filter(usuario=user, accion__in=acciones)
+        RegistroAccion.objects.filter(usuario=user, accion_id__in=acciones_ids)
         .values_list("accion_id", flat=True)
     )
 
     acciones_por_nivel = {
-        'estrategico': acciones.filter(nivel='estrategico'),
-        'tactico': acciones.filter(nivel='tactico'),
-        'desarrollo': acciones.filter(nivel='desarrollo'),
-        'activacion_bienestar': acciones.filter(nivel='activacion_bienestar'),
+        'estrategico': [a for a in acciones if a.nivel == 'estrategico'],
+        'tactico': [a for a in acciones if a.nivel == 'tactico'],
+        'desarrollo': [a for a in acciones if a.nivel == 'desarrollo'],
+        'activacion_bienestar': [a for a in acciones if a.nivel == 'activacion_bienestar'],
+        'capacitacion': [a for a in acciones if a.nivel == 'capacitacion'],
     }
 
     return render(request, "catalogo_acciones_pps.html", {
@@ -128,9 +211,9 @@ def registrar_accion_pps(request):
         return redir
 
     lider = _es_lider(user)
-    acciones = AccionPPS.objects.filter(activa=True)
-    if not lider:
-        acciones = acciones.filter(solo_lideres=False)
+    acciones_qs = AccionPPS.objects.filter(activa=True).exclude(nivel="capacitacion")
+    acciones = [a for a in acciones_qs if _accion_es_para_usuario(a, user)]
+    acciones_ids = {a.id for a in acciones}
 
     error = None
     success = request.session.pop("pps_registro_ok", None)
@@ -144,7 +227,10 @@ def registrar_accion_pps(request):
             accion_param_id = None
 
         if accion_param_id:
-            accion_seleccionada = acciones.filter(id=accion_param_id).first()
+            accion_seleccionada = next(
+                (a for a in acciones if a.id == accion_param_id),
+                None,
+            )
             if accion_seleccionada:
                 accion_seleccionada_id = accion_seleccionada.id
 
@@ -156,7 +242,7 @@ def registrar_accion_pps(request):
                 accion_id_int = int(accion_id)
             except ValueError:
                 accion_id_int = None
-            if accion_id_int and acciones.filter(id=accion_id_int).exists():
+            if accion_id_int and accion_id_int in acciones_ids:
                 accion_seleccionada_id = accion_id_int
 
         if not accion_id or not evidencia:
@@ -164,8 +250,10 @@ def registrar_accion_pps(request):
         else:
             try:
                 accion = AccionPPS.objects.get(pk=accion_id, activa=True)
-                if accion.solo_lideres and not lider:
-                    error = "Esta accion solo esta disponible para lideres."
+                if accion.nivel == "capacitacion":
+                    return redirect("home_bienestar_coltrade:ver_capacitacion_pps", accion_id=accion.id)
+                if not _accion_es_para_usuario(accion, user):
+                    error = "Esta accion no esta disponible para tu perfil."
                 elif RegistroAccion.objects.filter(usuario=user, accion=accion).exists():
                     error = "Ya registraste esta accion."
                 else:
@@ -185,6 +273,88 @@ def registrar_accion_pps(request):
         "error": error,
         "success": success,
         "accion_seleccionada_id": accion_seleccionada_id,
+        "es_lider": lider,
+    })
+
+
+# ----------------------------------------
+# Capacitacion
+# ----------------------------------------
+
+def ver_capacitacion_pps(request, accion_id):
+    user, redir = _require_login(request)
+    if redir:
+        return redir
+
+    accion = get_object_or_404(
+        AccionPPS, pk=accion_id, activa=True, nivel="capacitacion"
+    )
+    video_id = _extraer_youtube_id(accion.youtube_url or "")
+    if not video_id:
+        return render(request, "ver_capacitacion_pps.html", {
+            "accion": accion,
+            "error": "Esta capacitacion no tiene un video valido.",
+        })
+
+    progreso, _ = ProgresoCapacitacion.objects.get_or_create(
+        usuario=user, accion=accion
+    )
+
+    return render(request, "ver_capacitacion_pps.html", {
+        "accion": accion,
+        "video_id": video_id,
+        "progreso_pct": progreso.progreso_pct,
+        "puntos_otorgados": progreso.puntos_otorgados,
+        "puntos_max": accion.puntos_default,
+    })
+
+
+@require_POST
+def actualizar_progreso_capacitacion(request, accion_id):
+    user, redir = _require_login(request)
+    if redir:
+        return JsonResponse({"error": "login_required"}, status=401)
+
+    accion = get_object_or_404(
+        AccionPPS, pk=accion_id, activa=True, nivel="capacitacion"
+    )
+
+    progreso_raw = request.POST.get("progreso", "").strip()
+    try:
+        progreso_val = float(progreso_raw)
+    except ValueError:
+        return JsonResponse({"error": "progreso_invalido"}, status=400)
+
+    progreso_val = max(0, min(100, int(progreso_val)))
+    puntos_max = accion.puntos_default or 0
+
+    with transaction.atomic():
+        progreso, _ = ProgresoCapacitacion.objects.select_for_update().get_or_create(
+            usuario=user, accion=accion
+        )
+        if progreso_val < progreso.progreso_pct:
+            progreso_val = progreso.progreso_pct
+
+        nuevos_puntos_total = int((progreso_val / 100) * puntos_max)
+        if nuevos_puntos_total < progreso.puntos_otorgados:
+            nuevos_puntos_total = progreso.puntos_otorgados
+
+        delta = nuevos_puntos_total - progreso.puntos_otorgados
+        if delta > 0:
+            puntos = _get_or_create_puntos(user)
+            puntos.puntos_totales += delta
+            puntos.actualizar_nivel()
+            puntos.save()
+
+        progreso.progreso_pct = progreso_val
+        progreso.puntos_otorgados = nuevos_puntos_total
+        progreso.completado = progreso_val >= 100
+        progreso.save()
+
+    return JsonResponse({
+        "progreso_pct": progreso.progreso_pct,
+        "puntos_otorgados": progreso.puntos_otorgados,
+        "puntos_max": puntos_max,
     })
 
 
@@ -322,6 +492,7 @@ def crear_beneficio_pps(request):
     if not _es_lider(user):
         return redirect("home_bienestar_coltrade:home_bienestar_coltrade")
 
+    categorias = Beneficio.CATEGORIA_CHOICES
     error = None
     success = request.session.pop("pps_beneficio_ok", None)
 
@@ -355,6 +526,7 @@ def crear_beneficio_pps(request):
     return render(request, "crear_beneficio_pps.html", {
         "error": error,
         "success": success,
+        "categorias": categorias,
     })
 
 
@@ -370,7 +542,7 @@ def panel_lider_pps(request):
     if not _es_lider(user):
         return redirect("home_bienestar_coltrade:home_bienestar_coltrade")
 
-    es_admin_global = user.is_staff or user.is_superuser
+    es_admin_global = _es_admin_global(user)
     area = getattr(user, "area", None)
 
     filtro = request.GET.get("estado", "pendiente")
@@ -431,7 +603,7 @@ def resolver_accion_pps(request, registro_id):
     if request.method != "POST":
         return redirect("home_bienestar_coltrade:panel_lider_pps")
 
-    es_admin_global = user.is_staff or user.is_superuser
+    es_admin_global = _es_admin_global(user)
     area = getattr(user, "area", None)
 
     registros_qs = RegistroAccion.objects.filter(estado="pendiente")
@@ -487,7 +659,7 @@ def resolver_reclamo_beneficio_pps(request, reclamo_id):
     if request.method != "POST":
         return redirect("home_bienestar_coltrade:panel_lider_pps")
 
-    es_admin_global = user.is_staff or user.is_superuser
+    es_admin_global = _es_admin_global(user)
     area = getattr(user, "area", None)
 
     reclamos_qs = ReclamoBeneficio.objects.filter(estado="pendiente")
@@ -554,24 +726,53 @@ def crear_accion_pps(request):
 
     error = None
 
+    area_choices = AREA_CHOICES
     if request.method == "POST":
         nombre = request.POST.get("nombre", "").strip()
         descripcion = request.POST.get("descripcion", "").strip()
         nivel = request.POST.get("nivel", "")
+        youtube_url = request.POST.get("youtube_url", "").strip() or None
+        areas = request.POST.getlist("areas")
+        destinatarios = request.POST.get("destinatarios", "todos")
         puntos_min = request.POST.get("puntos_min", "")
         puntos_max = request.POST.get("puntos_max", "")
         puntos_default = request.POST.get("puntos_default", "")
-        solo_lideres = request.POST.get("solo_lideres") == "on"
         activa = request.POST.get("activa") == "on"
+
+        video_id = _extraer_youtube_id(youtube_url) if youtube_url else None
+        valid_areas = {key for key, _ in area_choices}
+        aplica_empresa = "empresa" in areas or destinatarios == "empresa"
+        if aplica_empresa:
+            areas = []
+            destinatarios = "todos"
 
         if not all([nombre, descripcion, nivel, puntos_min, puntos_max, puntos_default]):
             error = "Todos los campos son obligatorios."
+        elif not aplica_empresa and not areas:
+            error = "Debes seleccionar al menos un area o marcar Accion a Nivel Empresa."
+        elif any(a not in valid_areas for a in areas):
+            error = "Seleccionaste un area no valida."
+        elif destinatarios not in {"todos", "lideres", "colaboradores"}:
+            error = "Seleccionaste un destinatario no valido."
+        elif nivel == "capacitacion" and not video_id:
+            error = "Debes ingresar un enlace de YouTube valido para la capacitacion."
         else:
             try:
+                if nivel == "capacitacion":
+                    destinatarios = destinatarios or "todos"
+                else:
+                    youtube_url = None
+                if video_id:
+                    youtube_url = f"https://www.youtube.com/watch?v={video_id}"
+                solo_lideres = destinatarios == "lideres"
                 AccionPPS.objects.create(
                     nombre=nombre,
                     descripcion=descripcion,
                     nivel=nivel,
+                    youtube_url=youtube_url,
+                    areas=areas,
+                    destinatarios=destinatarios,
+                    aplica_empresa=aplica_empresa,
                     puntos_min=int(puntos_min),
                     puntos_max=int(puntos_max),
                     puntos_default=int(puntos_default),
@@ -583,7 +784,7 @@ def crear_accion_pps(request):
             except ValueError:
                 error = "Los valores de puntos deben ser numeros enteros."
 
-    return render(request, "crear_accion_pps.html", {"error": error})
+    return render(request, "crear_accion_pps.html", {"error": error, "area_choices": area_choices})
 
 
 def editar_accion_pps(request, accion_id):
@@ -597,23 +798,53 @@ def editar_accion_pps(request, accion_id):
     accion = get_object_or_404(AccionPPS, pk=accion_id)
     error = None
 
+    area_choices = AREA_CHOICES
     if request.method == "POST":
         accion.nombre = request.POST.get("nombre", "").strip()
         accion.descripcion = request.POST.get("descripcion", "").strip()
         accion.nivel = request.POST.get("nivel", "")
-        accion.solo_lideres = request.POST.get("solo_lideres") == "on"
+        youtube_url = request.POST.get("youtube_url", "").strip() or None
+        areas = request.POST.getlist("areas")
+        destinatarios = request.POST.get("destinatarios", "todos")
         accion.activa = request.POST.get("activa") == "on"
-        try:
-            accion.puntos_min = int(request.POST.get("puntos_min", 0))
-            accion.puntos_max = int(request.POST.get("puntos_max", 0))
-            accion.puntos_default = int(request.POST.get("puntos_default", 0))
-            accion.save()
-            request.session["pps_accion_ok"] = "Accion actualizada exitosamente."
-            return redirect("home_bienestar_coltrade:gestionar_acciones_pps")
-        except ValueError:
-            error = "Los valores de puntos deben ser numeros enteros."
+        video_id = _extraer_youtube_id(youtube_url) if youtube_url else None
+        valid_areas = {key for key, _ in area_choices}
+        aplica_empresa = "empresa" in areas or destinatarios == "empresa"
+        if aplica_empresa:
+            areas = []
+            destinatarios = "todos"
 
-    return render(request, "editar_accion_pps.html", {"accion": accion, "error": error})
+        if not aplica_empresa and not areas:
+            error = "Debes seleccionar al menos un area o marcar Accion a Nivel Empresa."
+        elif any(a not in valid_areas for a in areas):
+            error = "Seleccionaste un area no valida."
+        elif destinatarios not in {"todos", "lideres", "colaboradores"}:
+            error = "Seleccionaste un destinatario no valido."
+        elif accion.nivel == "capacitacion" and not video_id:
+            error = "Debes ingresar un enlace de YouTube valido para la capacitacion."
+        else:
+            try:
+                if accion.nivel == "capacitacion":
+                    destinatarios = destinatarios or "todos"
+                else:
+                    youtube_url = None
+                if video_id:
+                    youtube_url = f"https://www.youtube.com/watch?v={video_id}"
+                accion.youtube_url = youtube_url
+                accion.areas = areas
+                accion.destinatarios = destinatarios
+                accion.aplica_empresa = aplica_empresa
+                accion.solo_lideres = destinatarios == "lideres"
+                accion.puntos_min = int(request.POST.get("puntos_min", 0))
+                accion.puntos_max = int(request.POST.get("puntos_max", 0))
+                accion.puntos_default = int(request.POST.get("puntos_default", 0))
+                accion.save()
+                request.session["pps_accion_ok"] = "Accion actualizada exitosamente."
+                return redirect("home_bienestar_coltrade:gestionar_acciones_pps")
+            except ValueError:
+                error = "Los valores de puntos deben ser numeros enteros."
+
+    return render(request, "editar_accion_pps.html", {"accion": accion, "error": error, "area_choices": area_choices})
 
 
 def eliminar_accion_pps(request, accion_id):
@@ -630,3 +861,80 @@ def eliminar_accion_pps(request, accion_id):
         request.session["pps_accion_ok"] = "Accion eliminada."
 
     return redirect("home_bienestar_coltrade:gestionar_acciones_pps")
+
+
+# ----------------------------------------
+# Gestion de Beneficios
+# ----------------------------------------
+
+def gestionar_beneficios_pps(request):
+    user, redir = _require_login(request)
+    if redir:
+        return redir
+
+    if not _es_lider(user):
+        return redirect("home_bienestar_coltrade:home_bienestar_coltrade")
+
+    beneficios = Beneficio.objects.order_by("puntos_requeridos")
+    success = request.session.pop("pps_beneficio_ok", None)
+
+    return render(request, "gestionar_beneficios_pps.html", {
+        "beneficios": beneficios,
+        "success": success,
+    })
+
+
+def editar_beneficio_pps(request, beneficio_id):
+    user, redir = _require_login(request)
+    if redir:
+        return redir
+
+    if not _es_lider(user):
+        return redirect("home_bienestar_coltrade:home_bienestar_coltrade")
+
+    beneficio = get_object_or_404(Beneficio, pk=beneficio_id)
+    categorias = Beneficio.CATEGORIA_CHOICES
+    error = None
+
+    if request.method == "POST":
+        beneficio.nombre = request.POST.get("nombre", "").strip()
+        beneficio.descripcion = request.POST.get("descripcion", "").strip()
+        beneficio.categoria = request.POST.get("categoria", "")
+        beneficio.disponible = request.POST.get("disponible") == "on"
+
+        puntos_raw = request.POST.get("puntos_requeridos", "").strip()
+        stock_raw = request.POST.get("stock", "").strip()
+
+        if not all([beneficio.nombre, beneficio.descripcion, beneficio.categoria, puntos_raw]):
+            error = "Todos los campos obligatorios deben estar completos."
+        else:
+            try:
+                beneficio.puntos_requeridos = int(puntos_raw)
+                beneficio.stock = int(stock_raw) if stock_raw else None
+                beneficio.save()
+                request.session["pps_beneficio_ok"] = "Beneficio actualizado correctamente."
+                return redirect("home_bienestar_coltrade:gestionar_beneficios_pps")
+            except ValueError:
+                error = "Los valores numericos deben ser enteros."
+
+    return render(request, "editar_beneficio_pps.html", {
+        "beneficio": beneficio,
+        "categorias": categorias,
+        "error": error,
+    })
+
+
+def eliminar_beneficio_pps(request, beneficio_id):
+    user, redir = _require_login(request)
+    if redir:
+        return redir
+
+    if not _es_lider(user):
+        return redirect("home_bienestar_coltrade:home_bienestar_coltrade")
+
+    if request.method == "POST":
+        beneficio = get_object_or_404(Beneficio, pk=beneficio_id)
+        beneficio.delete()
+        request.session["pps_beneficio_ok"] = "Beneficio eliminado."
+
+    return redirect("home_bienestar_coltrade:gestionar_beneficios_pps")

@@ -1,0 +1,202 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+
+<div class="pps-page">
+  <div class="pps-page__header">
+    <h1 class="pps-page__title">{{ accion.nombre }}</h1>
+    <p class="pps-page__subtitle">{{ accion.descripcion }}</p>
+  </div>
+
+  {% if error %}
+  <div class="pps-alert pps-alert--error">{{ error }}</div>
+  {% else %}
+  <div class="pps-card">
+    <div class="pps-progress">
+      <div class="pps-progress__label">
+        <span>Progreso</span>
+        <span id="progressPct">{{ progreso_pct }}%</span>
+      </div>
+      <div class="pps-progress__bar">
+        <div class="pps-progress__fill" id="progressFill" style="width: {{ progreso_pct }}%;"></div>
+      </div>
+    </div>
+
+    <div class="pps-stats">
+      <div class="pps-stat">
+        <div class="pps-stat__value" id="pointsEarned">{{ puntos_otorgados }}</div>
+        <div class="pps-stat__label">Puntos ganados</div>
+      </div>
+      <div class="pps-stat">
+        <div class="pps-stat__value" id="pointsMax">{{ puntos_max }}</div>
+        <div class="pps-stat__label">Puntos al 100%</div>
+      </div>
+    </div>
+
+    <div class="pps-video">
+      <div id="player"></div>
+    </div>
+
+    <div class="pps-form__hint">Los puntos se suman automaticamente a medida que ves el video.</div>
+    <div id="videoError" class="pps-alert pps-alert--info" style="display:none; margin-top:12px;">
+      Este video no permite reproduccion embebida. Abre el enlace en YouTube para verlo.
+      <div style="margin-top:8px;">
+        <a href="{{ accion.youtube_url }}" target="_blank" rel="noopener" class="pps-btn pps-btn--primary pps-btn--sm">Ver en YouTube</a>
+      </div>
+    </div>
+  </div>
+  <form id="csrfToken" style="display:none;">{% csrf_token %}</form>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script>
+  const progressFill = document.getElementById('progressFill');
+  const progressPct = document.getElementById('progressPct');
+  const pointsEarned = document.getElementById('pointsEarned');
+
+  const videoError = document.getElementById('videoError');
+  const initialPct = Number(progressPct?.textContent.replace('%', '') || 0);
+  let lastSent = initialPct;
+
+  const csrfToken = document.querySelector('#csrfToken input[name=csrfmiddlewaretoken]')?.value || '';
+  const updateUrl = "{% url 'home_bienestar_coltrade:actualizar_progreso_capacitacion' accion.id %}";
+
+  function updateUI(pct, points) {
+    if (typeof pct === 'number') {
+      const safePct = Math.max(0, Math.min(100, Math.floor(pct)));
+      if (progressPct) progressPct.textContent = safePct + '%';
+      if (progressFill) progressFill.style.width = safePct + '%';
+    }
+    if (typeof points === 'number' && pointsEarned) {
+      pointsEarned.textContent = points;
+    }
+  }
+
+  function sendProgress(pct) {
+    if (pct <= lastSent) {
+      return;
+    }
+    lastSent = pct;
+
+    const body = new URLSearchParams();
+    body.append('progreso', pct);
+
+    fetch(updateUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': csrfToken,
+      },
+      body: body.toString(),
+    })
+      .then((resp) => resp.json())
+      .then((data) => {
+        if (data && typeof data.progreso_pct === 'number') {
+          updateUI(data.progreso_pct, data.puntos_otorgados);
+        }
+      })
+      .catch(() => {});
+  }
+
+  let player;
+  let progressTimer = null;
+  let maxWatchedTime = 0;
+  let lastVideoTime = 0;
+  let lastWallTime = null;
+
+  function checkProgress() {
+    if (!player || typeof player.getDuration !== 'function') {
+      return;
+    }
+    const duration = player.getDuration();
+    if (!duration) {
+      return;
+    }
+    const current = player.getCurrentTime();
+    const now = Date.now();
+    const dt = lastWallTime ? (now - lastWallTime) / 1000 : 0;
+    lastWallTime = now;
+    const allowAhead = Math.max(2.5, dt + 2);
+
+    if (maxWatchedTime > 0 && current > maxWatchedTime + allowAhead) {
+      player.seekTo(maxWatchedTime, true);
+      lastVideoTime = maxWatchedTime;
+      lastWallTime = Date.now();
+      return;
+    }
+    if (current > maxWatchedTime) {
+      maxWatchedTime = current;
+    }
+    lastVideoTime = current;
+    const pct = Math.min(100, Math.floor((maxWatchedTime / duration) * 100));
+    updateUI(pct);
+    sendProgress(pct);
+  }
+
+  function startTracking() {
+    if (!progressTimer) {
+      lastWallTime = Date.now();
+      if (player && typeof player.getCurrentTime === 'function') {
+        lastVideoTime = player.getCurrentTime();
+        if (lastVideoTime > maxWatchedTime) {
+          maxWatchedTime = lastVideoTime;
+        }
+      }
+      checkProgress();
+      progressTimer = setInterval(checkProgress, 5000);
+    }
+  }
+
+  function stopTracking() {
+    if (progressTimer) {
+      clearInterval(progressTimer);
+      progressTimer = null;
+      lastWallTime = null;
+    }
+  }
+
+  function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+      startTracking();
+    } else if (event.data === YT.PlayerState.ENDED) {
+      checkProgress();
+      stopTracking();
+    } else {
+      stopTracking();
+    }
+  }
+
+  function onPlayerReady() {
+    const duration = player.getDuration();
+    if (duration) {
+      maxWatchedTime = Math.max(0, Math.min(duration, (initialPct / 100) * duration));
+      lastVideoTime = maxWatchedTime;
+    }
+  }
+
+  function onPlayerError() {
+    if (videoError) {
+      videoError.style.display = 'block';
+    }
+  }
+
+    function onYouTubeIframeAPIReady() {
+      player = new YT.Player('player', {
+        videoId: "{{ video_id }}",
+        playerVars: { rel: 0, origin: window.location.origin, disablekb: 1 },
+        events: {
+          'onReady': onPlayerReady,
+          'onStateChange': onPlayerStateChange,
+          'onError': onPlayerError,
+        }
+      });
+    }
+  </script>
+  {% endif %}
+
+  <div style="margin-top:12px;">
+    <a href="{% url 'home_bienestar_coltrade:catalogo_acciones_pps' %}" class="pps-btn pps-btn--secondary">Volver al catalogo</a>
+  </div>
+</div>
+
+    </main>
+  </div>

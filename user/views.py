@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from .jwt_utils import create_jwt, get_user_from_request
 from django.contrib.auth.models import Group
 
-from .models import Usuario
+from .models import AREA_CHOICES, TIPO_USUARIO_CHOICES, Usuario
 
 
 def _is_admin_user(user):
@@ -26,7 +26,11 @@ def crear_usuario(request):
     if not _is_admin_user(user):
         return redirect("home_autenticado")
 
-    context = {"grupos": Group.objects.order_by("name")}
+    context = {
+        "grupos": Group.objects.order_by("name"),
+        "tipo_usuario_choices": TIPO_USUARIO_CHOICES,
+        "area_choices": AREA_CHOICES,
+    }
     if request.method == "POST":
         email = request.POST.get("email", "").strip()
         username = request.POST.get("username", "").strip()
@@ -34,8 +38,12 @@ def crear_usuario(request):
         apellido = request.POST.get("apellido", "").strip()
         edad_raw = request.POST.get("edad", "").strip()
         telefono = request.POST.get("telefono", "").strip()
+        tipo_usuario = request.POST.get("tipo_usuario", "").strip() or None
+        area = request.POST.get("area", "").strip() or None
         password = request.POST.get("password", "")
         grupos_ids = request.POST.getlist("grupos")
+        valid_tipo_usuario = {key for key, _ in TIPO_USUARIO_CHOICES}
+        valid_area = {key for key, _ in AREA_CHOICES}
 
         if not email or not username or not nombre or not password:
             context["error"] = "Email, usuario, nombre y contraseña son obligatorios."
@@ -47,6 +55,11 @@ def crear_usuario(request):
                 else:
                     context["error"] = "La edad debe ser un numero."
 
+            if tipo_usuario and tipo_usuario not in valid_tipo_usuario:
+                context["error"] = "El tipo de usuario no es valido."
+            if area and area not in valid_area:
+                context["error"] = "El area no es valida."
+
             if "error" not in context:
                 try:
                     new_user = Usuario.objects.create_user(
@@ -56,6 +69,8 @@ def crear_usuario(request):
                     new_user.apellido = apellido
                     new_user.edad = edad_val
                     new_user.telefono = telefono or None
+                    new_user.tipo_usuario = tipo_usuario
+                    new_user.area = area
                     new_user.save()
                     if grupos_ids:
                         grupos_validos = Group.objects.filter(id__in=grupos_ids)
@@ -165,6 +180,8 @@ def listado_usuarios(request):
     context = {
         "usuarios": Usuario.objects.order_by("email"),
         "grupos": Group.objects.order_by("name"),
+        "tipo_usuario_choices": TIPO_USUARIO_CHOICES,
+        "area_choices": AREA_CHOICES,
     }
 
     if request.method == "POST":
@@ -187,8 +204,12 @@ def listado_usuarios(request):
             apellido = request.POST.get("apellido", "").strip()
             edad_raw = request.POST.get("edad", "").strip()
             telefono = request.POST.get("telefono", "").strip()
+            tipo_usuario = request.POST.get("tipo_usuario", "").strip() or None
+            area = request.POST.get("area", "").strip() or None
             password = request.POST.get("password", "")
             grupos_ids = request.POST.getlist("grupos")
+            valid_tipo_usuario = {key for key, _ in TIPO_USUARIO_CHOICES}
+            valid_area = {key for key, _ in AREA_CHOICES}
 
             if not email or not username or not nombre or not password:
                 context["error"] = "Email, usuario, nombre y contraseña son obligatorios."
@@ -199,6 +220,10 @@ def listado_usuarios(request):
                         edad_val = int(edad_raw)
                     else:
                         context["error"] = "La edad debe ser un numero."
+                if tipo_usuario and tipo_usuario not in valid_tipo_usuario:
+                    context["error"] = "El tipo de usuario no es valido."
+                if area and area not in valid_area:
+                    context["error"] = "El area no es valida."
 
             if "error" not in context:
                 try:
@@ -209,6 +234,8 @@ def listado_usuarios(request):
                     new_user.apellido = apellido
                     new_user.edad = edad_val
                     new_user.telefono = telefono or None
+                    new_user.tipo_usuario = tipo_usuario
+                    new_user.area = area
                     new_user.save()
                     if grupos_ids:
                         grupos_validos = Group.objects.filter(id__in=grupos_ids)
@@ -240,7 +267,11 @@ def listado_usuarios(request):
                     apellido = request.POST.get("apellido", "").strip()
                     edad_raw = request.POST.get("edad", "").strip()
                     telefono = request.POST.get("telefono", "").strip()
+                    tipo_usuario = request.POST.get("tipo_usuario", "").strip() or None
+                    area = request.POST.get("area", "").strip() or None
                     grupos_ids = request.POST.getlist("grupos")
+                    valid_tipo_usuario = {key for key, _ in TIPO_USUARIO_CHOICES}
+                    valid_area = {key for key, _ in AREA_CHOICES}
 
                     if not email or not username or not nombre:
                         context["error"] = "Email, usuario y nombre son obligatorios."
@@ -251,6 +282,10 @@ def listado_usuarios(request):
                                 edad_val = int(edad_raw)
                             else:
                                 context["error"] = "La edad debe ser un numero."
+                        if tipo_usuario and tipo_usuario not in valid_tipo_usuario:
+                            context["error"] = "El tipo de usuario no es valido."
+                        if area and area not in valid_area:
+                            context["error"] = "El area no es valida."
 
                     if "error" not in context:
                         try:
@@ -260,6 +295,8 @@ def listado_usuarios(request):
                             target.apellido = apellido
                             target.edad = edad_val
                             target.telefono = telefono or None
+                            target.tipo_usuario = tipo_usuario
+                            target.area = area
                             target.save()
 
                             if grupos_ids:

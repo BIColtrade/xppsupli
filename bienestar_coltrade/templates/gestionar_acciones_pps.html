@@ -25,6 +25,8 @@
           <tr>
             <th>Nombre</th>
             <th>Nivel</th>
+            <th>Areas</th>
+            <th>Dirigida a</th>
             <th>Rango</th>
             <th>Default</th>
             <th>Solo lideres</th>
@@ -37,6 +39,22 @@
           <tr>
             <td>{{ a.nombre }}</td>
             <td><span class="nivel-badge nivel-badge--{{ a.nivel }}">{{ a.get_nivel_display }}</span></td>
+            <td>
+              {% if a.aplica_empresa %}
+                Empresa
+              {% elif a.areas %}
+                {{ a.areas|join:", " }}
+              {% else %}
+                Todas
+              {% endif %}
+            </td>
+            <td>
+              {% if a.aplica_empresa %}
+                Empresa
+              {% else %}
+                {{ a.get_destinatarios_display }}
+              {% endif %}
+            </td>
             <td>{{ a.puntos_min }}-{{ a.puntos_max }}</td>
             <td>{{ a.puntos_default }}</td>
             <td>{% if a.solo_lideres %}Si{% else %}No{% endif %}</td>

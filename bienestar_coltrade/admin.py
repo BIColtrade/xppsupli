@@ -5,8 +5,18 @@ from .models import AccionPPS, PuntosUsuario, RegistroAccion, Beneficio, Reclamo
 
 @admin.register(AccionPPS)
 class AccionPPSAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "nivel", "puntos_min", "puntos_max", "puntos_default", "solo_lideres", "activa")
-    list_filter = ("nivel", "solo_lideres", "activa")
+    list_display = (
+        "nombre",
+        "nivel",
+        "puntos_min",
+        "puntos_max",
+        "puntos_default",
+        "destinatarios",
+        "aplica_empresa",
+        "solo_lideres",
+        "activa",
+    )
+    list_filter = ("nivel", "destinatarios", "aplica_empresa", "solo_lideres", "activa")
     search_fields = ("nombre", "descripcion")
 
 

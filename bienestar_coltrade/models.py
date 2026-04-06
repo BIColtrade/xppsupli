@@ -7,6 +7,7 @@ NIVEL_PUNTOS_CHOICES = [
     ('tactico', 'Tactico'),
     ('desarrollo', 'Desarrollo'),
     ('activacion_bienestar', 'Activacion & Bienestar'),
+    ('capacitacion', 'Capacitacion'),
 ]
 
 NIVEL_PROGRESION_CHOICES = [
@@ -22,11 +23,23 @@ ESTADO_REGISTRO_CHOICES = [
     ('rechazado', 'Rechazado'),
 ]
 
+DESTINATARIOS_ACCION_CHOICES = [
+    ('todos', 'Todos'),
+    ('lideres', 'Lideres'),
+    ('colaboradores', 'Colaboradores'),
+]
+
 
 class AccionPPS(models.Model):
     nombre = models.CharField(max_length=200)
     descripcion = models.TextField()
     nivel = models.CharField(max_length=30, choices=NIVEL_PUNTOS_CHOICES)
+    youtube_url = models.URLField(blank=True, null=True)
+    areas = models.JSONField(default=list, blank=True)
+    destinatarios = models.CharField(
+        max_length=20, choices=DESTINATARIOS_ACCION_CHOICES, default='todos'
+    )
+    aplica_empresa = models.BooleanField(default=False)
     puntos_min = models.PositiveIntegerField()
     puntos_max = models.PositiveIntegerField()
     puntos_default = models.PositiveIntegerField()
@@ -40,6 +53,22 @@ class AccionPPS(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.get_nivel_display()})"
+
+
+class ProgresoCapacitacion(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='capacitaciones_pps')
+    accion = models.ForeignKey(AccionPPS, on_delete=models.CASCADE, related_name='capacitaciones_progreso')
+    progreso_pct = models.PositiveSmallIntegerField(default=0)
+    puntos_otorgados = models.PositiveIntegerField(default=0)
+    completado = models.BooleanField(default=False)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'pps_capacitaciones_progreso'
+        unique_together = ('usuario', 'accion')
+
+    def __str__(self):
+        return f"{self.usuario} - {self.accion.nombre} ({self.progreso_pct}%)"
 
 
 class PuntosUsuario(models.Model):

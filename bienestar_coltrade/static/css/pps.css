@@ -249,6 +249,7 @@
 .nivel-badge--tactico              { background: #dbeafe; color: #1e40af; }
 .nivel-badge--desarrollo           { background: #d1fae5; color: #065f46; }
 .nivel-badge--activacion_bienestar { background: #fce7f3; color: #9d174d; }
+.nivel-badge--capacitacion         { background: #e0e7ff; color: #3730a3; }
 
 .nivel-section__pts {
   font-size: 13px;
@@ -428,6 +429,26 @@
   gap: 8px;
   font-size: 14px;
   color: #374151;
+}
+
+/* ---- Video ---- */
+.pps-video {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: #0f172a;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.pps-video iframe,
+.pps-video #player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 /* ---- Buttons ---- */
