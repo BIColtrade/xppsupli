@@ -12,4 +12,5 @@ urlpatterns = [
     path("portafolio/mayoristas/", include("portafolio_mayoristas.urls")),
     path("malla/operaciones/coltrxde/", include("malla_operaciones_trade.urls")),
     path("bienestar/coltrxde/", include("bienestar_coltrade.urls")),
+    path("listadocompras/coltrxde/", include("listado_compras.urls")),
 ]

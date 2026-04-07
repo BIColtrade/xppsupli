@@ -1,0 +1,20 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/home_listado_compras.css' %}">
+
+<section class="home-cards">
+  <h1 class="home-cards__title">Listado de Compras</h1>
+  <p class="home-cards__subtitle">Accesos rapidos a los listados principales.</p>
+
+  <div class="home-cards__grid">
+    <a class="home-card" href="{% url 'listado_compras:listado_productos_supli' %}">
+      <div class="home-card__title">Listado Productos Supli</div>
+      <div class="home-card__text">Consulta y gestion de productos Supli.</div>
+    </a>
+  </div>
+</section>
+
+<script src="{% static 'js/home_listado_compras.js' %}"></script>
+
+    </main>
+  </div>

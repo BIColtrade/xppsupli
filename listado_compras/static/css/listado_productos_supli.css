@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@300;400;500;600&display=swap');
+
+:root {
+  color-scheme: dark;
+  --list-bg: #000005;
+  --list-border: rgba(172, 170, 173, 0.2);
+  --list-text: #e7e7f2;
+  --list-muted: rgba(172, 170, 173, 0.8);
+  --list-accent: #5934bc;
+  --list-accent-2: #01509b;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.listado {
+  padding: clamp(20px, 3vw, 32px);
+  color: var(--list-text);
+  font-family: "Sora", "Space Grotesk", sans-serif;
+}
+
+.listado__title {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: "Space Grotesk", "Sora", sans-serif;
+}
+
+.listado__subtitle {
+  margin: 0 0 18px;
+  color: var(--list-muted);
+}
+
+.listado__empty {
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--list-border);
+  background: linear-gradient(160deg, rgba(25, 6, 91, 0.9), rgba(0, 0, 5, 0.95));
+  color: var(--list-muted);
+}
+
+@media (max-width: 600px) {
+  .listado {
+    padding: 18px;
+  }
+}
