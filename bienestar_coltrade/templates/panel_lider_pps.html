@@ -1,6 +1,6 @@
 {% load static %}
 {% include "navbar.html" %}
-<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+<link rel="stylesheet" href="{% static 'css/panel_lider_pps.css' %}">
 
 <div class="pps-page">
   <div class="pps-page__header">
@@ -68,16 +68,16 @@
                 {% csrf_token %}
                 <input class="pps-form__input" type="number" name="puntos_asignados" value="{{ r.accion.puntos_default }}" min="{{ r.accion.puntos_min }}" max="{{ r.accion.puntos_max }}" step="1">
                 <textarea class="pps-form__textarea" name="observacion" placeholder="Observacion (opcional)"></textarea>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <div class="pps-row-actions">
                   <button name="accion_resolucion" value="aprobar" class="pps-btn pps-btn--success pps-btn--sm">Aprobar</button>
                   <button name="accion_resolucion" value="rechazar" class="pps-btn pps-btn--danger pps-btn--sm">Rechazar</button>
                 </div>
               </form>
               {% else %}
-              <div style="font-size:13px;">
+              <div class="pps-resolution">
                 {% if r.estado == 'aprobado' %}+{{ r.puntos_asignados }} pts{% endif %}
-                {% if r.aprobado_por %}<div style="color:#6c7a89;">Por: {{ r.aprobado_por }}</div>{% endif %}
-                {% if r.observacion_lider %}<div style="color:#6c7a89;">{{ r.observacion_lider }}</div>{% endif %}
+                {% if r.aprobado_por %}<div class="pps-resolution__meta">Por: {{ r.aprobado_por }}</div>{% endif %}
+                {% if r.observacion_lider %}<div class="pps-resolution__meta">{{ r.observacion_lider }}</div>{% endif %}
               </div>
               {% endif %}
             </td>
@@ -87,7 +87,7 @@
       </table>
     </div>
     {% else %}
-    <p style="color:#6c7a89;font-size:14px;">No hay registros para este filtro.</p>
+    <p class="pps-empty">No hay registros para este filtro.</p>
     {% endif %}
   </div>
 
@@ -117,7 +117,7 @@
             <td>
               <form method="post" action="{% url 'home_bienestar_coltrade:resolver_reclamo_beneficio_pps' r.id %}" class="resolucion-form">
                 {% csrf_token %}
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <div class="pps-row-actions">
                   <button name="accion_resolucion" value="entregar" class="pps-btn pps-btn--success pps-btn--sm">Entregar</button>
                   <button name="accion_resolucion" value="cancelar" class="pps-btn pps-btn--danger pps-btn--sm">Cancelar</button>
                 </div>
@@ -129,12 +129,12 @@
       </table>
     </div>
     {% else %}
-    <p style="color:#6c7a89;font-size:14px;">No hay reclamos pendientes.</p>
+    <p class="pps-empty">No hay reclamos pendientes.</p>
     {% endif %}
   </div>
 </div>
 
-<script src="{% static 'js/pps.js' %}"></script>
+<script src="{% static 'js/panel_lider_pps.js' %}"></script>
 
     </main>
   </div>

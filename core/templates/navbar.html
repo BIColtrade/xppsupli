@@ -1,15 +1,15 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
-<script src="{% static 'js/sidebar.js' %}" defer></script>
 {% if jwt_user %}
   <div class="layout">
     {% include "sidebar.html" %}
     <main class="layout__content">
 {% else %}
+  <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+  <script src="{% static 'js/navbar.js' %}" defer></script>
   <nav class="navbar">
     <a class="navbar__brand" href="{% url 'home' %}">Inicio</a>
     <div class="navbar__links">
-      <a href="{% url 'login' %}">Login</a>
+      <a class="navbar__cta" href="{% url 'login' %}">Login</a>
     </div>
   </nav>
 {% endif %}

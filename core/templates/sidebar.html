@@ -1,3 +1,6 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/sidebar.css' %}">
+<script src="{% static 'js/sidebar.js' %}" defer></script>
 <aside class="sidebar">
   <button
     type="button"
@@ -9,7 +12,7 @@
   >
     <span class="sidebar__toggle-icon" aria-hidden="true">&#x276E;</span>
   </button>
-  <div class="sidebar__brand">Coltrade</div>
+  <div class="sidebar__brand">Supli</div>
   <nav class="sidebar__nav">
     <a href="{% url 'home_autenticado' %}">
       <span class="sidebar__icon" aria-hidden="true">&#x1F3E0;</span>

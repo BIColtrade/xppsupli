@@ -1,6 +1,6 @@
 {% load static %}
 {% include "navbar.html" %}
-<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+<link rel="stylesheet" href="{% static 'css/mis_acciones_pps.css' %}">
 
 <div class="pps-page">
   <div class="pps-page__header">
@@ -60,12 +60,12 @@
       </table>
     </div>
     {% else %}
-    <p style="color:#6c7a89;font-size:14px;">Aun no has registrado acciones. <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}">Registra tu primera accion.</a></p>
+    <p class="pps-empty">Aun no has registrado acciones. <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}">Registra tu primera accion.</a></p>
     {% endif %}
   </div>
 </div>
 
-<script src="{% static 'js/pps.js' %}"></script>
+<script src="{% static 'js/mis_acciones_pps.js' %}"></script>
 
     </main>
   </div>

@@ -1,6 +1,6 @@
 {% load static %}
 {% include "navbar.html" %}
-<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+<link rel="stylesheet" href="{% static 'css/registrar_accion_pps.css' %}">
 
 <div class="pps-page">
   <div class="pps-page__header">
@@ -36,7 +36,7 @@
       <textarea class="pps-form__textarea" id="evidencia" name="evidencia" required placeholder="Describe que hiciste, impacto, fechas, etc."></textarea>
     </div>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <div class="pps-form__actions">
       <button type="submit" class="pps-btn pps-btn--primary">Enviar registro</button>
       <a href="{% url 'home_bienestar_coltrade:catalogo_acciones_pps' %}" class="pps-btn pps-btn--secondary">Ver catalogo</a>
     </div>
@@ -46,12 +46,12 @@
   {% if es_lider %}
     <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="pps-btn pps-btn--primary">Gestionar catalogo</a>
   {% else %}
-    <p style="color:#6c7a89;font-size:14px;">Contacta a tu lider para habilitar acciones.</p>
+    <p class="pps-empty">Contacta a tu lider para habilitar acciones.</p>
   {% endif %}
   {% endif %}
 </div>
 
-<script src="{% static 'js/pps.js' %}"></script>
+<script src="{% static 'js/registrar_accion_pps.js' %}"></script>
 
     </main>
   </div>

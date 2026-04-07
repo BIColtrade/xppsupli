@@ -1,0 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@300;400;500;600&display=swap');
+
+:root {
+  color-scheme: dark;
+  --pps-bg: #000005;
+  --pps-surface: rgba(25, 6, 91, 0.92);
+  --pps-surface-2: rgba(71, 16, 127, 0.35);
+  --pps-surface-3: rgba(1, 80, 155, 0.14);
+  --pps-border: rgba(172, 170, 173, 0.2);
+  --pps-text: #e7e7f2;
+  --pps-muted: rgba(172, 170, 173, 0.8);
+  --pps-accent: #5934bc;
+  --pps-accent-2: #01509b;
+  --pps-accent-3: #47107f;
+  --pps-accent-4: #19065b;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Sora", "Space Grotesk", sans-serif;
+  color: var(--pps-text);
+  background: var(--pps-bg);
+}
+
+.pps-page {
+  padding: clamp(20px, 3vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pps-page__header {
+  background: linear-gradient(135deg, rgba(25, 6, 91, 0.92), rgba(1, 80, 155, 0.35));
+  border: 1px solid var(--pps-border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+}
+
+.pps-page__title {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--pps-text);
+}
+
+.pps-page__subtitle {
+  margin: 0;
+  color: var(--pps-muted);
+  font-size: 14px;
+}
+
+.pps-card {
+  background: linear-gradient(160deg, rgba(25, 6, 91, 0.88), rgba(0, 0, 5, 0.95));
+  border: 1px solid var(--pps-border);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.pps-card__title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 18px;
+  color: var(--pps-text);
+  border-bottom: 1px solid rgba(172, 170, 173, 0.15);
+  padding-bottom: 12px;
+}
+
+.pps-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+}
+
+.pps-stat {
+  background: linear-gradient(160deg, rgba(25, 6, 91, 0.82), rgba(0, 0, 5, 0.96));
+  border: 1px solid var(--pps-border);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+.pps-stat__value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--pps-text);
+}
+
+.pps-stat__label {
+  font-size: 12px;
+  color: var(--pps-muted);
+  margin-top: 4px;
+}
+
+.pps-table-wrap {
+  overflow-x: auto;
+}
+
+.pps-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.pps-table th {
+  background: rgba(25, 6, 91, 0.75);
+  color: var(--pps-muted);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--pps-border);
+}
+
+.pps-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(172, 170, 173, 0.12);
+  vertical-align: middle;
+  color: var(--pps-text);
+}
+
+.pps-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pps-table tr:hover td {
+  background: rgba(89, 52, 188, 0.12);
+}
+
+.ranking-position {
+  font-weight: 800;
+  font-size: 18px;
+  color: var(--pps-muted);
+}
+
+.ranking-position--1 { color: #f2f2fb; }
+.ranking-position--2 { color: rgba(172, 170, 173, 0.85); }
+.ranking-position--3 { color: rgba(89, 52, 188, 0.85); }
+
+.ranking-me td {
+  background: rgba(89, 52, 188, 0.18) !important;
+  font-weight: 700;
+}
+
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(172, 170, 173, 0.2);
+  color: #f7f7ff;
+}
+
+.level-badge--bronce   { background: rgba(71, 16, 127, 0.45); }
+.level-badge--plata    { background: rgba(1, 80, 155, 0.35); }
+.level-badge--oro      { background: rgba(89, 52, 188, 0.45); }
+.level-badge--diamante { background: rgba(172, 170, 173, 0.35); }
+
+.pps-empty {
+  color: var(--pps-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .pps-page__header {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 600px) {
+  .pps-page {
+    padding: 16px;
+  }
+}

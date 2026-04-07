@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Sora:wght@300;400;500;600&display=swap');
+
+:root {
+  color-scheme: dark;
+  --crud-bg: #000005;
+  --crud-surface: rgba(25, 6, 91, 0.9);
+  --crud-surface-2: rgba(71, 16, 127, 0.35);
+  --crud-border: rgba(172, 170, 173, 0.2);
+  --crud-text: #e7e7f2;
+  --crud-muted: rgba(172, 170, 173, 0.8);
+  --crud-accent: #5934bc;
+  --crud-accent-2: #01509b;
+  --crud-danger: rgba(71, 16, 127, 0.75);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.crud {
+  padding: clamp(20px, 3vw, 32px);
+  color: var(--crud-text);
+  font-family: "Sora", "Space Grotesk", sans-serif;
+}
+
+.crud__title {
+  margin: 0 0 6px 0;
+  font-size: 24px;
+  font-weight: 700;
+  font-family: "Space Grotesk", "Sora", sans-serif;
+}
+
+.crud__subtitle {
+  margin: 0 0 18px 0;
+  color: var(--crud-muted);
+}
+
+.crud__create {
+  margin-bottom: 18px;
+  padding: 18px;
+  border: 1px solid var(--crud-border);
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(25, 6, 91, 0.9), rgba(0, 0, 5, 0.95));
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.crud__section-title {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+}
+
+.crud__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px 12px;
+  margin-bottom: 12px;
+}
+
+.crud__create label {
+  display: block;
+  font-size: 12px;
+  color: var(--crud-muted);
+  margin-bottom: 4px;
+}
+
+.crud__create input,
+.crud__table input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid rgba(172, 170, 173, 0.3);
+  border-radius: 10px;
+  font-size: 13px;
+  background: rgba(1, 80, 155, 0.12);
+  color: var(--crud-text);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.crud__create input:focus,
+.crud__table input:focus {
+  outline: none;
+  border-color: rgba(89, 52, 188, 0.75);
+  box-shadow: 0 0 0 3px rgba(89, 52, 188, 0.25);
+}
+
+.crud__table {
+  overflow-x: auto;
+  background: linear-gradient(160deg, rgba(25, 6, 91, 0.88), rgba(0, 0, 5, 0.96));
+  border: 1px solid var(--crud-border);
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+th,
+td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(172, 170, 173, 0.12);
+  vertical-align: middle;
+}
+
+th {
+  text-align: left;
+  background: rgba(25, 6, 91, 0.75);
+  color: var(--crud-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-size: 12px;
+}
+
+tbody tr:hover td {
+  background: rgba(89, 52, 188, 0.12);
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #5934bc, #01509b);
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(1, 80, 155, 0.35);
+}
+
+.btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-danger {
+  background: var(--crud-danger);
+}
+
+.msg {
+  padding: 10px 12px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  border: 1px solid rgba(172, 170, 173, 0.2);
+}
+
+.msg--error {
+  background: rgba(71, 16, 127, 0.25);
+  color: #f7f7ff;
+}
+
+.msg--success {
+  background: rgba(1, 80, 155, 0.22);
+  color: #f7f7ff;
+}
+
+@media (max-width: 900px) {
+  .crud {
+    padding: 18px;
+  }
+}

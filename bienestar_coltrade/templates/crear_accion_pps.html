@@ -1,6 +1,6 @@
 {% load static %}
 {% include "navbar.html" %}
-<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+<link rel="stylesheet" href="{% static 'css/crear_accion_pps.css' %}">
 
 <div class="pps-page">
   <div class="pps-page__header">
@@ -87,14 +87,14 @@
       </label>
     </div>
 
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <div class="pps-form__actions">
       <button type="submit" class="pps-btn pps-btn--primary">Guardar</button>
       <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="pps-btn pps-btn--secondary">Volver</a>
     </div>
   </form>
 </div>
 
-<script src="{% static 'js/pps.js' %}"></script>
+<script src="{% static 'js/crear_accion_pps.js' %}"></script>
 
     </main>
   </div>

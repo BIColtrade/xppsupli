@@ -1,7 +1,10 @@
+{% load static %}
 {% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/acceso_no_permitido.css' %}">
 
-<div style="max-width:720px;margin:40px auto;padding:24px;border:1px solid #e0e0e0;border-radius:12px;">
+<div class="access-card">
   <h2>Acceso no permitido</h2>
   <p>No tienes permisos para acceder a esta seccion.</p>
-  <a href="{% url 'home_autenticado' %}">Volver al inicio</a>
+  <a class="access-card__link" href="{% url 'home_autenticado' %}">Volver al inicio</a>
 </div>
+<script src="{% static 'js/acceso_no_permitido.js' %}"></script>

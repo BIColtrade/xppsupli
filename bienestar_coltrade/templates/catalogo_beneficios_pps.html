@@ -1,6 +1,6 @@
 {% load static %}
 {% include "navbar.html" %}
-<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+<link rel="stylesheet" href="{% static 'css/catalogo_beneficios_pps.css' %}">
 
 <div class="pps-page">
   <div class="pps-page__header">
@@ -38,18 +38,18 @@
       <div class="beneficio-card__desc">{{ b.descripcion }}</div>
       <div class="beneficio-card__pts">{{ b.puntos_requeridos }} <span>pts</span></div>
       {% if b.stock is not None %}
-      <div style="font-size:12px;color:#6c7a89;">Stock: {{ b.stock }}</div>
+      <div class="beneficio-card__stock">Stock: {{ b.stock }}</div>
       {% endif %}
 
       {% if b.stock is not None and b.stock <= 0 %}
-      <span style="font-size:12px;color:#ef4444;">Sin stock</span>
+      <span class="beneficio-card__status beneficio-card__status--out">Sin stock</span>
       {% elif puntos.puntos_totales >= b.puntos_requeridos %}
       <form method="post" action="{% url 'home_bienestar_coltrade:reclamar_beneficio_pps' b.id %}">
         {% csrf_token %}
         <button type="submit" class="pps-btn pps-btn--success">Reclamar</button>
       </form>
       {% else %}
-      <span style="font-size:12px;color:#6c7a89;">Puntos insuficientes</span>
+      <span class="beneficio-card__status beneficio-card__status--low">Puntos insuficientes</span>
       {% endif %}
     </div>
     {% endfor %}
@@ -59,7 +59,7 @@
   {% endif %}
 </div>
 
-<script src="{% static 'js/pps.js' %}"></script>
+<script src="{% static 'js/catalogo_beneficios_pps.js' %}"></script>
 
     </main>
   </div>

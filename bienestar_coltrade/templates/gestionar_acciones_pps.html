@@ -1,6 +1,6 @@
 {% load static %}
 {% include "navbar.html" %}
-<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+<link rel="stylesheet" href="{% static 'css/gestionar_acciones_pps.css' %}">
 
 <div class="pps-page">
   <div class="pps-page__header">
@@ -12,7 +12,7 @@
   <div class="pps-alert pps-alert--success">{{ success }}</div>
   {% endif %}
 
-  <div style="margin-bottom:16px;">
+  <div class="pps-actions">
     <a href="{% url 'home_bienestar_coltrade:crear_accion_pps' %}" class="pps-btn pps-btn--primary">Crear accion</a>
   </div>
 
@@ -60,7 +60,7 @@
             <td>{% if a.solo_lideres %}Si{% else %}No{% endif %}</td>
             <td>{% if a.activa %}Si{% else %}No{% endif %}</td>
             <td>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <div class="pps-row-actions">
                 <a href="{% url 'home_bienestar_coltrade:editar_accion_pps' a.id %}" class="pps-btn pps-btn--secondary pps-btn--sm">Editar</a>
                 <form method="post" action="{% url 'home_bienestar_coltrade:eliminar_accion_pps' a.id %}" data-confirm="Eliminar esta accion-">
                   {% csrf_token %}
@@ -74,12 +74,12 @@
       </table>
     </div>
     {% else %}
-    <p style="color:#6c7a89;font-size:14px;">Aun no hay acciones registradas.</p>
+    <p class="pps-empty">Aun no hay acciones registradas.</p>
     {% endif %}
   </div>
 </div>
 
-<script src="{% static 'js/pps.js' %}"></script>
+<script src="{% static 'js/gestionar_acciones_pps.js' %}"></script>
 
     </main>
   </div>

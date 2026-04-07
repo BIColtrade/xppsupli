@@ -1,6 +1,6 @@
 {% load static %}
 {% include "navbar.html" %}
-<link rel="stylesheet" href="{% static 'css/pps.css' %}">
+<link rel="stylesheet" href="{% static 'css/ranking_pps.css' %}">
 
 <div class="pps-page">
   <div class="pps-page__header">
@@ -52,12 +52,12 @@
       </table>
     </div>
     {% else %}
-    <p style="color:#6c7a89;font-size:14px;">Aun no hay datos de ranking.</p>
+    <p class="pps-empty">Aun no hay datos de ranking.</p>
     {% endif %}
   </div>
 </div>
 
-<script src="{% static 'js/pps.js' %}"></script>
+<script src="{% static 'js/ranking_pps.js' %}"></script>
 
     </main>
   </div>
