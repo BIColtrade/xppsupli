@@ -18,6 +18,6 @@ def home_autenticado(request):
         "can_listadocompras": is_admin or "listadocompras" in group_names,
         "can_malla": is_admin or "mallaoperaciones" in group_names,
         "can_portafolio": is_admin or "portafoliomayoristas" in group_names,
-        "can_user": is_admin or "user" in group_names,
+        "can_user": True,  # Todo usuario autenticado ve la tarjeta Usuarios
     }
     return render(request, "home_autenticado.html", context)
