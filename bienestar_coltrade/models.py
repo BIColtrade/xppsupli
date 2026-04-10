@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from user.models import Usuario
 
 
@@ -45,6 +46,12 @@ class AccionPPS(models.Model):
     puntos_default = models.PositiveIntegerField()
     solo_lideres = models.BooleanField(default=False)
     activa = models.BooleanField(default=True)
+    aprobador_todos = models.BooleanField(default=True)
+    aprobadores = models.ManyToManyField(
+        Usuario, blank=True, related_name="aprobador_acciones_permitidas"
+    )
+    fecha_inicio = models.DateTimeField(null=True, blank=True)
+    fecha_fin = models.DateTimeField(null=True, blank=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -53,6 +60,22 @@ class AccionPPS(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.get_nivel_display()})"
+
+    def esta_vigente(self, ahora=None):
+        ahora = ahora or timezone.now()
+        if self.fecha_inicio and ahora < self.fecha_inicio:
+            return False
+        if self.fecha_fin and ahora > self.fecha_fin:
+            return False
+        return True
+
+    def estado_vigencia(self, ahora=None):
+        ahora = ahora or timezone.now()
+        if self.fecha_inicio and ahora < self.fecha_inicio:
+            return "no_iniciada"
+        if self.fecha_fin and ahora > self.fecha_fin:
+            return "vencida"
+        return "vigente"
 
 
 class ProgresoCapacitacion(models.Model):
@@ -131,6 +154,12 @@ class Beneficio(models.Model):
     puntos_requeridos = models.PositiveIntegerField()
     disponible = models.BooleanField(default=True)
     stock = models.PositiveIntegerField(null=True, blank=True, help_text="Dejar vacio si es ilimitado")
+    imagen_url = models.URLField(null=True, blank=True)
+    niveles_permitidos = models.JSONField(default=list, blank=True)
+    aprobador_todos = models.BooleanField(default=True)
+    aprobadores = models.ManyToManyField(
+        Usuario, blank=True, related_name="aprobador_beneficios_permitidas"
+    )
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -139,6 +168,12 @@ class Beneficio(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.puntos_requeridos} pts)"
+
+    def niveles_permitidos_labels(self):
+        if not self.niveles_permitidos:
+            return "Todos"
+        labels = dict(NIVEL_PROGRESION_CHOICES)
+        return ", ".join([labels.get(n, n) for n in self.niveles_permitidos])
 
 
 class ReclamoBeneficio(models.Model):
@@ -151,6 +186,10 @@ class ReclamoBeneficio(models.Model):
     beneficio = models.ForeignKey(Beneficio, on_delete=models.PROTECT, related_name='reclamos')
     fecha_reclamo = models.DateTimeField(auto_now_add=True)
     estado = models.CharField(max_length=20, choices=ESTADO_CHOICES, default='pendiente')
+    aprobado_por = models.ForeignKey(
+        Usuario, null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='aprobaciones_beneficios_pps'
+    )
     puntos_descontados = models.PositiveIntegerField()
 
     class Meta:

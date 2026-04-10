@@ -1,12 +1,20 @@
+import base64
+import os
+import secrets
+from datetime import timedelta
+from email.message import EmailMessage
+
+import requests
 from django.contrib.auth import authenticate
 from django.db import IntegrityError
 from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .jwt_utils import create_jwt, get_user_from_request
 from django.contrib.auth.models import Group
 
-from .models import AREA_CHOICES, TIPO_USUARIO_CHOICES, Usuario
+from .models import AREA_CHOICES, TIPO_USUARIO_CHOICES, PasswordResetCode, Usuario
 
 
 def _is_admin_user(user):
@@ -17,6 +25,77 @@ def _is_admin_user(user):
     groups = set(user.groups.values_list("name", flat=True))
     groups = {g.lower() for g in groups}
     return "admin" in groups
+
+
+RESET_CODE_TTL_MINUTES = 10
+
+
+def _generate_reset_code():
+    return f"{secrets.randbelow(1_000_000):06d}"
+
+
+def _get_gmail_access_token():
+    client_id = os.environ.get("GMAIL_CLIENT_ID")
+    client_secret = os.environ.get("GMAIL_CLIENT_SECRET")
+    refresh_token = os.environ.get("GMAIL_REFRESH_TOKEN")
+    if not client_id or not client_secret or not refresh_token:
+        return None, "Faltan credenciales de Gmail en el .env."
+
+    try:
+        response = requests.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "refresh_token": refresh_token,
+                "grant_type": "refresh_token",
+            },
+            timeout=10,
+        )
+    except requests.RequestException:
+        return None, "No se pudo conectar con Gmail."
+
+    if response.status_code != 200:
+        return None, "No se pudo autenticar con Gmail."
+
+    access_token = response.json().get("access_token")
+    if not access_token:
+        return None, "No se pudo obtener el token de Gmail."
+    return access_token, None
+
+
+def _send_reset_code_email(to_email, code):
+    from_email = os.environ.get("GMAIL_FROM")
+    if not from_email:
+        return False, "Falta GMAIL_FROM en el .env."
+
+    access_token, error = _get_gmail_access_token()
+    if error:
+        return False, error
+
+    message = EmailMessage()
+    message["To"] = to_email
+    message["From"] = from_email
+    message["Subject"] = "Codigo de recuperacion de contrasena"
+    message.set_content(
+        "Tu codigo de recuperacion es: "
+        f"{code}\nEste codigo vence en {RESET_CODE_TTL_MINUTES} minutos."
+    )
+
+    raw = base64.urlsafe_b64encode(message.as_bytes()).decode("utf-8")
+    try:
+        response = requests.post(
+            "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+            headers={"Authorization": f"Bearer {access_token}"},
+            json={"raw": raw},
+            timeout=10,
+        )
+    except requests.RequestException:
+        return False, "No se pudo enviar el correo."
+
+    if response.status_code not in (200, 202):
+        return False, "No se pudo enviar el correo."
+    return True, None
 
 
 def crear_usuario(request):
@@ -105,6 +184,90 @@ def login_view(request):
         )
         return response
     return render(request, "login.html")
+
+
+def recuperar_password(request):
+    context = {}
+    if request.method == "POST":
+        action = request.POST.get("action", "").strip()
+        email = request.POST.get("email", "").strip().lower()
+        if email:
+            context["email_value"] = email
+
+        if action == "send_code":
+            if not email:
+                context["error"] = "El correo es obligatorio."
+            else:
+                user = Usuario.objects.filter(email__iexact=email).first()
+                if user:
+                    PasswordResetCode.objects.filter(
+                        user=user, used_at__isnull=True, expires_at__gt=timezone.now()
+                    ).update(used_at=timezone.now())
+
+                    code = _generate_reset_code()
+                    expires_at = timezone.now() + timedelta(minutes=RESET_CODE_TTL_MINUTES)
+                    PasswordResetCode.objects.create(
+                        user=user,
+                        code=code,
+                        expires_at=expires_at,
+                    )
+                    sent, error = _send_reset_code_email(email, code)
+                    if not sent:
+                        PasswordResetCode.objects.filter(
+                            user=user, code=code, used_at__isnull=True
+                        ).update(used_at=timezone.now())
+                        context["error"] = error
+                    else:
+                        context["success"] = (
+                            "Si el correo existe, se envio un codigo de recuperacion."
+                        )
+                else:
+                    context["success"] = (
+                        "Si el correo existe, se envio un codigo de recuperacion."
+                    )
+
+        elif action == "reset_password":
+            code = request.POST.get("code", "").strip()
+            new_password = request.POST.get("new_password", "")
+            confirm = request.POST.get("confirm_password", "")
+            context["code_value"] = code
+
+            if not email:
+                context["error_reset"] = "El correo es obligatorio."
+            elif not code:
+                context["error_reset"] = "El codigo es obligatorio."
+            elif not code.isdigit() or len(code) != 6:
+                context["error_reset"] = "El codigo debe tener 6 digitos."
+            elif not new_password:
+                context["error_reset"] = "La nueva contrasena es obligatoria."
+            elif new_password != confirm:
+                context["error_reset"] = "Las contrasenas no coinciden."
+            else:
+                user = Usuario.objects.filter(email__iexact=email).first()
+                if not user:
+                    context["error_reset"] = "Codigo o correo invalidos."
+                else:
+                    now = timezone.now()
+                    reset = (
+                        PasswordResetCode.objects.filter(
+                            user=user,
+                            code=code,
+                            used_at__isnull=True,
+                            expires_at__gt=now,
+                        )
+                        .order_by("-created_at")
+                        .first()
+                    )
+                    if not reset:
+                        context["error_reset"] = "Codigo invalido o vencido."
+                    else:
+                        user.set_password(new_password)
+                        user.save()
+                        reset.used_at = now
+                        reset.save()
+                        context["success_reset"] = "Contrasena actualizada."
+
+    return render(request, "recuperar_password.html", context)
 
 
 @require_POST

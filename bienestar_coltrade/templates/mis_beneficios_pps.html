@@ -41,6 +41,7 @@
             <th>Fecha</th>
             <th>Estado</th>
             <th>Puntos</th>
+            <th>Lider</th>
           </tr>
         </thead>
         <tbody>
@@ -50,6 +51,7 @@
             <td>{{ r.fecha_reclamo|date:"d/m/Y" }}</td>
             <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
             <td>{{ r.puntos_descontados }}</td>
+            <td>{% if r.aprobado_por %}{{ r.aprobado_por.nombre }} {{ r.aprobado_por.apellido }}{% else %}-{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>

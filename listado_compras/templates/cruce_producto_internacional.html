@@ -1,0 +1,53 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/crud_productos_supli.css' %}">
+<link rel="stylesheet" href="{% static 'css/cruce_producto_internacional.css' %}">
+
+<section class="crud">
+  <h1 class="crud__title">Cruce Productos Internacionales</h1>
+  <p class="crud__subtitle">Consulta UPC unicos y abre el detalle cuando haya mas de un registro.</p>
+  <a class="home-link" href="{% url 'listado_compras:home_listado_compras' %}">Ir al inicio</a>
+
+  <div class="crud__create">
+    <h2 class="crud__section-title">UPC unicos</h2>
+    <p class="cruce__hint">Si un UPC aparece mas de una vez, puedes cruzarlo para comparar costos y cantidades.</p>
+  </div>
+
+  <div class="crud__table">
+    <table>
+      <thead>
+        <tr>
+          <th>UPC</th>
+          <th>Nombre producto</th>
+          <th>Marca</th>
+          <th>Registros</th>
+          <th>Accion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in upc_resumen %}
+          <tr>
+            <td>{{ item.upc }}</td>
+            <td>{{ item.nombre_producto|default:"-" }}</td>
+            <td>{{ item.marca_producto|default:"-" }}</td>
+            <td><span class="cruce__badge">{{ item.total }}</span></td>
+            <td>
+              {% if item.total > 1 %}
+                <a class="cruce__button" href="{% url 'listado_compras:cruce_producto_internacional_detalle' %}?upc={{ item.upc|urlencode }}">Cruzar</a>
+              {% else %}
+                <span class="cruce__muted">Unico</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr class="crud__empty-row" data-empty="true">
+            <td colspan="5">No hay productos internacionales cargados.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

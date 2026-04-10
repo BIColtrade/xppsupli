@@ -1,0 +1,202 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/crud_productos_supli.css' %}">
+
+<section class="crud">
+  <h1 class="crud__title">Listado Internacional</h1>
+  <p class="crud__subtitle">Crear y administrar productos internacionales.</p>
+  <a class="home-link" href="{% url 'listado_compras:home_listado_compras' %}">Ir al inicio</a>
+
+  <div class="crud__create">
+    <h2 class="crud__section-title">Importar / Exportar</h2>
+    <form method="post" action="{% url 'listado_compras:productos_internacionales_import' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="crud__grid">
+        <div>
+          <label>Archivo Excel (.xlsx)</label>
+          <input type="file" name="archivo" accept=".xlsx" required>
+        </div>
+      </div>
+      <div class="crud__actions">
+        <button type="submit">Importar Excel</button>
+      </div>
+    </form>
+    <form method="get" action="{% url 'listado_compras:productos_internacionales_export' %}">
+      <div class="crud__actions">
+        <button type="submit">Exportar Excel</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="crud__create">
+    <h2 class="crud__section-title">Crear producto</h2>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create">
+      <div class="crud__grid">
+        <div>
+          <label>Fecha de lista</label>
+          <input type="date" name="fecha_lista" required>
+        </div>
+        <div>
+          <label>UPC</label>
+          <input type="text" name="upc" required>
+        </div>
+        <div>
+          <label>Nombre</label>
+          <input type="text" name="nombre" required>
+        </div>
+        <div>
+          <label>Costo</label>
+          <input type="number" name="costo" step="0.01" required>
+        </div>
+        <div>
+          <label>Cantidad disponible</label>
+          <input type="number" name="cantidad_disponible" required>
+        </div>
+        <div>
+          <label>Proveedores</label>
+          <input type="text" name="proveedores" required>
+        </div>
+        <div>
+          <label>Factor logistico (%)</label>
+          <input type="number" name="factor_logistico" step="0.01" required>
+        </div>
+      </div>
+      <button type="submit">Crear</button>
+    </form>
+  </div>
+
+  {% if error %}
+    <div class="msg msg--error">{{ error }}</div>
+  {% endif %}
+  {% if success %}
+    <div class="msg msg--success">{{ success }}</div>
+  {% endif %}
+
+  <div class="crud__create crud__filter">
+    <h2 class="crud__section-title">Buscar productos</h2>
+    <div class="crud__filter-controls">
+      <div class="crud__filter-buttons" role="group" aria-label="Filtros de busqueda">
+        <button type="button" class="crud__filter-btn is-active" data-field="proveedores" data-label="Proveedores" data-placeholder="Buscar por proveedor...">Proveedor</button>
+        <button type="button" class="crud__filter-btn" data-field="upc" data-label="UPC" data-placeholder="Buscar por UPC...">UPC</button>
+        <button type="button" class="crud__filter-btn" data-field="nombre" data-label="Nombre" data-placeholder="Buscar por nombre...">Nombre</button>
+      </div>
+      <div class="crud__filter-input">
+        <label id="filterLabel" for="filterInput">Proveedores</label>
+        <input type="text" id="filterInput" placeholder="Buscar por proveedor..." autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <div class="crud__table">
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>UPC</th>
+          <th>Nombre</th>
+          <th>Costo</th>
+          <th>Cantidad</th>
+          <th>Proveedores</th>
+          <th>Factor %</th>
+          <th>Costo con factor</th>
+          <th>Accion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for producto in productos %}
+          <tr>
+            <form method="post">
+              {% csrf_token %}
+              <td>
+                <input type="date" name="fecha_lista" value="{{ producto.fecha_lista|date:'Y-m-d' }}" required>
+              </td>
+              <td>
+                <input type="hidden" name="producto_id" value="{{ producto.id }}">
+                {{ producto.upc }}
+              </td>
+              <td>
+                <input type="text" name="nombre" value="{{ producto.nombre }}" required>
+              </td>
+              <td>
+                <input type="number" name="costo" step="0.01" value="{{ producto.costo }}" required>
+              </td>
+              <td>
+                <input type="number" name="cantidad_disponible" value="{{ producto.cantidad_disponible }}" required>
+              </td>
+              <td>
+                <input type="text" name="proveedores" value="{{ producto.proveedores }}" required>
+              </td>
+              <td>
+                <input type="number" name="factor_logistico" step="0.01" value="{{ producto.factor_logistico }}" required>
+              </td>
+              <td>
+                <input type="number" name="costo_con_factor_logistico" step="0.01" value="{{ producto.costo_con_factor_logistico }}" readonly>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button type="submit" name="action" value="save">Guardar</button>
+                  <button type="submit" name="action" value="delete" class="btn-danger" onclick="return confirm('Eliminar producto?');">Eliminar</button>
+                </div>
+              </td>
+            </form>
+          </tr>
+        {% empty %}
+          <tr class="crud__empty-row" data-empty="true">
+            <td colspan="9">No hay productos.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const filterButtons = document.querySelectorAll(".crud__filter-btn");
+    const filterLabel = document.getElementById("filterLabel");
+    const filterInput = document.getElementById("filterInput");
+    const rows = document.querySelectorAll(".crud__table tbody tr");
+    const fieldToIndex = { upc: 1, nombre: 2, proveedores: 5 };
+    let activeField = "proveedores";
+
+    const applyFilter = () => {
+      const term = filterInput.value.trim().toLowerCase();
+      rows.forEach((row) => {
+        if (row.dataset.empty === "true") {
+          row.style.display = term ? "none" : "";
+          return;
+        }
+        const cells = row.querySelectorAll("td");
+        const cell = cells[fieldToIndex[activeField]];
+        let text = "";
+        if (cell) {
+          const input = cell.querySelector("input");
+          text = input ? input.value.trim().toLowerCase() : cell.textContent.trim().toLowerCase();
+        }
+        const match = term === "" || text.includes(term);
+        row.style.display = match ? "" : "none";
+      });
+    };
+
+    const setActiveButton = (button) => {
+      filterButtons.forEach((btn) => btn.classList.remove("is-active"));
+      button.classList.add("is-active");
+      activeField = button.dataset.field || "proveedores";
+      filterLabel.textContent = button.dataset.label || "Proveedores";
+      filterInput.placeholder = button.dataset.placeholder || "Buscar...";
+      filterInput.focus();
+      applyFilter();
+    };
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => setActiveButton(button));
+    });
+
+    filterInput.addEventListener("input", applyFilter);
+  });
+</script>
+
+    </main>
+  </div>

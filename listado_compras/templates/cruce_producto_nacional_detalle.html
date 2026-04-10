@@ -1,0 +1,173 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/crud_productos_supli.css' %}">
+<link rel="stylesheet" href="{% static 'css/cruce_producto_internacional.css' %}">
+
+<section class="crud">
+  <div class="cruce__header">
+    <div>
+      <h1 class="crud__title">Detalle de cruce nacional</h1>
+      <p class="crud__subtitle">Comparacion de proveedores usando el total costo.</p>
+    </div>
+    <div class="cruce__actions">
+      <a class="home-link" href="{% url 'listado_compras:home_listado_compras' %}">Ir al inicio</a>
+      <a class="cruce__back" href="{% url 'listado_compras:cruce_producto_nacional' %}">Volver al listado</a>
+      <a class="cruce__button" href="{% url 'listado_compras:cruce_producto_nacional_export' %}?upc={{ selected_upc|urlencode }}">Exportar Excel</a>
+    </div>
+  </div>
+
+  <div class="crud__create">
+    <h2 class="crud__section-title">UPC {{ selected_upc }}</h2>
+    <div class="cruce__grid">
+      <div>
+        <div class="cruce__label">Registros encontrados</div>
+        <div class="cruce__value">{{ selected_count }}</div>
+      </div>
+      <div>
+        <div class="cruce__label">Producto Supli</div>
+        <div class="cruce__value">
+          {% if selected_info %}
+            {{ selected_info.nombre_producto }}
+          {% else %}
+            Sin registro
+          {% endif %}
+        </div>
+      </div>
+      <div>
+        <div class="cruce__label">Marca</div>
+        <div class="cruce__value">
+          {% if selected_info %}
+            {{ selected_info.marca_producto }}
+          {% else %}
+            -
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <p class="cruce__hint">Se resaltan el menor total costo y la mayor cantidad disponible.</p>
+  </div>
+
+  <div class="crud__create">
+    <h2 class="crud__section-title">Proveedor con menor total costo</h2>
+    {% if mejor_proveedor %}
+      <div class="cruce__grid">
+        <div>
+          <div class="cruce__label">Proveedor</div>
+          <div class="cruce__value">{{ mejor_proveedor.proveedor }}</div>
+        </div>
+        <div>
+          <div class="cruce__label">Nombre producto</div>
+          <div class="cruce__value">{{ mejor_proveedor.nombre }}</div>
+        </div>
+        <div>
+          <div class="cruce__label">Cantidad disponible</div>
+          <div class="cruce__value">{{ mejor_proveedor.cantidad_disponible }}</div>
+        </div>
+        <div>
+          <div class="cruce__label">Total costo</div>
+          <div class="cruce__value">{{ mejor_proveedor.total_costo }}</div>
+        </div>
+      </div>
+    {% else %}
+      <p class="cruce__hint">No hay datos para calcular el mejor proveedor.</p>
+    {% endif %}
+  </div>
+
+  <div class="crud__table">
+    <table class="cruce__detalle-table">
+      <thead>
+        <tr>
+          <th class="sort-header" data-sort="top" data-order="desc">Top total costo <span class="sort-arrow">&darr;</span></th>
+          <th>Nombre producto</th>
+          <th>Proveedor</th>
+          <th class="sort-header" data-sort="costo" data-order="desc">Costo <span class="sort-arrow">&darr;</span></th>
+          <th class="sort-header" data-sort="adicionales" data-order="desc">Costos adicionales <span class="sort-arrow">&darr;</span></th>
+          <th class="sort-header" data-sort="total" data-order="desc">Total costo <span class="sort-arrow">&darr;</span></th>
+          <th class="sort-header" data-sort="cantidad" data-order="desc">Cantidad <span class="sort-arrow">&darr;</span></th>
+          <th class="sort-header" data-sort="similitud" data-order="desc">Similitud nombre (%) <span class="sort-arrow">&darr;</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for fila in detalles %}
+          <tr class="{% if fila.es_menor_costo %}is-best-cost {% endif %}{% if fila.es_mayor_cantidad %}is-best-qty{% endif %}">
+            <td data-field="top" data-value="{{ fila.top }}">{{ fila.top }}</td>
+            <td>{{ fila.nombre }}</td>
+            <td>{{ fila.proveedor }}</td>
+            <td data-field="costo" data-value="{{ fila.costo }}">{{ fila.costo }}</td>
+            <td data-field="adicionales" data-value="{{ fila.costos_adicionales }}">{{ fila.costos_adicionales }}</td>
+            <td data-field="total" data-value="{{ fila.total_costo }}">{{ fila.total_costo }}</td>
+            <td data-field="cantidad" data-value="{{ fila.cantidad_disponible }}">{{ fila.cantidad_disponible }}</td>
+            <td>
+              {% if fila.similitud_nombre is not None %}
+                <span data-field="similitud" data-value="{{ fila.similitud_nombre }}">{{ fila.similitud_nombre }}%</span>
+              {% else %}
+                <span data-field="similitud" data-value="">-</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr class="crud__empty-row" data-empty="true">
+            <td colspan="8">No hay registros para este UPC.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const table = document.querySelector(".cruce__detalle-table");
+    if (!table) return;
+    const tbody = table.querySelector("tbody");
+    const headers = table.querySelectorAll("th[data-sort]");
+
+    const getValue = (row, field) => {
+      const cell = row.querySelector(`[data-field="${field}"]`);
+      if (!cell) return NaN;
+      const value = cell.dataset.value;
+      if (value === undefined || value === null || value === "") return NaN;
+      const parsed = Number(String(value).replace(",", "."));
+      return Number.isNaN(parsed) ? NaN : parsed;
+    };
+
+    const updateArrow = (header) => {
+      const arrow = header.querySelector(".sort-arrow");
+      if (!arrow) return;
+      arrow.innerHTML = header.dataset.order === "desc" ? "&darr;" : "&uarr;";
+    };
+
+    headers.forEach((header) => updateArrow(header));
+
+    headers.forEach((header) => {
+      header.addEventListener("click", () => {
+        const field = header.dataset.sort;
+        if (!field) return;
+        const order = header.dataset.order === "desc" ? "asc" : "desc";
+
+        headers.forEach((other) => {
+          other.dataset.order = other === header ? order : "desc";
+          updateArrow(other);
+        });
+
+        const rows = Array.from(tbody.querySelectorAll("tr")).filter(
+          (row) => row.dataset.empty !== "true"
+        );
+
+        rows.sort((a, b) => {
+          const aValue = getValue(a, field);
+          const bValue = getValue(b, field);
+          if (Number.isNaN(aValue) && Number.isNaN(bValue)) return 0;
+          if (Number.isNaN(aValue)) return 1;
+          if (Number.isNaN(bValue)) return -1;
+          return order === "desc" ? bValue - aValue : aValue - bValue;
+        });
+
+        rows.forEach((row) => tbody.appendChild(row));
+      });
+    });
+  });
+</script>
+
+    </main>
+  </div>

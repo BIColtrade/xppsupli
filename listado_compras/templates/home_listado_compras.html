@@ -5,11 +5,40 @@
 <section class="home-cards">
   <h1 class="home-cards__title">Listado de Compras</h1>
   <p class="home-cards__subtitle">Accesos rapidos a los listados principales.</p>
+  <a class="home-link" href="{% url 'listado_compras:home_listado_compras' %}">Ir al inicio</a>
 
   <div class="home-cards__grid">
     <a class="home-card" href="{% url 'listado_compras:listado_productos_supli' %}">
       <div class="home-card__title">Listado Productos Supli</div>
       <div class="home-card__text">Consulta y gestion de productos Supli.</div>
+    </a>
+    <a class="home-card" href="{% url 'listado_compras:crud_productos_supli' %}">
+      <div class="home-card__title">CRUD Productos Supli</div>
+      <div class="home-card__text">Crear, editar y eliminar productos Supli.</div>
+    </a>
+    <a class="home-card" href="{% url 'listado_compras:crud_listado_internacional' %}">
+      <div class="home-card__title">CRUD Listado Internacional</div>
+      <div class="home-card__text">Crear, editar y eliminar productos internacionales.</div>
+    </a>
+    <a class="home-card" href="{% url 'listado_compras:crud_listado_nacional' %}">
+      <div class="home-card__title">CRUD Listado Nacional</div>
+      <div class="home-card__text">Crear, editar y eliminar productos nacionales.</div>
+    </a>
+    <a class="home-card" href="{% url 'listado_compras:cruce_producto_internacional' %}">
+      <div class="home-card__title">Cruce Productos Internacionales</div>
+      <div class="home-card__text">Comparar proveedores y costos por UPC.</div>
+    </a>
+    <a class="home-card" href="{% url 'listado_compras:cruce_producto_internacional_detalle_general' %}">
+      <div class="home-card__title">Cruce Internacional General</div>
+      <div class="home-card__text">Un registro por UPC con el mejor proveedor.</div>
+    </a>
+    <a class="home-card" href="{% url 'listado_compras:cruce_producto_nacional' %}">
+      <div class="home-card__title">Cruce Productos Nacionales</div>
+      <div class="home-card__text">Comparar proveedores y costos nacionales.</div>
+    </a>
+    <a class="home-card" href="{% url 'listado_compras:cruce_producto_nacional_detalle_general' %}">
+      <div class="home-card__title">Cruce Nacional General</div>
+      <div class="home-card__text">Un registro por UPC con el menor total costo.</div>
     </a>
   </div>
 </section>

@@ -52,6 +52,7 @@
             <th>Fecha</th>
             <th>Estado</th>
             <th>Puntos</th>
+            <th>Lider</th>
           </tr>
         </thead>
         <tbody>
@@ -62,6 +63,7 @@
             <td>{{ r.fecha_registro|date:"d/m/Y" }}</td>
             <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
             <td>{% if r.estado == 'aprobado' %}+{{ r.puntos_asignados }}{% else %}-{% endif %}</td>
+            <td>{% if r.aprobado_por %}{{ r.aprobado_por.nombre }} {{ r.aprobado_por.apellido }}{% else %}-{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -84,6 +86,7 @@
             <th>Fecha</th>
             <th>Puntos</th>
             <th>Estado</th>
+            <th>Lider</th>
           </tr>
         </thead>
         <tbody>
@@ -93,6 +96,7 @@
             <td>{{ rc.fecha_reclamo|date:"d/m/Y" }}</td>
             <td>{{ rc.puntos_descontados }}</td>
             <td><span class="status-badge status-badge--{{ rc.estado }}">{{ rc.get_estado_display }}</span></td>
+            <td>{% if rc.aprobado_por %}{{ rc.aprobado_por.nombre }} {{ rc.aprobado_por.apellido }}{% else %}-{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>

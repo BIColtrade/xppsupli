@@ -190,6 +190,22 @@ body {
   color: var(--pps-muted);
 }
 
+.beneficio-card__nivel {
+  font-size: 12px;
+  color: var(--pps-muted);
+}
+
+.beneficio-card__link {
+  font-size: 12px;
+  color: #c9c4ff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.beneficio-card__link:hover {
+  text-decoration: underline;
+}
+
 .beneficio-card__status {
   font-size: 12px;
   font-weight: 600;

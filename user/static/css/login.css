@@ -191,6 +191,35 @@ body.login-page::after {
   font-size: 0.95rem;
 }
 
+.alert--success {
+  background: rgba(1, 80, 155, 0.22);
+  border-color: rgba(1, 80, 155, 0.5);
+}
+
+.section-divider {
+  height: 1px;
+  width: 100%;
+  background: rgba(172, 170, 173, 0.2);
+  margin: 6px 0;
+}
+
+.helper-links {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-start;
+  font-size: 0.9rem;
+}
+
+.text-link {
+  color: rgba(172, 170, 173, 0.95);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.text-link:hover {
+  color: #f2f2fb;
+}
+
 .field {
   display: flex;
   flex-direction: column;

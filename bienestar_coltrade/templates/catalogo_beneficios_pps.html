@@ -37,12 +37,24 @@
       <div class="beneficio-card__nombre">{{ b.nombre }}</div>
       <div class="beneficio-card__desc">{{ b.descripcion }}</div>
       <div class="beneficio-card__pts">{{ b.puntos_requeridos }} <span>pts</span></div>
-      {% if b.stock is not None %}
-      <div class="beneficio-card__stock">Stock: {{ b.stock }}</div>
+      <div class="beneficio-card__stock">
+        {% if b.stock is None %}
+          Stock disponible: Ilimitado
+        {% elif b.stock > 0 %}
+          Stock disponible: {{ b.stock }}
+        {% else %}
+          Sin stock
+        {% endif %}
+      </div>
+      <div class="beneficio-card__nivel">Nivel: {{ b.niveles_permitidos_labels }}</div>
+      {% if b.imagen_url %}
+      <a href="{{ b.imagen_url }}" target="_blank" rel="noopener" class="beneficio-card__link">Ver imagen</a>
       {% endif %}
 
       {% if b.stock is not None and b.stock <= 0 %}
       <span class="beneficio-card__status beneficio-card__status--out">Sin stock</span>
+      {% elif b.niveles_permitidos and puntos.nivel not in b.niveles_permitidos %}
+      <span class="beneficio-card__status beneficio-card__status--low">No disponible para tu nivel</span>
       {% elif puntos.puntos_totales >= b.puntos_requeridos %}
       <form method="post" action="{% url 'home_bienestar_coltrade:reclamar_beneficio_pps' b.id %}">
         {% csrf_token %}

@@ -64,19 +64,23 @@
             <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
             <td>
               {% if r.estado == 'pendiente' %}
-              <form method="post" action="{% url 'home_bienestar_coltrade:resolver_accion_pps' r.id %}" class="resolucion-form">
-                {% csrf_token %}
-                <input class="pps-form__input" type="number" name="puntos_asignados" value="{{ r.accion.puntos_default }}" min="{{ r.accion.puntos_min }}" max="{{ r.accion.puntos_max }}" step="1">
-                <textarea class="pps-form__textarea" name="observacion" placeholder="Observacion (opcional)"></textarea>
-                <div class="pps-row-actions">
-                  <button name="accion_resolucion" value="aprobar" class="pps-btn pps-btn--success pps-btn--sm">Aprobar</button>
-                  <button name="accion_resolucion" value="rechazar" class="pps-btn pps-btn--danger pps-btn--sm">Rechazar</button>
-                </div>
-              </form>
+                {% if r.id in puede_aprobar_registros %}
+                <form method="post" action="{% url 'home_bienestar_coltrade:resolver_accion_pps' r.id %}" class="resolucion-form">
+                  {% csrf_token %}
+                  <input class="pps-form__input" type="number" name="puntos_asignados" value="{{ r.accion.puntos_default }}" min="{{ r.accion.puntos_min }}" max="{{ r.accion.puntos_max }}" step="1">
+                  <textarea class="pps-form__textarea" name="observacion" placeholder="Observacion (opcional)"></textarea>
+                  <div class="pps-row-actions">
+                    <button name="accion_resolucion" value="aprobar" class="pps-btn pps-btn--success pps-btn--sm">Aprobar</button>
+                    <button name="accion_resolucion" value="rechazar" class="pps-btn pps-btn--danger pps-btn--sm">Rechazar</button>
+                  </div>
+                </form>
+                {% else %}
+                <div class="pps-resolution">No puedes aprobar</div>
+                {% endif %}
               {% else %}
               <div class="pps-resolution">
                 {% if r.estado == 'aprobado' %}+{{ r.puntos_asignados }} pts{% endif %}
-                {% if r.aprobado_por %}<div class="pps-resolution__meta">Por: {{ r.aprobado_por }}</div>{% endif %}
+                {% if r.aprobado_por %}<div class="pps-resolution__meta">Por: {{ r.aprobado_por.nombre }} {{ r.aprobado_por.apellido }}</div>{% endif %}
                 {% if r.observacion_lider %}<div class="pps-resolution__meta">{{ r.observacion_lider }}</div>{% endif %}
               </div>
               {% endif %}
@@ -115,13 +119,17 @@
             <td>{{ r.fecha_reclamo|date:"d/m/Y" }}</td>
             <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
             <td>
-              <form method="post" action="{% url 'home_bienestar_coltrade:resolver_reclamo_beneficio_pps' r.id %}" class="resolucion-form">
-                {% csrf_token %}
-                <div class="pps-row-actions">
-                  <button name="accion_resolucion" value="entregar" class="pps-btn pps-btn--success pps-btn--sm">Entregar</button>
-                  <button name="accion_resolucion" value="cancelar" class="pps-btn pps-btn--danger pps-btn--sm">Cancelar</button>
-                </div>
-              </form>
+              {% if r.id in puede_aprobar_reclamos %}
+                <form method="post" action="{% url 'home_bienestar_coltrade:resolver_reclamo_beneficio_pps' r.id %}" class="resolucion-form">
+                  {% csrf_token %}
+                  <div class="pps-row-actions">
+                    <button name="accion_resolucion" value="entregar" class="pps-btn pps-btn--success pps-btn--sm">Entregar</button>
+                    <button name="accion_resolucion" value="cancelar" class="pps-btn pps-btn--danger pps-btn--sm">Cancelar</button>
+                  </div>
+                </form>
+              {% else %}
+                <div class="pps-resolution">No puedes aprobar</div>
+              {% endif %}
             </td>
           </tr>
           {% endfor %}

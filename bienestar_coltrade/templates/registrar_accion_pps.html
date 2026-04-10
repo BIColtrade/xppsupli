@@ -42,12 +42,17 @@
     </div>
   </form>
   {% else %}
-  <div class="pps-alert pps-alert--info">No hay acciones activas en el catalogo.</div>
-  {% if es_lider %}
-    <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="pps-btn pps-btn--primary">Gestionar catalogo</a>
-  {% else %}
-    <p class="pps-empty">Contacta a tu lider para habilitar acciones.</p>
-  {% endif %}
+    {% if tiene_acciones_catalogo %}
+      <div class="pps-alert pps-alert--info">No hay acciones vigentes para registrar en este momento.</div>
+      <a href="{% url 'home_bienestar_coltrade:catalogo_acciones_pps' %}" class="pps-btn pps-btn--secondary">Ver catalogo</a>
+    {% else %}
+      <div class="pps-alert pps-alert--info">No hay acciones activas en el catalogo.</div>
+      {% if es_lider %}
+        <a href="{% url 'home_bienestar_coltrade:gestionar_acciones_pps' %}" class="pps-btn pps-btn--primary">Gestionar catalogo</a>
+      {% else %}
+        <p class="pps-empty">Contacta a tu lider para habilitar acciones.</p>
+      {% endif %}
+    {% endif %}
   {% endif %}
 </div>
 

@@ -59,9 +59,35 @@
     </div>
 
     <div class="pps-form__group">
+      <label class="pps-form__label" for="aprobadores">Quien puede aprobar</label>
+      <label class="pps-form__checkbox-group">
+        <input type="checkbox" name="aprobador_todos" checked>
+        Todos (Admin + People)
+      </label>
+      <select class="pps-form__select" id="aprobadores" name="aprobadores" multiple size="6">
+        {% for u in aprobadores_disponibles %}
+          <option value="{{ u.id }}">{{ u.nombre }} {{ u.apellido }}</option>
+        {% endfor %}
+      </select>
+      <div class="pps-form__hint">Si marcas Todos, se ignorara la lista.</div>
+    </div>
+
+    <div class="pps-form__group">
       <label class="pps-form__label" for="youtube_url">Enlace YouTube</label>
       <input class="pps-form__input" type="url" id="youtube_url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
       <div class="pps-form__hint">Solo obligatorio si el nivel es Capacitacion.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="fecha_inicio">Fecha de inicio</label>
+      <input class="pps-form__input" type="datetime-local" id="fecha_inicio" name="fecha_inicio">
+      <div class="pps-form__hint">Opcional. Si se deja vacia, la accion queda disponible de inmediato.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="fecha_fin">Fecha de vencimiento</label>
+      <input class="pps-form__input" type="datetime-local" id="fecha_fin" name="fecha_fin">
+      <div class="pps-form__hint">Opcional. Si se deja vacia, la accion no vence.</div>
     </div>
 
     <div class="pps-form__group">

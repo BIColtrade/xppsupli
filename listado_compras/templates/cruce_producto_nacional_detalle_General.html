@@ -1,0 +1,65 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/crud_productos_supli.css' %}">
+<link rel="stylesheet" href="{% static 'css/cruce_producto_internacional.css' %}">
+
+<section class="crud">
+  <div class="cruce__header">
+    <div>
+      <h1 class="crud__title">Cruce nacional general</h1>
+      <p class="crud__subtitle">Se muestra un registro por UPC con el proveedor de menor total costo.</p>
+    </div>
+    <div class="cruce__actions">
+      <a class="home-link" href="{% url 'listado_compras:home_listado_compras' %}">Ir al inicio</a>
+      <a class="cruce__button" href="{% url 'listado_compras:cruce_producto_nacional_detalle_general_export' %}">Exportar Excel</a>
+    </div>
+  </div>
+
+  <div class="crud__table">
+    <table>
+      <thead>
+        <tr>
+          <th>UPC</th>
+          <th>Nombre Supli (producto)</th>
+          <th>Nombre producto proveedor</th>
+          <th>Proveedor</th>
+          <th>Marca</th>
+          <th>Costo</th>
+          <th>Costos adicionales</th>
+          <th>Total costo</th>
+          <th>Q disponible</th>
+          <th>Similitud nombre (%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in resumen %}
+          <tr>
+            <td>{{ item.upc }}</td>
+            <td>{{ item.nombre_supli|default:"-" }}</td>
+            <td>{{ item.nombre_proveedor }}</td>
+            <td>{{ item.proveedor|default:"-" }}</td>
+            <td>{{ item.marca_supli|default:"-" }}</td>
+            <td>{{ item.costo }}</td>
+            <td>{{ item.costos_adicionales }}</td>
+            <td>{{ item.total_costo }}</td>
+            <td>{{ item.cantidad_disponible }}</td>
+            <td>
+              {% if item.similitud_nombre is not None %}
+                {{ item.similitud_nombre }}%
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr class="crud__empty-row" data-empty="true">
+            <td colspan="10">No hay productos nacionales cargados.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

@@ -15,6 +15,8 @@ class AccionPPSAdmin(admin.ModelAdmin):
         "aplica_empresa",
         "solo_lideres",
         "activa",
+        "fecha_inicio",
+        "fecha_fin",
     )
     list_filter = ("nivel", "destinatarios", "aplica_empresa", "solo_lideres", "activa")
     search_fields = ("nombre", "descripcion")
@@ -36,13 +38,13 @@ class RegistroAccionAdmin(admin.ModelAdmin):
 
 @admin.register(Beneficio)
 class BeneficioAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "categoria", "puntos_requeridos", "disponible", "stock")
+    list_display = ("nombre", "categoria", "puntos_requeridos", "disponible", "stock", "imagen_url")
     list_filter = ("categoria", "disponible")
     search_fields = ("nombre", "descripcion")
 
 
 @admin.register(ReclamoBeneficio)
 class ReclamoBeneficioAdmin(admin.ModelAdmin):
-    list_display = ("usuario", "beneficio", "estado", "puntos_descontados", "fecha_reclamo")
+    list_display = ("usuario", "beneficio", "estado", "puntos_descontados", "fecha_reclamo", "aprobado_por")
     list_filter = ("estado",)
     search_fields = ("usuario__email", "usuario__username", "beneficio__nombre")

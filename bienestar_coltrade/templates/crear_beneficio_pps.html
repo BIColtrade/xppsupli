@@ -49,6 +49,40 @@
     </div>
 
     <div class="pps-form__group">
+      <label class="pps-form__label" for="imagen_url">Enlace de imagen</label>
+      <input class="pps-form__input" type="url" id="imagen_url" name="imagen_url" placeholder="https://...">
+      <div class="pps-form__hint">Opcional. Se mostrara como "Ver imagen" en el catalogo.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="niveles_permitidos">Niveles permitidos</label>
+      <label class="pps-form__checkbox-group">
+        <input type="checkbox" name="niveles_todos" {% if niveles_todos %}checked{% endif %}>
+        Todos los niveles
+      </label>
+      <select class="pps-form__select" id="niveles_permitidos" name="niveles_permitidos" multiple size="4">
+        {% for value, label in niveles_choices %}
+          <option value="{{ value }}" {% if value in niveles_seleccionados %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+      <div class="pps-form__hint">Si marcas Todos, se ignorara la lista.</div>
+    </div>
+
+    <div class="pps-form__group">
+      <label class="pps-form__label" for="aprobadores">Quien puede aprobar</label>
+      <label class="pps-form__checkbox-group">
+        <input type="checkbox" name="aprobador_todos" checked>
+        Todos (Admin + People)
+      </label>
+      <select class="pps-form__select" id="aprobadores" name="aprobadores" multiple size="6">
+        {% for u in aprobadores_disponibles %}
+          <option value="{{ u.id }}">{{ u.nombre }} {{ u.apellido }}</option>
+        {% endfor %}
+      </select>
+      <div class="pps-form__hint">Si marcas Todos, se ignorara la lista.</div>
+    </div>
+
+    <div class="pps-form__group">
       <label class="pps-form__checkbox-group">
         <input type="checkbox" name="disponible" checked>
         Beneficio disponible

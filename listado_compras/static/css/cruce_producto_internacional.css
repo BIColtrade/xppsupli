@@ -1,0 +1,122 @@
+.cruce__hint {
+  margin: 6px 0 0 0;
+  color: var(--crud-muted);
+  font-size: 13px;
+}
+
+.cruce__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.cruce__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cruce__actions .home-link {
+  margin: 0;
+}
+
+.cruce__back {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(172, 170, 173, 0.3);
+  color: var(--crud-text);
+  text-decoration: none;
+  font-size: 12px;
+  background: rgba(1, 80, 155, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cruce__back:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(1, 80, 155, 0.35);
+}
+
+.sort-header {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sort-arrow {
+  margin-left: 6px;
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.cruce__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px 14px;
+}
+
+.cruce__label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--crud-muted);
+}
+
+.cruce__value {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.cruce__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(1, 80, 155, 0.25);
+  border: 1px solid rgba(172, 170, 173, 0.3);
+}
+
+.cruce__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #5934bc, #01509b);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cruce__button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(1, 80, 155, 0.35);
+}
+
+.cruce__muted {
+  color: var(--crud-muted);
+  font-size: 12px;
+}
+
+.cruce__row.is-active td {
+  background: rgba(1, 80, 155, 0.2);
+}
+
+.is-best-cost td {
+  background: rgba(89, 52, 188, 0.18);
+}
+
+.is-best-qty td {
+  background: rgba(1, 80, 155, 0.18);
+}
+
+.is-best-cost.is-best-qty td {
+  background: linear-gradient(135deg, rgba(89, 52, 188, 0.28), rgba(1, 80, 155, 0.28));
+}

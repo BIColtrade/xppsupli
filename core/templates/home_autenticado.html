@@ -6,34 +6,46 @@
   <p class="home-cards__subtitle">Elige una seccion para continuar.</p>
 
   <div class="home-cards__grid">
+    {% if can_abastecimientos %}
     <a class="home-card" href="{% url 'abastecimientos:home_abastecimiento' %}">
       <div class="home-card__title">Abastecimientos</div>
       <div class="home-card__text">Reportes, cruces y herramientas.</div>
     </a>
+    {% endif %}
 
+    {% if can_user %}
     <a class="home-card" href="{% url 'home_user' %}">
       <div class="home-card__title">Usuarios</div>
       <div class="home-card__text">Perfil y configuracion del usuario.</div>
     </a>
+    {% endif %}
 
-    <a class="home-card" href="http://127.0.0.1:8000/portafolio/mayoristas/home/">
+    {% if can_portafolio %}
+    <a class="home-card" href="{% url 'portafolio_mayoristas:home_portafolio_mayoristas' %}">
       <div class="home-card__title">Mayoristas</div>
       <div class="home-card__text">Acceso al portafolio de mayoristas.</div>
     </a>
+    {% endif %}
 
+    {% if can_bienestar %}
     <a class="home-card" href="{% url 'home_bienestar_coltrade:home_bienestar_coltrade' %}">
       <div class="home-card__title">Bienestar Coltrade</div>
       <div class="home-card__text">Acceso al modulo de bienestar.</div>
     </a>
+    {% endif %}
 
+    {% if can_malla %}
     <a class="home-card" href="{% url 'malla_operaciones_trade:home_malla_operaciones' %}">
       <div class="home-card__title">Malla Operaciones</div>
       <div class="home-card__text">Vista principal de operaciones trade.</div>
     </a>
-    <a class="home-card" href="/listadocompras/coltrxde/home/">
+    {% endif %}
+    {% if can_listadocompras %}
+    <a class="home-card" href="{% url 'listado_compras:home_listado_compras' %}">
       <div class="home-card__title">Listado de Compras</div>
       <div class="home-card__text">Acceso al listado de compras Coltrade.</div>
     </a>
+    {% endif %}
   </div>
 </section>
 <script src="{% static 'js/home_autenticado.js' %}"></script>

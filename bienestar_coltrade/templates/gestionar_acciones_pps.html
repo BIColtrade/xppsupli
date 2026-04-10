@@ -29,6 +29,7 @@
             <th>Dirigida a</th>
             <th>Rango</th>
             <th>Default</th>
+            <th>Vigencia</th>
             <th>Solo lideres</th>
             <th>Activa</th>
             <th>Acciones</th>
@@ -57,6 +58,19 @@
             </td>
             <td>{{ a.puntos_min }}-{{ a.puntos_max }}</td>
             <td>{{ a.puntos_default }}</td>
+            <td>
+              {% if a.fecha_inicio or a.fecha_fin %}
+                {% if a.fecha_inicio and a.fecha_fin %}
+                  {{ a.fecha_inicio|date:"d/m/Y H:i" }} - {{ a.fecha_fin|date:"d/m/Y H:i" }}
+                {% elif a.fecha_inicio %}
+                  Desde {{ a.fecha_inicio|date:"d/m/Y H:i" }}
+                {% else %}
+                  Hasta {{ a.fecha_fin|date:"d/m/Y H:i" }}
+                {% endif %}
+              {% else %}
+                Sin fecha
+              {% endif %}
+            </td>
             <td>{% if a.solo_lideres %}Si{% else %}No{% endif %}</td>
             <td>{% if a.activa %}Si{% else %}No{% endif %}</td>
             <td>

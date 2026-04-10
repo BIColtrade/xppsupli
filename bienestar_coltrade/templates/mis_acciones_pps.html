@@ -53,7 +53,7 @@
             <td>{{ r.fecha_registro|date:"d/m/Y" }}</td>
             <td><span class="status-badge status-badge--{{ r.estado }}">{{ r.get_estado_display }}</span></td>
             <td>{% if r.estado == 'aprobado' %}+{{ r.puntos_asignados }}{% else %}-{% endif %}</td>
-            <td>{% if r.aprobado_por %}{{ r.aprobado_por }}{% else %}-{% endif %}</td>
+            <td>{% if r.aprobado_por %}{{ r.aprobado_por.nombre }} {{ r.aprobado_por.apellido }}{% else %}-{% endif %}</td>
           </tr>
           {% endfor %}
         </tbody>

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -60,3 +61,21 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         full_name = f"{self.nombre} {self.apellido}".strip()
         return full_name or self.email
+
+
+class PasswordResetCode(models.Model):
+    user = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name="reset_codes")
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "password_reset_codes"
+        indexes = [
+            models.Index(fields=["user", "code"]),
+            models.Index(fields=["expires_at"]),
+        ]
+
+    def is_expired(self):
+        return self.expires_at <= timezone.now()

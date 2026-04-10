@@ -24,9 +24,24 @@
         </div>
         <div class="accion-card__desc">{{ accion.descripcion }}</div>
         <div class="accion-card__pts">{{ accion.puntos_min }}-{{ accion.puntos_max }} puntos</div>
+        {% if accion.fecha_inicio or accion.fecha_fin %}
+        <div class="accion-card__vigencia">
+          {% if accion.fecha_inicio and accion.fecha_fin %}
+            Vigencia: {{ accion.fecha_inicio|date:"d/m/Y H:i" }} - {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% elif accion.fecha_inicio %}
+            Disponible desde {{ accion.fecha_inicio|date:"d/m/Y H:i" }}
+          {% else %}
+            Disponible hasta {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% endif %}
+        </div>
+        {% endif %}
         <div class="accion-card__actions">
           {% if accion.id in acciones_registradas_ids %}
             <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion ya registrada</span>
+          {% elif accion.id in acciones_vencidas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion vencida</span>
+          {% elif accion.id in acciones_no_iniciadas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Aun no disponible</span>
           {% else %}
             <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}?accion={{ accion.id }}" class="pps-btn pps-btn--primary pps-btn--sm">Registrar</a>
           {% endif %}
@@ -54,9 +69,24 @@
         </div>
         <div class="accion-card__desc">{{ accion.descripcion }}</div>
         <div class="accion-card__pts">{{ accion.puntos_min }}-{{ accion.puntos_max }} puntos</div>
+        {% if accion.fecha_inicio or accion.fecha_fin %}
+        <div class="accion-card__vigencia">
+          {% if accion.fecha_inicio and accion.fecha_fin %}
+            Vigencia: {{ accion.fecha_inicio|date:"d/m/Y H:i" }} - {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% elif accion.fecha_inicio %}
+            Disponible desde {{ accion.fecha_inicio|date:"d/m/Y H:i" }}
+          {% else %}
+            Disponible hasta {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% endif %}
+        </div>
+        {% endif %}
         <div class="accion-card__actions">
           {% if accion.id in acciones_registradas_ids %}
             <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion ya registrada</span>
+          {% elif accion.id in acciones_vencidas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion vencida</span>
+          {% elif accion.id in acciones_no_iniciadas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Aun no disponible</span>
           {% else %}
             <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}?accion={{ accion.id }}" class="pps-btn pps-btn--primary pps-btn--sm">Registrar</a>
           {% endif %}
@@ -84,9 +114,24 @@
         </div>
         <div class="accion-card__desc">{{ accion.descripcion }}</div>
         <div class="accion-card__pts">{{ accion.puntos_min }}-{{ accion.puntos_max }} puntos</div>
+        {% if accion.fecha_inicio or accion.fecha_fin %}
+        <div class="accion-card__vigencia">
+          {% if accion.fecha_inicio and accion.fecha_fin %}
+            Vigencia: {{ accion.fecha_inicio|date:"d/m/Y H:i" }} - {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% elif accion.fecha_inicio %}
+            Disponible desde {{ accion.fecha_inicio|date:"d/m/Y H:i" }}
+          {% else %}
+            Disponible hasta {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% endif %}
+        </div>
+        {% endif %}
         <div class="accion-card__actions">
           {% if accion.id in acciones_registradas_ids %}
             <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion ya registrada</span>
+          {% elif accion.id in acciones_vencidas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion vencida</span>
+          {% elif accion.id in acciones_no_iniciadas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Aun no disponible</span>
           {% else %}
             <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}?accion={{ accion.id }}" class="pps-btn pps-btn--primary pps-btn--sm">Registrar</a>
           {% endif %}
@@ -114,9 +159,24 @@
         </div>
         <div class="accion-card__desc">{{ accion.descripcion }}</div>
         <div class="accion-card__pts">{{ accion.puntos_min }}-{{ accion.puntos_max }} puntos</div>
+        {% if accion.fecha_inicio or accion.fecha_fin %}
+        <div class="accion-card__vigencia">
+          {% if accion.fecha_inicio and accion.fecha_fin %}
+            Vigencia: {{ accion.fecha_inicio|date:"d/m/Y H:i" }} - {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% elif accion.fecha_inicio %}
+            Disponible desde {{ accion.fecha_inicio|date:"d/m/Y H:i" }}
+          {% else %}
+            Disponible hasta {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% endif %}
+        </div>
+        {% endif %}
         <div class="accion-card__actions">
           {% if accion.id in acciones_registradas_ids %}
             <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion ya registrada</span>
+          {% elif accion.id in acciones_vencidas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Accion vencida</span>
+          {% elif accion.id in acciones_no_iniciadas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Aun no disponible</span>
           {% else %}
             <a href="{% url 'home_bienestar_coltrade:registrar_accion_pps' %}?accion={{ accion.id }}" class="pps-btn pps-btn--primary pps-btn--sm">Registrar</a>
           {% endif %}
@@ -143,8 +203,25 @@
         </div>
         <div class="accion-card__desc">{{ accion.descripcion }}</div>
         <div class="accion-card__pts">{{ accion.puntos_default }} puntos al completar</div>
+        {% if accion.fecha_inicio or accion.fecha_fin %}
+        <div class="accion-card__vigencia">
+          {% if accion.fecha_inicio and accion.fecha_fin %}
+            Vigencia: {{ accion.fecha_inicio|date:"d/m/Y H:i" }} - {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% elif accion.fecha_inicio %}
+            Disponible desde {{ accion.fecha_inicio|date:"d/m/Y H:i" }}
+          {% else %}
+            Disponible hasta {{ accion.fecha_fin|date:"d/m/Y H:i" }}
+          {% endif %}
+        </div>
+        {% endif %}
         <div class="accion-card__actions">
-          <a href="{% url 'home_bienestar_coltrade:ver_capacitacion_pps' accion.id %}" class="pps-btn pps-btn--primary pps-btn--sm">Ver capacitacion</a>
+          {% if accion.id in acciones_vencidas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Capacitacion vencida</span>
+          {% elif accion.id in acciones_no_iniciadas_ids %}
+            <span class="pps-btn pps-btn--secondary pps-btn--sm pps-btn--disabled">Aun no disponible</span>
+          {% else %}
+            <a href="{% url 'home_bienestar_coltrade:ver_capacitacion_pps' accion.id %}" class="pps-btn pps-btn--primary pps-btn--sm">Ver capacitacion</a>
+          {% endif %}
         </div>
       </div>
       {% endfor %}

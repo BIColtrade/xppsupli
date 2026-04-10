@@ -1,0 +1,166 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/crud_productos_supli.css' %}">
+
+<section class="crud">
+  <h1 class="crud__title">Productos Supli</h1>
+  <p class="crud__subtitle">Crear y administrar productos Supli.</p>
+  <a class="home-link" href="{% url 'listado_compras:home_listado_compras' %}">Ir al inicio</a>
+
+  <div class="crud__create">
+    <h2 class="crud__section-title">Importar / Exportar</h2>
+    <form method="post" action="{% url 'listado_compras:productos_supli_import' %}" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="crud__grid">
+        <div>
+          <label>Archivo Excel (.xlsx)</label>
+          <input type="file" name="archivo" accept=".xlsx" required>
+        </div>
+      </div>
+      <div class="crud__actions">
+        <button type="submit">Importar Excel</button>
+      </div>
+    </form>
+    <form method="get" action="{% url 'listado_compras:productos_supli_export' %}">
+      <div class="crud__actions">
+        <button type="submit">Exportar Excel</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="crud__create">
+    <h2 class="crud__section-title">Crear producto</h2>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create">
+      <div class="crud__grid">
+        <div>
+          <label>UPC</label>
+          <input type="text" name="UPC" required>
+        </div>
+        <div>
+          <label>Nombre del producto</label>
+          <input type="text" name="nombre_producto" required>
+        </div>
+        <div>
+          <label>Marca del producto</label>
+          <input type="text" name="marca_producto" required>
+        </div>
+      </div>
+      <button type="submit">Crear</button>
+    </form>
+  </div>
+
+  {% if error %}
+    <div class="msg msg--error">{{ error }}</div>
+  {% endif %}
+  {% if success %}
+    <div class="msg msg--success">{{ success }}</div>
+  {% endif %}
+
+  <div class="crud__create crud__filter">
+    <h2 class="crud__section-title">Buscar productos</h2>
+    <div class="crud__filter-controls">
+      <div class="crud__filter-buttons" role="group" aria-label="Filtros de busqueda">
+        <button type="button" class="crud__filter-btn is-active" data-field="marca" data-label="Marca del producto" data-placeholder="Buscar por marca...">Marca</button>
+        <button type="button" class="crud__filter-btn" data-field="upc" data-label="UPC" data-placeholder="Buscar por UPC...">UPC</button>
+        <button type="button" class="crud__filter-btn" data-field="nombre" data-label="Nombre del producto" data-placeholder="Buscar por nombre...">Nombre</button>
+      </div>
+      <div class="crud__filter-input">
+        <label id="filterLabel" for="filterInput">Marca del producto</label>
+        <input type="text" id="filterInput" placeholder="Buscar por marca..." autocomplete="off">
+      </div>
+    </div>
+  </div>
+
+  <div class="crud__table">
+    <table>
+      <thead>
+        <tr>
+          <th>UPC</th>
+          <th>Nombre</th>
+          <th>Marca</th>
+          <th>Accion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for producto in productos %}
+          <tr>
+            <form method="post">
+              {% csrf_token %}
+              <td>
+                <input type="hidden" name="producto_upc" value="{{ producto.UPC }}">
+                {{ producto.UPC }}
+              </td>
+              <td>
+                <input type="text" name="nombre_producto" value="{{ producto.nombre_producto }}" required>
+              </td>
+              <td>
+                <input type="text" name="marca_producto" value="{{ producto.marca_producto }}" required>
+              </td>
+              <td>
+                <div class="btn-group">
+                  <button type="submit" name="action" value="save">Guardar</button>
+                  <button type="submit" name="action" value="delete" class="btn-danger" onclick="return confirm('Eliminar producto?');">Eliminar</button>
+                </div>
+              </td>
+            </form>
+          </tr>
+        {% empty %}
+          <tr class="crud__empty-row" data-empty="true">
+            <td colspan="4">No hay productos.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const filterButtons = document.querySelectorAll(".crud__filter-btn");
+    const filterLabel = document.getElementById("filterLabel");
+    const filterInput = document.getElementById("filterInput");
+    const rows = document.querySelectorAll(".crud__table tbody tr");
+    const fieldToIndex = { upc: 0, nombre: 1, marca: 2 };
+    let activeField = "marca";
+
+    const applyFilter = () => {
+      const term = filterInput.value.trim().toLowerCase();
+      rows.forEach((row) => {
+        if (row.dataset.empty === "true") {
+          row.style.display = term ? "none" : "";
+          return;
+        }
+        const cells = row.querySelectorAll("td");
+        const cell = cells[fieldToIndex[activeField]];
+        let text = "";
+        if (cell) {
+          const input = cell.querySelector("input");
+          text = input ? input.value.trim().toLowerCase() : cell.textContent.trim().toLowerCase();
+        }
+        const match = term === "" || text.includes(term);
+        row.style.display = match ? "" : "none";
+      });
+    };
+
+    const setActiveButton = (button) => {
+      filterButtons.forEach((btn) => btn.classList.remove("is-active"));
+      button.classList.add("is-active");
+      activeField = button.dataset.field || "marca";
+      filterLabel.textContent = button.dataset.label || "Marca del producto";
+      filterInput.placeholder = button.dataset.placeholder || "Buscar...";
+      filterInput.focus();
+      applyFilter();
+    };
+
+    filterButtons.forEach((button) => {
+      button.addEventListener("click", () => setActiveButton(button));
+    });
+
+    filterInput.addEventListener("input", applyFilter);
+  });
+</script>
+
+    </main>
+  </div>
