@@ -10,4 +10,14 @@ urlpatterns = [
     path("crear-usuarios/", views.crear_usuario, name="crear_usuarios"),
     path("home_user/", views.home_user, name="home_user"),
     path("listado-usuarios/", views.listado_usuarios, name="listado_usuarios"),
+    path(
+        "listado-usuarios/plantilla-importacion/",
+        views.descargar_plantilla_usuarios,
+        name="descargar_plantilla_usuarios",
+    ),
+    path(
+        "listado-usuarios/importar/",
+        views.importar_usuarios,
+        name="importar_usuarios",
+    ),
 ]

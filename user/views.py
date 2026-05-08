@@ -3,10 +3,15 @@ import os
 import secrets
 from datetime import timedelta
 from email.message import EmailMessage
+from io import BytesIO
 
+import openpyxl
+from openpyxl.styles import Alignment, Font, PatternFill
+from openpyxl.utils import get_column_letter
 import requests
 from django.contrib.auth import authenticate
 from django.db import IntegrityError
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
@@ -475,4 +480,264 @@ def listado_usuarios(request):
         context["usuarios"] = Usuario.objects.order_by("email")
         context["grupos"] = Group.objects.order_by("name")
 
+    return render(request, "listado_usuarios.html", context)
+
+
+IMPORT_COLUMNS = [
+    ("email", "Email (obligatorio)"),
+    ("username", "Usuario (obligatorio)"),
+    ("nombre", "Nombre (obligatorio)"),
+    ("apellido", "Apellido"),
+    ("edad", "Edad"),
+    ("telefono", "Telefono"),
+    ("tipo_usuario", "Tipo usuario"),
+    ("area", "Area"),
+    ("password", "Contrasena (obligatorio)"),
+    ("grupos", "Grupos (separados por coma)"),
+]
+
+
+def descargar_plantilla_usuarios(request):
+    user = get_user_from_request(request)
+    if user is None:
+        return redirect("login")
+    if not _is_admin_user(user):
+        return redirect("home_autenticado")
+
+    workbook = openpyxl.Workbook()
+    sheet = workbook.active
+    sheet.title = "Usuarios"
+
+    header_font = Font(bold=True, color="FFFFFF", name="Calibri")
+    header_fill = PatternFill(start_color="5934BC", end_color="5934BC", fill_type="solid")
+    center_align = Alignment(horizontal="center", vertical="center")
+
+    for idx, (_key, header) in enumerate(IMPORT_COLUMNS, start=1):
+        cell = sheet.cell(row=1, column=idx, value=header)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = center_align
+        sheet.column_dimensions[get_column_letter(idx)].width = max(20, len(header) + 4)
+
+    ejemplo = [
+        "ejemplo@empresa.com",
+        "ejemplo.user",
+        "Juan",
+        "Perez",
+        30,
+        "3001234567",
+        "colaborador",
+        "trade",
+        "Cambiar123*",
+        "Admin,Operaciones",
+    ]
+    for idx, valor in enumerate(ejemplo, start=1):
+        sheet.cell(row=2, column=idx, value=valor)
+
+    tipos_validos = ", ".join(key for key, _ in TIPO_USUARIO_CHOICES)
+    areas_validas = ", ".join(key for key, _ in AREA_CHOICES)
+
+    instrucciones = workbook.create_sheet(title="Instrucciones")
+    instrucciones.column_dimensions["A"].width = 30
+    instrucciones.column_dimensions["B"].width = 90
+    titulo = instrucciones.cell(row=1, column=1, value="Instrucciones de importacion")
+    titulo.font = Font(bold=True, size=14)
+    instrucciones.merge_cells(start_row=1, start_column=1, end_row=1, end_column=2)
+
+    filas_info = [
+        ("email", "Obligatorio. Debe ser unico."),
+        ("username", "Obligatorio. Debe ser unico."),
+        ("nombre", "Obligatorio."),
+        ("apellido", "Opcional."),
+        ("edad", "Opcional. Solo numero entero."),
+        ("telefono", "Opcional."),
+        ("tipo_usuario", f"Opcional. Valores validos: {tipos_validos}"),
+        ("area", f"Opcional. Valores validos: {areas_validas}"),
+        ("password", "Obligatorio. Contrasena inicial del usuario."),
+        ("grupos", "Opcional. Nombres de grupos existentes separados por coma."),
+    ]
+    for idx, (campo, descripcion) in enumerate(filas_info, start=3):
+        celda_a = instrucciones.cell(row=idx, column=1, value=campo)
+        celda_a.font = Font(bold=True)
+        instrucciones.cell(row=idx, column=2, value=descripcion)
+
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
+
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    )
+    response["Content-Disposition"] = (
+        'attachment; filename="plantilla_importacion_usuarios.xlsx"'
+    )
+    return response
+
+
+@require_POST
+def importar_usuarios(request):
+    user = get_user_from_request(request)
+    if user is None:
+        return redirect("login")
+    if not _is_admin_user(user):
+        return redirect("home_autenticado")
+
+    archivo = request.FILES.get("archivo")
+    context = {
+        "usuarios": Usuario.objects.order_by("email"),
+        "grupos": Group.objects.order_by("name"),
+        "tipo_usuario_choices": TIPO_USUARIO_CHOICES,
+        "area_choices": AREA_CHOICES,
+    }
+
+    if not archivo:
+        context["error"] = "Debes seleccionar un archivo Excel."
+        return render(request, "listado_usuarios.html", context)
+
+    nombre_archivo = (archivo.name or "").lower()
+    if not nombre_archivo.endswith(".xlsx"):
+        context["error"] = "El archivo debe tener extension .xlsx."
+        return render(request, "listado_usuarios.html", context)
+
+    try:
+        workbook = openpyxl.load_workbook(archivo, data_only=True)
+    except Exception:
+        context["error"] = "No se pudo leer el archivo Excel."
+        return render(request, "listado_usuarios.html", context)
+
+    sheet = workbook.active
+    if sheet.max_row < 2:
+        context["error"] = "El archivo no tiene filas con datos."
+        return render(request, "listado_usuarios.html", context)
+
+    valid_tipo_usuario = {key for key, _ in TIPO_USUARIO_CHOICES}
+    valid_area = {key for key, _ in AREA_CHOICES}
+    grupos_por_nombre = {g.name.lower(): g for g in Group.objects.all()}
+
+    creados = 0
+    errores = []
+
+    column_keys = [key for key, _ in IMPORT_COLUMNS]
+
+    for fila_idx, fila in enumerate(
+        sheet.iter_rows(min_row=2, values_only=True), start=2
+    ):
+        if not any(celda not in (None, "") for celda in fila):
+            continue
+
+        datos = {}
+        for idx, key in enumerate(column_keys):
+            valor = fila[idx] if idx < len(fila) else None
+            if isinstance(valor, str):
+                valor = valor.strip()
+            datos[key] = valor
+
+        email = (datos.get("email") or "").strip() if datos.get("email") else ""
+        username = (datos.get("username") or "").strip() if datos.get("username") else ""
+        nombre = (datos.get("nombre") or "").strip() if datos.get("nombre") else ""
+        password = datos.get("password")
+        if isinstance(password, (int, float)):
+            password = str(password)
+        password = (password or "").strip() if password else ""
+
+        if not email or not username or not nombre or not password:
+            errores.append(
+                f"Fila {fila_idx}: email, usuario, nombre y contrasena son obligatorios."
+            )
+            continue
+
+        edad_val = None
+        edad_raw = datos.get("edad")
+        if edad_raw not in (None, ""):
+            try:
+                edad_val = int(edad_raw)
+                if edad_val < 0:
+                    raise ValueError
+            except (TypeError, ValueError):
+                errores.append(f"Fila {fila_idx}: la edad debe ser un numero entero.")
+                continue
+
+        tipo_usuario = datos.get("tipo_usuario")
+        if tipo_usuario:
+            tipo_usuario = str(tipo_usuario).strip().lower() or None
+            if tipo_usuario and tipo_usuario not in valid_tipo_usuario:
+                errores.append(
+                    f"Fila {fila_idx}: tipo_usuario '{tipo_usuario}' no es valido."
+                )
+                continue
+        else:
+            tipo_usuario = None
+
+        area = datos.get("area")
+        if area:
+            area = str(area).strip().lower() or None
+            if area and area not in valid_area:
+                errores.append(f"Fila {fila_idx}: area '{area}' no es valida.")
+                continue
+        else:
+            area = None
+
+        telefono = datos.get("telefono")
+        if telefono not in (None, ""):
+            telefono = str(telefono).strip() or None
+        else:
+            telefono = None
+
+        apellido = datos.get("apellido")
+        if apellido not in (None, ""):
+            apellido = str(apellido).strip()
+        else:
+            apellido = ""
+
+        grupos_raw = datos.get("grupos")
+        grupos_objs = []
+        grupos_invalidos = []
+        if grupos_raw:
+            nombres = [g.strip() for g in str(grupos_raw).split(",") if g.strip()]
+            for nombre_grupo in nombres:
+                grupo = grupos_por_nombre.get(nombre_grupo.lower())
+                if grupo is None:
+                    grupos_invalidos.append(nombre_grupo)
+                else:
+                    grupos_objs.append(grupo)
+        if grupos_invalidos:
+            errores.append(
+                f"Fila {fila_idx}: grupos no encontrados: {', '.join(grupos_invalidos)}."
+            )
+            continue
+
+        try:
+            nuevo = Usuario.objects.create_user(
+                email=email, username=username, password=password
+            )
+            nuevo.nombre = nombre
+            nuevo.apellido = apellido
+            nuevo.edad = edad_val
+            nuevo.telefono = telefono
+            nuevo.tipo_usuario = tipo_usuario
+            nuevo.area = area
+            nuevo.save()
+            if grupos_objs:
+                nuevo.groups.set(grupos_objs)
+            creados += 1
+        except IntegrityError:
+            errores.append(
+                f"Fila {fila_idx}: el email '{email}' o usuario '{username}' ya existe."
+            )
+        except Exception:
+            errores.append(f"Fila {fila_idx}: no se pudo crear el usuario.")
+
+    mensajes = []
+    if creados:
+        mensajes.append(f"Se importaron {creados} usuario(s) correctamente.")
+    if errores:
+        context["error"] = " | ".join([*mensajes, *errores])
+    else:
+        context["success"] = (
+            mensajes[0] if mensajes else "No se importaron filas (archivo vacio)."
+        )
+
+    context["usuarios"] = Usuario.objects.order_by("email")
+    context["grupos"] = Group.objects.order_by("name")
     return render(request, "listado_usuarios.html", context)

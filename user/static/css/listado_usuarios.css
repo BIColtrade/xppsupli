@@ -46,13 +46,66 @@
 }
 
 .users__create,
-.users__groups {
+.users__groups,
+.users__import {
   margin-bottom: 18px;
   padding: 18px;
   border: 1px solid var(--users-border);
   border-radius: 14px;
   background: linear-gradient(160deg, rgba(25, 6, 91, 0.9), rgba(0, 0, 5, 0.95));
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+.users__import-help {
+  margin: 0 0 14px 0;
+  color: var(--users-muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.users__import-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.users__import-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  flex: 1;
+  min-width: 260px;
+}
+
+.users__import-file {
+  flex: 1;
+  min-width: 180px;
+  padding: 6px 8px;
+  font-size: 13px;
+  color: var(--users-text);
+  background: rgba(1, 80, 155, 0.12);
+  border: 1px dashed rgba(172, 170, 173, 0.4);
+  border-radius: 8px;
+}
+
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #5934bc, #01509b);
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-link:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(1, 80, 155, 0.35);
 }
 
 .users__section-title {

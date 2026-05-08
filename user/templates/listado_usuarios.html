@@ -70,6 +70,35 @@
     </form>
   </div>
 
+  <div class="users__import">
+    <h2 class="users__section-title">Importar usuarios desde Excel</h2>
+    <p class="users__import-help">
+      Descarga la plantilla, completa los datos y subela para crear varios usuarios a la vez.
+      Las columnas obligatorias son: email, usuario, nombre y contrasena.
+    </p>
+    <div class="users__import-actions">
+      <a class="btn-link" href="{% url 'descargar_plantilla_usuarios' %}">
+        ⬇️ Descargar plantilla Excel
+      </a>
+      <form
+        method="post"
+        action="{% url 'importar_usuarios' %}"
+        enctype="multipart/form-data"
+        class="users__import-form"
+      >
+        {% csrf_token %}
+        <input
+          type="file"
+          name="archivo"
+          accept=".xlsx"
+          required
+          class="users__import-file"
+        >
+        <button type="submit">⬆️ Importar usuarios</button>
+      </form>
+    </div>
+  </div>
+
   <div class="users__groups">
     <h2 class="users__section-title">Grupos</h2>
     <form method="post" class="users__group-form">
