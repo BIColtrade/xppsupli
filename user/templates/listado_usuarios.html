@@ -126,14 +126,30 @@
     </div>
   </div>
 
-  <div class="users__filters">
+  <form class="users__filters" method="get">
     <input
       id="userFilter"
+      name="q"
       type="text"
+      value="{{ filter_query }}"
       placeholder="Filtrar por email o nombre y apellido..."
       aria-label="Filtrar usuarios"
     >
-  </div>
+    <select id="userFilterArea" name="area" aria-label="Filtrar por area">
+      <option value="">Todas las areas</option>
+      {% for value, label in area_choices %}
+        <option value="{{ value }}" {% if filter_area == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <select id="userFilterRol" name="rol" aria-label="Filtrar por rol">
+      <option value="">Todos los roles</option>
+      {% for value, label in tipo_usuario_choices %}
+        <option value="{{ value }}" {% if filter_rol == value %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Filtrar</button>
+    <a class="users__clear-filter" href="{% url 'listado_usuarios' %}">Limpiar</a>
+  </form>
 
   {% if error %}
     <div class="msg msg--error">{{ error }}</div>
@@ -228,6 +244,25 @@
       </tbody>
     </table>
   </div>
+
+  {% if page_obj %}
+    <div class="users__pagination">
+      <span>
+        Mostrando {{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ paginator.count }} usuarios
+      </span>
+      <div class="users__pagination-actions">
+        {% if page_obj.has_previous %}
+          <a href="?{% if pagination_query %}{{ pagination_query }}&{% endif %}page=1">Primera</a>
+          <a href="?{% if pagination_query %}{{ pagination_query }}&{% endif %}page={{ page_obj.previous_page_number }}">Anterior</a>
+        {% endif %}
+        <strong>Pagina {{ page_obj.number }} de {{ paginator.num_pages }}</strong>
+        {% if page_obj.has_next %}
+          <a href="?{% if pagination_query %}{{ pagination_query }}&{% endif %}page={{ page_obj.next_page_number }}">Siguiente</a>
+          <a href="?{% if pagination_query %}{{ pagination_query }}&{% endif %}page={{ paginator.num_pages }}">Ultima</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
 </section>
 
 <script src="{% static 'js/listado_usuarios.js' %}"></script>

@@ -1,0 +1,104 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Evaluar a {{ asignacion.evaluado }}</h1>
+      <p class="val-page__subtitle">
+        Ciclo: <strong>{{ ciclo.nombre }}</strong> &middot;
+        Tipo: {{ asignacion.get_tipo_evaluacion_display }} &middot;
+        Rol: {{ asignacion.get_rol_evaluador_display }} &middot;
+        Cierra: {{ ciclo.fecha_cierre|date:"d/m/Y H:i" }}
+      </p>
+    </div>
+    <a href="{% url 'modulo_valoracion:mis_evaluaciones' %}" class="val-btn val-btn--secondary">Volver</a>
+  </div>
+
+  {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
+  {% if error %}<div class="val-alert val-alert--error">{{ error }}</div>{% endif %}
+
+  {% if not ciclo_disponible and asignacion.estado != 'completada' %}
+    <div class="val-alert val-alert--info">
+      Este ciclo no esta activo en este momento. No puedes responder hasta que se reactive.
+    </div>
+  {% endif %}
+
+  {% if asignacion.estado == 'completada' %}
+    <div class="val-alert val-alert--success">
+      Esta evaluacion fue enviada el {{ asignacion.fecha_completada|date:"d/m/Y H:i" }}. Solo puedes consultarla.
+    </div>
+  {% endif %}
+
+  <div class="val-stats">
+    <div class="val-stat">
+      <div class="val-stat__value">{{ respondidas }}/{{ total }}</div>
+      <div class="val-stat__label">Preguntas respondidas</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ progreso_pct }}%</div>
+      <div class="val-stat__label">Progreso</div>
+    </div>
+  </div>
+
+  {% if total == 0 %}
+    <div class="val-alert val-alert--info">
+      Aun no hay preguntas configuradas para este tipo de evaluacion. Pide al admin del modulo que las cree.
+    </div>
+  {% else %}
+  <form method="post" class="val-form" style="max-width:none;">
+    {% csrf_token %}
+
+    {% for p in preguntas_data %}
+    <div class="val-form__group" style="border-bottom: 1px solid var(--val-border); padding-bottom: 18px; margin-bottom: 18px;">
+      <label class="val-form__label">
+        {{ forloop.counter }}. {{ p.enunciado }}
+        {% if p.obligatoria %}<span style="color:#ff8a8a;">*</span>{% endif %}
+      </label>
+
+      {% if p.tipo_pregunta == 'likert' %}
+        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+          {% for op in p.opciones_likert %}
+            <label class="val-form__checkbox" style="background:rgba(1,80,155,0.12); border:1px solid var(--val-border); padding:8px 12px; border-radius:8px; cursor:pointer;">
+              <input type="radio" name="valor_{{ p.id }}" value="{{ op.valor }}"
+                {% if op.seleccionado %}checked{% endif %}
+                {% if bloquear_inputs %}disabled{% endif %}>
+              <span><strong>{{ op.valor }}</strong> &middot; {{ op.label }}</span>
+            </label>
+          {% endfor %}
+        </div>
+      {% else %}
+        <textarea class="val-form__textarea" name="texto_{{ p.id }}"
+          {% if bloquear_inputs %}disabled{% endif %}
+          placeholder="Escribe tu respuesta...">{{ p.texto_actual }}</textarea>
+      {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="val-form__group">
+      <label class="val-form__label">
+        Observaciones y acuerdos
+        {% if ciclo.comentarios_obligatorios %}<span style="color:#ff8a8a;">*</span>{% endif %}
+      </label>
+      <textarea class="val-form__textarea" name="observaciones_acuerdos"
+        {% if bloquear_inputs %}disabled{% endif %}
+        placeholder="Comentarios cualitativos, compromisos y proximos pasos...">{{ asignacion.observaciones_acuerdos }}</textarea>
+      <div class="val-form__hint">Este campo no califica, queda como acuerdo cualitativo.</div>
+    </div>
+
+    {% if not bloquear_inputs %}
+    <div class="val-form__actions">
+      <button class="val-btn val-btn--secondary" name="accion" value="borrador" type="submit">Guardar borrador</button>
+      <button class="val-btn val-btn--primary" name="accion" value="enviar" type="submit"
+        onclick="return confirm('Enviar evaluacion definitiva? Despues no podras modificarla.');">
+        Enviar evaluacion
+      </button>
+    </div>
+    {% endif %}
+  </form>
+  {% endif %}
+</section>
+
+    </main>
+  </div>

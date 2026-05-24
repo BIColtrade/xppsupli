@@ -94,6 +94,24 @@ class GroupAccessMiddleware:
             if not (_is_admin() or _in_group("mallaoperaciones")):
                 return render(request, "acceso_no_permitido.html", status=403)
 
+        # Modulo Valoracion: admin, grupo modulovaloracion, o roles internos
+        # (Admin People, BI/Tech, CEO, lider o colaborador con asignacion).
+        # Aqui solo bloqueamos a quienes claramente no tienen acceso global; los
+        # views aplican controles finos por seccion.
+        if path.startswith("/modulo/valoracion/"):
+            auth_resp = _require_auth()
+            if auth_resp:
+                return auth_resp
+            area = getattr(user, "area", None)
+            tipo_usuario = getattr(user, "tipo_usuario", None)
+            if not (
+                _is_admin()
+                or _in_group("modulovaloracion")
+                or area in {"people", "bi", "tecnologia", "ceo"}
+                or tipo_usuario in {"admin", "lider", "colaborador"}
+            ):
+                return render(request, "acceso_no_permitido.html", status=403)
+
         # home_user y settings_user: admin o cualquier grupo funcional
         if path.startswith("/coltrxde/home_user/") or path.startswith("/coltrxde/settings-user/"):
             auth_resp = _require_auth()

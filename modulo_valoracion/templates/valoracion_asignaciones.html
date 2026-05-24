@@ -1,0 +1,87 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Asignaciones del ciclo: {{ ciclo.nombre }}</h1>
+      <p class="val-page__subtitle">Define quien evalua a quien dentro de este ciclo.</p>
+    </div>
+    <a href="{% url 'modulo_valoracion:gestionar_ciclos' %}" class="val-btn val-btn--secondary">Volver a ciclos</a>
+  </div>
+
+  {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
+
+  <form method="post" class="val-form" action="{% url 'modulo_valoracion:crear_asignacion' ciclo.id %}" style="max-width:none; margin-bottom: 20px;">
+    {% csrf_token %}
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__label">Evaluador</label>
+        <select class="val-form__select" name="evaluador" required>
+          <option value="">Selecciona...</option>
+          {% for u in usuarios %}<option value="{{ u.id }}">{{ u }}{% if u.cargo %} - {{ u.cargo }}{% endif %}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Evaluado</label>
+        <select class="val-form__select" name="evaluado" required>
+          <option value="">Selecciona...</option>
+          {% for u in usuarios %}<option value="{{ u.id }}">{{ u }}{% if u.cargo %} - {{ u.cargo }}{% endif %}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Rol evaluador</label>
+        <select class="val-form__select" name="rol_evaluador" required>
+          {% for code, label in rol_evaluador_choices %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Tipo evaluacion</label>
+        <select class="val-form__select" name="tipo_evaluacion" required>
+          {% for code, label in tipo_evaluacion_choices %}<option value="{{ code }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="val-form__actions">
+      <button class="val-btn val-btn--primary" type="submit">+ Agregar asignacion</button>
+    </div>
+  </form>
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Evaluador</th>
+          <th>Evaluado</th>
+          <th>Rol</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in asignaciones %}
+        <tr>
+          <td>{{ a.evaluador }}</td>
+          <td>{{ a.evaluado }}</td>
+          <td>{{ a.get_rol_evaluador_display }}</td>
+          <td>{{ a.get_tipo_evaluacion_display }}</td>
+          <td><span class="status-badge status-badge--{{ a.estado }}">{{ a.get_estado_display }}</span></td>
+          <td class="val-actions">
+            <form method="post" action="{% url 'modulo_valoracion:eliminar_asignacion' a.id %}" onsubmit="return confirm('Eliminar asignacion?');" style="display:inline;">
+              {% csrf_token %}
+              <button class="val-btn val-btn--danger val-btn--sm" type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center; color: var(--val-muted); padding: 24px;">No hay asignaciones aun.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

@@ -1,9 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const filterInput = document.getElementById("userFilter");
+  const filterForm = document.querySelector(".users__filters");
+  const filterArea = document.getElementById("userFilterArea");
+  const filterRol = document.getElementById("userFilterRol");
   const rows = Array.from(document.querySelectorAll("tbody tr"));
-
-  const normalizeText = (value) =>
-    (value || "").toString().toLowerCase().trim();
 
   const setRowEditing = (row, editing) => {
     const fields = Array.from(row.querySelectorAll('[data-editable="1"]'));
@@ -34,19 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  if (filterInput) {
-    filterInput.addEventListener("input", () => {
-      const q = normalizeText(filterInput.value);
-      rows.forEach((row) => {
-        const email = normalizeText(row.querySelector('[data-filter="email"]')?.value);
-        const nombre = normalizeText(row.querySelector('[data-filter="nombre"]')?.value);
-        const apellido = normalizeText(row.querySelector('[data-filter="apellido"]')?.value);
-        const fullName = `${nombre} ${apellido}`.trim();
-
-        const match = !q || email.includes(q) || fullName.includes(q);
-        row.style.display = match ? "" : "none";
-      });
-    });
+  if (filterArea) {
+    filterArea.addEventListener("change", () => filterForm?.submit());
+  }
+  if (filterRol) {
+    filterRol.addEventListener("change", () => filterForm?.submit());
   }
 
   document.querySelectorAll(".msg").forEach((alert) => {

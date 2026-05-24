@@ -1,0 +1,52 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Mis Evaluaciones</h1>
+      <p class="val-page__subtitle">Estas son las personas y ciclos que tienes que evaluar.</p>
+    </div>
+  </div>
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Ciclo</th>
+          <th>Evaluado</th>
+          <th>Tipo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Cierre</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in asignaciones %}
+        <tr>
+          <td>{{ a.ciclo.nombre }}</td>
+          <td>{{ a.evaluado }}{% if a.evaluado.cargo %} <small style="color:var(--val-muted);">({{ a.evaluado.cargo }})</small>{% endif %}</td>
+          <td>{{ a.get_tipo_evaluacion_display }}</td>
+          <td>{{ a.get_rol_evaluador_display }}</td>
+          <td><span class="status-badge status-badge--{{ a.estado }}">{{ a.get_estado_display }}</span></td>
+          <td>{{ a.ciclo.fecha_cierre|date:"d/m/Y" }}</td>
+          <td>
+            {% if a.estado == 'completada' %}
+              <a href="{% url 'modulo_valoracion:responder_evaluacion' a.id %}" class="val-btn val-btn--secondary val-btn--sm">Ver respuestas</a>
+            {% else %}
+              <a href="{% url 'modulo_valoracion:responder_evaluacion' a.id %}" class="val-btn val-btn--primary val-btn--sm">Responder</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center; color: var(--val-muted); padding: 24px;">No tienes evaluaciones asignadas.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

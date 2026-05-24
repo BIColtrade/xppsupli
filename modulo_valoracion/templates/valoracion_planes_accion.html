@@ -1,0 +1,44 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Planes de Accion</h1>
+      <p class="val-page__subtitle">Acciones de mejora derivadas de los resultados de evaluacion.</p>
+    </div>
+  </div>
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Evaluado</th>
+          <th>Ciclo</th>
+          <th>Descripcion</th>
+          <th>Responsable</th>
+          <th>Fecha compromiso</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in planes %}
+        <tr>
+          <td>{{ p.resultado.evaluado }}</td>
+          <td>{{ p.resultado.ciclo.nombre }}</td>
+          <td>{{ p.descripcion|truncatechars:100 }}</td>
+          <td>{{ p.responsable }}</td>
+          <td>{{ p.fecha_compromiso|date:"d/m/Y" }}</td>
+          <td><span class="status-badge status-badge--{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center; color: var(--val-muted); padding: 24px;">No hay planes de accion registrados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

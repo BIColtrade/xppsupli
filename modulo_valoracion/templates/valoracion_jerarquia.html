@@ -1,0 +1,68 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Jerarquia y Cargos</h1>
+      <p class="val-page__subtitle">Asigna el jefe directo y el cargo de cada usuario. La jerarquia es dinamica: una persona puede tener a otra como jefe sin importar el tipo de usuario.</p>
+    </div>
+  </div>
+
+  {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
+
+  <form method="get" class="val-filters">
+    <div style="flex:1; max-width: 400px;">
+      <label class="val-form__label">Buscar (nombre, email, cargo)</label>
+      <input class="val-form__input" name="q" value="{{ query }}" placeholder="Ej: Julian, jefe operations...">
+    </div>
+    <button class="val-btn val-btn--secondary" type="submit">Buscar</button>
+  </form>
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Area</th>
+          <th>Tipo</th>
+          <th>Cargo</th>
+          <th>Jefe directo actual</th>
+          <th>Actualizar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr>
+          <td>{{ u }}</td>
+          <td>{{ u.get_area_display|default:"-" }}</td>
+          <td>{{ u.get_tipo_usuario_display|default:"-" }}</td>
+          <td>{{ u.cargo|default:"-" }}</td>
+          <td>{{ u.jefe_directo|default:"-" }}</td>
+          <td>
+            <form method="post" action="{% url 'modulo_valoracion:actualizar_jefe_directo' u.id %}" style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+              {% csrf_token %}
+              <input class="val-form__input" name="cargo" value="{{ u.cargo|default:'' }}" placeholder="Cargo" style="width:160px;">
+              <select class="val-form__select" name="jefe_directo" style="width:200px;">
+                <option value="">- Sin jefe -</option>
+                {% for j in todos_usuarios %}
+                  {% if j.id != u.id %}
+                  <option value="{{ j.id }}" {% if u.jefe_directo_id == j.id %}selected{% endif %}>{{ j }}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+              <button class="val-btn val-btn--primary val-btn--sm" type="submit">Guardar</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center; color: var(--val-muted); padding: 24px;">No hay usuarios para mostrar.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

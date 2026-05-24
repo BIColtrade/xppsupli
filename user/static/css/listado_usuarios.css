@@ -153,6 +153,10 @@
 
 .users__filters {
   margin-bottom: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 
 #userFilter {
@@ -165,6 +169,48 @@
   background: rgba(1, 80, 155, 0.12);
   color: var(--users-text);
   transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#userFilterArea,
+#userFilterRol {
+  width: 100%;
+  max-width: 220px;
+}
+
+.users__clear-filter,
+.users__pagination a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(1, 80, 155, 0.22);
+  border: 1px solid rgba(172, 170, 173, 0.22);
+}
+
+.users__pagination {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  color: var(--users-muted);
+  font-size: 13px;
+}
+
+.users__pagination-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.users__pagination strong {
+  color: var(--users-text);
 }
 
 #userFilter:focus {

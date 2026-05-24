@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'malla_operaciones_trade',
     'bienestar_coltrade',
     'listado_compras',
+    'modulo_valoracion'
 ]
 
 MIDDLEWARE = [

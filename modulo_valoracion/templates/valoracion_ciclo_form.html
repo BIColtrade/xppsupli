@@ -1,0 +1,90 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">{% if ciclo %}Editar ciclo{% else %}Nuevo ciclo{% endif %}</h1>
+      <p class="val-page__subtitle">Configura las fechas, tipo y reglas del ciclo de evaluacion.</p>
+    </div>
+    <a href="{% url 'modulo_valoracion:gestionar_ciclos' %}" class="val-btn val-btn--secondary">Volver</a>
+  </div>
+
+  {% if error %}<div class="val-alert val-alert--error">{{ error }}</div>{% endif %}
+
+  <form method="post" class="val-form">
+    {% csrf_token %}
+    <div class="val-form__group">
+      <label class="val-form__label">Nombre</label>
+      <input class="val-form__input" name="nombre" required value="{{ ciclo.nombre|default:'' }}">
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Descripcion</label>
+      <textarea class="val-form__textarea" name="descripcion">{{ ciclo.descripcion|default:'' }}</textarea>
+    </div>
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__label">Tipo</label>
+        <select class="val-form__select" name="tipo">
+          {% for code, label in tipo_choices %}
+          <option value="{{ code }}" {% if ciclo and ciclo.tipo == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Estado</label>
+        <select class="val-form__select" name="estado">
+          {% for code, label in estado_choices %}
+          <option value="{{ code }}" {% if ciclo and ciclo.estado == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__label">Fecha inicio</label>
+        <input class="val-form__input" name="fecha_inicio" type="datetime-local" required
+               value="{{ ciclo.fecha_inicio|date:'Y-m-d\TH:i'|default:'' }}">
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Fecha cierre</label>
+        <input class="val-form__input" name="fecha_cierre" type="datetime-local" required
+               value="{{ ciclo.fecha_cierre|date:'Y-m-d\TH:i'|default:'' }}">
+      </div>
+    </div>
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__label">Peso jefe (lider) %</label>
+        <input class="val-form__input" name="peso_jefe_lider" type="number" min="0" max="100" value="{{ ciclo.peso_jefe_lider|default:60 }}">
+        <div class="val-form__hint">Default 60 - debe sumar 100 con peso equipo.</div>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Peso equipo (lider) %</label>
+        <input class="val-form__input" name="peso_equipo_lider" type="number" min="0" max="100" value="{{ ciclo.peso_equipo_lider|default:40 }}">
+        <div class="val-form__hint">Default 40 - aplica en evaluacion 180.</div>
+      </div>
+    </div>
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__checkbox">
+          <input type="checkbox" name="anonimato" {% if ciclo and ciclo.anonimato %}checked{% endif %}>
+          Anonimato (evaluador no se muestra al evaluado)
+        </label>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__checkbox">
+          <input type="checkbox" name="comentarios_obligatorios" {% if ciclo and ciclo.comentarios_obligatorios %}checked{% endif %}>
+          Comentarios obligatorios
+        </label>
+      </div>
+    </div>
+    <div class="val-form__actions">
+      <button class="val-btn val-btn--primary" type="submit">Guardar</button>
+      <a class="val-btn val-btn--secondary" href="{% url 'modulo_valoracion:gestionar_ciclos' %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+
+    </main>
+  </div>

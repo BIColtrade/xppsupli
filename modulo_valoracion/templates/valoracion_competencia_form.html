@@ -1,0 +1,50 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">{% if competencia %}Editar competencia{% else %}Nueva competencia{% endif %}</h1>
+      <p class="val-page__subtitle">Categoria interna - ej: A. CULTURA, B. ESTRUCTURA OPERACIONAL.</p>
+    </div>
+    <a href="{% url 'modulo_valoracion:gestionar_competencias' %}" class="val-btn val-btn--secondary">Volver</a>
+  </div>
+
+  {% if error %}<div class="val-alert val-alert--error">{{ error }}</div>{% endif %}
+
+  <form method="post" class="val-form">
+    {% csrf_token %}
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__label">Codigo</label>
+        <input class="val-form__input" name="codigo" maxlength="10" required value="{{ competencia.codigo|default:'' }}">
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Orden</label>
+        <input class="val-form__input" name="orden" type="number" min="0" value="{{ competencia.orden|default:0 }}">
+      </div>
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Nombre</label>
+      <input class="val-form__input" name="nombre" required value="{{ competencia.nombre|default:'' }}">
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Descripcion</label>
+      <textarea class="val-form__textarea" name="descripcion">{{ competencia.descripcion|default:'' }}</textarea>
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__checkbox">
+        <input type="checkbox" name="activa" {% if competencia is None or competencia.activa %}checked{% endif %}>
+        Activa
+      </label>
+    </div>
+    <div class="val-form__actions">
+      <button class="val-btn val-btn--primary" type="submit">Guardar</button>
+      <a class="val-btn val-btn--secondary" href="{% url 'modulo_valoracion:gestionar_competencias' %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+
+    </main>
+  </div>

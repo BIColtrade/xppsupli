@@ -1,0 +1,56 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Competencias</h1>
+      <p class="val-page__subtitle">Categorias internas que agrupan las preguntas. Solo visibles para administradores.</p>
+    </div>
+    <a href="{% url 'modulo_valoracion:crear_competencia' %}" class="val-btn val-btn--primary">+ Nueva competencia</a>
+  </div>
+
+  {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Nombre</th>
+          <th>Orden</th>
+          <th>Preguntas</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in competencias %}
+        <tr>
+          <td>{{ c.codigo }}</td>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.orden }}</td>
+          <td>{{ c.preguntas.count }}</td>
+          <td>
+            {% if c.activa %}<span class="status-badge status-badge--activo">Activa</span>
+            {% else %}<span class="status-badge status-badge--cancelado">Inactiva</span>{% endif %}
+          </td>
+          <td class="val-actions">
+            <a href="{% url 'modulo_valoracion:editar_competencia' c.id %}" class="val-btn val-btn--secondary val-btn--sm">Editar</a>
+            <form method="post" action="{% url 'modulo_valoracion:eliminar_competencia' c.id %}" onsubmit="return confirm('Eliminar competencia?');" style="display:inline;">
+              {% csrf_token %}
+              <button class="val-btn val-btn--danger val-btn--sm" type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" style="text-align:center; color: var(--val-muted); padding: 24px;">Aun no hay competencias creadas.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

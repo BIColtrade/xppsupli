@@ -28,15 +28,21 @@ TIPO_USUARIO_CHOICES = [
 ]
 
 AREA_CHOICES = [
+    ('ceo', 'Presidencia'),
+    ('direccion_comercial', 'Direccion Comercial'),
+    ('tecnologia', 'Tech'),
+    ('accounting', 'Accounting'),
+    ('finanzas', 'Finance'),
+    ('sales', 'Sales'),
+    ('operations', 'Operations (Ops)'),
+    ('procurement', 'Procurement'),
     ('trade', 'Trade Marketing'),
-    ('supli', 'Supply Chain'),
-    ('people', 'People & Cultura'),
-    ('comercial', 'Comercial'),
-    ('logistica', 'Logistica'),
-    ('tecnologia', 'Tecnologia'),
-    ('finanzas', 'Finanzas'),
-    ('administracion', 'Administracion'),
-    ('otra', 'Otra'),
+    ('brands', 'Brands'),
+    ('bi', 'Business Intelligence'),
+    ('sales_corporativo', 'Sales Corporativo'),
+    ('sales_retail', 'Sales Retail'),
+    ('people', 'People'),
+    ('quality', 'Quality'),
 ]
 
 
@@ -49,6 +55,14 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     telefono = models.CharField(max_length=30, null=True, blank=True)
     tipo_usuario = models.CharField(max_length=20, choices=TIPO_USUARIO_CHOICES, null=True, blank=True)
     area = models.CharField(max_length=30, choices=AREA_CHOICES, null=True, blank=True)
+    cargo = models.CharField(max_length=150, null=True, blank=True)
+    jefe_directo = models.ForeignKey(
+        "self",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reportes_directos",
+    )
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

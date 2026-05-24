@@ -1,7 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python get_db_schema2.py)"
+      "Bash(python get_db_schema2.py)",
+      "Bash(python manage.py makemigrations user modulo_valoracion)",
+      "Bash(python manage.py check)",
+      "Bash(python manage.py migrate --plan)",
+      "Bash(python manage.py makemigrations user)",
+      "Bash(python -c ' *)"
     ]
   }
 }

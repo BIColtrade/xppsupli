@@ -226,3 +226,27 @@ body {
 .sidebar.is-collapsed .sidebar__icon {
   font-size: 18px;
 }
+
+/* ---- Global fix: legibilidad de <select> y <option> en tema oscuro ----
+   Los <option> no heredan el color del <select>, asi que hay que
+   forzar fondo oscuro y texto claro para que se vean en cualquier app. */
+select option,
+select optgroup {
+  background-color: #19065b;
+  color: #e7e7f2;
+}
+
+select option:checked,
+select option:hover {
+  background-color: #5934bc;
+  color: #ffffff;
+}
+
+select[multiple] {
+  background-color: rgba(25, 6, 91, 0.85);
+  color: #e7e7f2;
+}
+
+select[multiple] option {
+  padding: 4px 8px;
+}

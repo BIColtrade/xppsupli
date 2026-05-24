@@ -12,8 +12,11 @@ class UsuarioAdmin(admin.ModelAdmin):
         "apellido",
         "tipo_usuario",
         "area",
+        "cargo",
+        "jefe_directo",
         "is_active",
         "is_staff",
     )
-    search_fields = ("email", "username", "nombre", "apellido")
+    search_fields = ("email", "username", "nombre", "apellido", "cargo")
     list_filter = ("tipo_usuario", "area", "is_active", "is_staff")
+    autocomplete_fields = ("jefe_directo",)

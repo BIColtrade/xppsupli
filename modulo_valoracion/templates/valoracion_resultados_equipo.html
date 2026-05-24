@@ -1,0 +1,50 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Resultados del Equipo</h1>
+      <p class="val-page__subtitle">{% if puede_ver_todo %}Visibilidad organizacional total.{% else %}Resultados de las personas a tu cargo.{% endif %}</p>
+    </div>
+  </div>
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Evaluado</th>
+          <th>Cargo</th>
+          <th>Area</th>
+          <th>Ciclo</th>
+          <th>Tipo</th>
+          <th>Puntaje</th>
+          <th>%</th>
+          <th>Semaforo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in resultados %}
+        <tr>
+          <td>{{ r.evaluado }}</td>
+          <td>{{ r.evaluado.cargo|default:"-" }}</td>
+          <td>{{ r.evaluado.get_area_display|default:"-" }}</td>
+          <td>{{ r.ciclo.nombre }}</td>
+          <td>{{ r.get_tipo_evaluacion_display }}</td>
+          <td>{{ r.puntaje_total }}</td>
+          <td>{{ r.porcentaje }}%</td>
+          <td><span class="semaforo semaforo--{{ r.semaforo }}">{{ r.get_semaforo_display }}</span></td>
+          <td><a href="{% url 'modulo_valoracion:detalle_resultado' r.id %}" class="val-btn val-btn--secondary val-btn--sm">Ver detalle</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="text-align:center; color: var(--val-muted); padding: 24px;">No hay resultados disponibles.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

@@ -1,0 +1,74 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Preguntas</h1>
+      <p class="val-page__subtitle">Banco de preguntas por tipo de evaluacion. La competencia es interna y no se muestra al evaluador.</p>
+    </div>
+    <a href="{% url 'modulo_valoracion:crear_pregunta' %}" class="val-btn val-btn--primary">+ Nueva pregunta</a>
+  </div>
+
+  {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
+
+  <form method="get" class="val-filters">
+    <div>
+      <label class="val-form__label">Tipo de evaluacion</label>
+      <select name="tipo" class="val-form__select" onchange="this.form.submit()">
+        <option value="">Todos</option>
+        {% for code, label in tipo_choices %}
+        <option value="{{ code }}" {% if filtro_tipo == code %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Competencia</th>
+          <th>Enunciado</th>
+          <th>Tipo eval.</th>
+          <th>Tipo preg.</th>
+          <th>Peso</th>
+          <th>Orden</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in preguntas %}
+        <tr>
+          <td>{{ p.id }}</td>
+          <td>{{ p.competencia.codigo }}. {{ p.competencia.nombre }}</td>
+          <td>{{ p.enunciado|truncatechars:80 }}</td>
+          <td>{{ p.get_tipo_evaluacion_display }}</td>
+          <td>{{ p.get_tipo_pregunta_display }}</td>
+          <td>{{ p.peso }}</td>
+          <td>{{ p.orden }}</td>
+          <td>
+            {% if p.activa %}<span class="status-badge status-badge--activo">Activa</span>
+            {% else %}<span class="status-badge status-badge--cancelado">Inactiva</span>{% endif %}
+          </td>
+          <td class="val-actions">
+            <a href="{% url 'modulo_valoracion:editar_pregunta' p.id %}" class="val-btn val-btn--secondary val-btn--sm">Editar</a>
+            <form method="post" action="{% url 'modulo_valoracion:eliminar_pregunta' p.id %}" onsubmit="return confirm('Eliminar pregunta?');" style="display:inline;">
+              {% csrf_token %}
+              <button class="val-btn val-btn--danger val-btn--sm" type="submit">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="9" style="text-align:center; color: var(--val-muted); padding: 24px;">Aun no hay preguntas registradas.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

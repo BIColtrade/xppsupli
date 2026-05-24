@@ -1,0 +1,87 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="home-cards">
+  <h1 class="home-cards__title">Modulo de Valoracion - SUPLI OS</h1>
+  <p class="home-cards__subtitle">Evalua, mide y consolida resultados organizacionales.</p>
+
+  <div class="val-stats">
+    <div class="val-stat">
+      <div class="val-stat__value">{{ asignaciones_pendientes }}</div>
+      <div class="val-stat__label">Evaluaciones por responder</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ mis_resultados }}</div>
+      <div class="val-stat__label">Mis resultados</div>
+    </div>
+  </div>
+
+  <div class="val-section-title">Mi participacion</div>
+  <div class="home-cards__grid">
+    <a href="{% url 'modulo_valoracion:mis_evaluaciones' %}" class="home-card home-card--primary">
+      <div class="home-card__icon">ME</div>
+      <div class="home-card__title">Mis Evaluaciones</div>
+      <div class="home-card__desc">Responde las evaluaciones que tienes asignadas en ciclos activos.</div>
+    </a>
+    <a href="{% url 'modulo_valoracion:mis_resultados' %}" class="home-card home-card--info">
+      <div class="home-card__icon">MR</div>
+      <div class="home-card__title">Mis Resultados</div>
+      <div class="home-card__desc">Consulta tu resultado, semaforo, fortalezas y brechas.</div>
+    </a>
+    <a href="{% url 'modulo_valoracion:listar_planes_accion' %}" class="home-card home-card--purple">
+      <div class="home-card__icon">PA</div>
+      <div class="home-card__title">Planes de Accion</div>
+      <div class="home-card__desc">Acciones de mejora asignadas a ti o a tu equipo.</div>
+    </a>
+  </div>
+
+  {% if es_lider or puede_ver_todo %}
+  <div class="val-section-divider"></div>
+  <div class="val-section-title">Lider / Visibilidad</div>
+  <div class="home-cards__grid">
+    <a href="{% url 'modulo_valoracion:resultados_equipo' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">RE</div>
+      <div class="home-card__title">Resultados del Equipo</div>
+      <div class="home-card__desc">Resultados consolidados de las personas a tu cargo.</div>
+    </a>
+  </div>
+  {% endif %}
+
+  {% if puede_configurar %}
+  <div class="val-section-divider"></div>
+  <div class="val-section-title">Configuracion (Admin People / BI / Tech)</div>
+  <div class="home-cards__grid">
+    <a href="{% url 'modulo_valoracion:gestionar_ciclos' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">CI</div>
+      <div class="home-card__title">Ciclos de Evaluacion</div>
+      <div class="home-card__desc">Crea, programa y administra los ciclos del modulo.</div>
+    </a>
+    <a href="{% url 'modulo_valoracion:gestionar_preguntas' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">PR</div>
+      <div class="home-card__title">Preguntas</div>
+      <div class="home-card__desc">Banco de preguntas por tipo de evaluacion y competencia.</div>
+    </a>
+    <a href="{% url 'modulo_valoracion:gestionar_competencias' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">CO</div>
+      <div class="home-card__title">Competencias</div>
+      <div class="home-card__desc">Categorias internas (Cultura, Estructura Operacional...).</div>
+    </a>
+  </div>
+  {% endif %}
+
+  {% if es_admin_people %}
+  <div class="val-section-divider"></div>
+  <div class="val-section-title">Admin People</div>
+  <div class="home-cards__grid">
+    <a href="{% url 'modulo_valoracion:gestionar_jerarquia' %}" class="home-card home-card--leader">
+      <div class="home-card__icon">JE</div>
+      <div class="home-card__title">Jerarquia / Cargos</div>
+      <div class="home-card__desc">Define quien le reporta a quien y el cargo de cada persona.</div>
+    </a>
+  </div>
+  {% endif %}
+</section>
+
+    </main>
+  </div>

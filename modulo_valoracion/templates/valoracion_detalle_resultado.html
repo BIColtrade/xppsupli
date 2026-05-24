@@ -1,0 +1,101 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Detalle del resultado: {{ resultado.evaluado }}</h1>
+      <p class="val-page__subtitle">
+        Ciclo: <strong>{{ resultado.ciclo.nombre }}</strong> &middot;
+        Tipo: {{ resultado.get_tipo_evaluacion_display }} &middot;
+        Evaluadores: {{ asignaciones_count }}
+      </p>
+    </div>
+    <a href="javascript:history.back()" class="val-btn val-btn--secondary">Volver</a>
+  </div>
+
+  <div class="val-stats">
+    <div class="val-stat">
+      <div class="val-stat__value">{{ resultado.porcentaje }}%</div>
+      <div class="val-stat__label">Porcentaje final</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ resultado.puntaje_total }}</div>
+      <div class="val-stat__label">Puntaje (sobre 5)</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ resultado.puntaje_jefe }}%</div>
+      <div class="val-stat__label">Score jefe</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ resultado.puntaje_equipo }}%</div>
+      <div class="val-stat__label">Score equipo</div>
+    </div>
+  </div>
+
+  <div style="margin-bottom: 18px;">
+    <span class="semaforo semaforo--{{ resultado.semaforo }}" style="font-size: 16px; padding: 8px 18px;">
+      {{ resultado.get_semaforo_display }}
+    </span>
+  </div>
+
+  {% if resultado.fortalezas %}
+  <div class="val-form" style="max-width:none; margin-bottom:18px;">
+    <div class="val-section-title">Fortalezas</div>
+    <ul style="color: var(--val-text); padding-left: 18px;">
+      {% for f in resultado.fortalezas %}<li>{{ f }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if resultado.brechas %}
+  <div class="val-form" style="max-width:none; margin-bottom:18px;">
+    <div class="val-section-title">Brechas</div>
+    <ul style="color: var(--val-text); padding-left: 18px;">
+      {% for b in resultado.brechas %}<li>{{ b }}</li>{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <div class="val-section-title">Detalle pregunta por pregunta</div>
+  <div class="val-table-wrap" style="margin-bottom: 18px;">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Competencia</th>
+          <th>Enunciado</th>
+          <th># Resp.</th>
+          <th>Promedio (1-5)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in preguntas_data %}
+        <tr>
+          <td>{{ p.competencia }}</td>
+          <td>{{ p.enunciado }}</td>
+          <td>{{ p.respuestas_count }}</td>
+          <td><strong>{{ p.promedio }}</strong></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="text-align:center; color:var(--val-muted); padding: 20px;">Sin respuestas tipo Likert.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if observaciones %}
+  <div class="val-section-title">Observaciones y acuerdos</div>
+  {% for o in observaciones %}
+    <div class="val-form" style="max-width:none; margin-bottom:12px;">
+      <div style="font-size:13px; color:var(--val-muted); margin-bottom:6px;">
+        <strong>{{ o.evaluador }}</strong> &middot; {{ o.rol }}
+      </div>
+      <div style="white-space:pre-wrap;">{{ o.texto }}</div>
+    </div>
+  {% endfor %}
+  {% endif %}
+</section>
+
+    </main>
+  </div>

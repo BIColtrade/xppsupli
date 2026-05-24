@@ -11,6 +11,8 @@ from openpyxl.utils import get_column_letter
 import requests
 from django.contrib.auth import authenticate
 from django.db import IntegrityError
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
@@ -33,10 +35,51 @@ def _is_admin_user(user):
 
 
 RESET_CODE_TTL_MINUTES = 10
+USERS_PER_PAGE = 20
 
 
 def _generate_reset_code():
     return f"{secrets.randbelow(1_000_000):06d}"
+
+
+def _listado_usuarios_context(request, extra_context=None):
+    filter_query = request.GET.get("q", "").strip()
+    filter_area = request.GET.get("area", "").strip()
+    filter_rol = request.GET.get("rol", "").strip()
+
+    usuarios_qs = Usuario.objects.prefetch_related("groups").order_by("email")
+    if filter_query:
+        usuarios_qs = usuarios_qs.filter(
+            Q(email__icontains=filter_query)
+            | Q(nombre__icontains=filter_query)
+            | Q(apellido__icontains=filter_query)
+            | Q(username__icontains=filter_query)
+        )
+    if filter_area:
+        usuarios_qs = usuarios_qs.filter(area=filter_area)
+    if filter_rol:
+        usuarios_qs = usuarios_qs.filter(tipo_usuario=filter_rol)
+
+    paginator = Paginator(usuarios_qs, USERS_PER_PAGE)
+    page_obj = paginator.get_page(request.GET.get("page"))
+    query_params = request.GET.copy()
+    query_params.pop("page", None)
+
+    context = {
+        "usuarios": page_obj,
+        "page_obj": page_obj,
+        "paginator": paginator,
+        "grupos": Group.objects.order_by("name"),
+        "tipo_usuario_choices": TIPO_USUARIO_CHOICES,
+        "area_choices": AREA_CHOICES,
+        "filter_query": filter_query,
+        "filter_area": filter_area,
+        "filter_rol": filter_rol,
+        "pagination_query": query_params.urlencode(),
+    }
+    if extra_context:
+        context.update(extra_context)
+    return context
 
 
 def _get_gmail_access_token():
@@ -345,12 +388,7 @@ def listado_usuarios(request):
     if not _is_admin_user(user):
         return redirect("home_autenticado")
 
-    context = {
-        "usuarios": Usuario.objects.order_by("email"),
-        "grupos": Group.objects.order_by("name"),
-        "tipo_usuario_choices": TIPO_USUARIO_CHOICES,
-        "area_choices": AREA_CHOICES,
-    }
+    context = _listado_usuarios_context(request)
 
     if request.method == "POST":
         action = request.POST.get("action", "").strip()
@@ -427,6 +465,13 @@ def listado_usuarios(request):
                         else:
                             target.delete()
                             context["success"] = "Usuario eliminado."
+                        context = _listado_usuarios_context(
+                            request,
+                            {
+                                "error": context.get("error"),
+                                "success": context.get("success"),
+                            },
+                        )
                         return render(request, "listado_usuarios.html", context)
 
                     email = request.POST.get("email", "").strip()
@@ -477,8 +522,13 @@ def listado_usuarios(request):
                         except IntegrityError:
                             context["error"] = "El email o usuario ya existe."
 
-        context["usuarios"] = Usuario.objects.order_by("email")
-        context["grupos"] = Group.objects.order_by("name")
+        context = _listado_usuarios_context(
+            request,
+            {
+                "error": context.get("error"),
+                "success": context.get("success"),
+            },
+        )
 
     return render(request, "listado_usuarios.html", context)
 
@@ -584,12 +634,7 @@ def importar_usuarios(request):
         return redirect("home_autenticado")
 
     archivo = request.FILES.get("archivo")
-    context = {
-        "usuarios": Usuario.objects.order_by("email"),
-        "grupos": Group.objects.order_by("name"),
-        "tipo_usuario_choices": TIPO_USUARIO_CHOICES,
-        "area_choices": AREA_CHOICES,
-    }
+    context = _listado_usuarios_context(request)
 
     if not archivo:
         context["error"] = "Debes seleccionar un archivo Excel."
@@ -738,6 +783,11 @@ def importar_usuarios(request):
             mensajes[0] if mensajes else "No se importaron filas (archivo vacio)."
         )
 
-    context["usuarios"] = Usuario.objects.order_by("email")
-    context["grupos"] = Group.objects.order_by("name")
+    context = _listado_usuarios_context(
+        request,
+        {
+            "error": context.get("error"),
+            "success": context.get("success"),
+        },
+    )
     return render(request, "listado_usuarios.html", context)

@@ -1,0 +1,57 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Ciclos de Evaluacion</h1>
+      <p class="val-page__subtitle">Define los periodos de evaluacion, sus participantes y estado.</p>
+    </div>
+    <a href="{% url 'modulo_valoracion:crear_ciclo' %}" class="val-btn val-btn--primary">+ Nuevo ciclo</a>
+  </div>
+
+  {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Estado</th>
+          <th>Inicio</th>
+          <th>Cierre</th>
+          <th>Asignaciones</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in ciclos %}
+        <tr>
+          <td>{{ c.nombre }}</td>
+          <td>{{ c.get_tipo_display }}</td>
+          <td><span class="status-badge status-badge--{{ c.estado }}">{{ c.get_estado_display }}</span></td>
+          <td>{{ c.fecha_inicio|date:"d/m/Y H:i" }}</td>
+          <td>{{ c.fecha_cierre|date:"d/m/Y H:i" }}</td>
+          <td>{{ c.asignaciones.count }}</td>
+          <td class="val-actions">
+            <a href="{% url 'modulo_valoracion:editar_ciclo' c.id %}" class="val-btn val-btn--secondary val-btn--sm">Editar</a>
+            <a href="{% url 'modulo_valoracion:asignaciones_ciclo' c.id %}" class="val-btn val-btn--primary val-btn--sm">Asignaciones</a>
+            <form method="post" action="{% url 'modulo_valoracion:consolidar_ciclo' c.id %}" style="display:inline;"
+                  onsubmit="return confirm('Consolidar resultados del ciclo? Procesara todas las evaluaciones completadas.');">
+              {% csrf_token %}
+              <button type="submit" class="val-btn val-btn--success val-btn--sm">Consolidar resultados</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center; color: var(--val-muted); padding: 24px;">Aun no hay ciclos creados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

@@ -1,0 +1,81 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">{% if pregunta %}Editar pregunta{% else %}Nueva pregunta{% endif %}</h1>
+      <p class="val-page__subtitle">El evaluador solo vera el enunciado y las opciones; la competencia es interna.</p>
+    </div>
+    <a href="{% url 'modulo_valoracion:gestionar_preguntas' %}" class="val-btn val-btn--secondary">Volver</a>
+  </div>
+
+  {% if error %}<div class="val-alert val-alert--error">{{ error }}</div>{% endif %}
+
+  <form method="post" class="val-form">
+    {% csrf_token %}
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__label">Competencia</label>
+        <select class="val-form__select" name="competencia" required>
+          <option value="">Selecciona...</option>
+          {% for c in competencias %}
+          <option value="{{ c.id }}" {% if pregunta and pregunta.competencia_id == c.id %}selected{% endif %}>{{ c.codigo }}. {{ c.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Tipo de evaluacion</label>
+        <select class="val-form__select" name="tipo_evaluacion" required>
+          {% for code, label in tipo_evaluacion_choices %}
+          <option value="{{ code }}" {% if pregunta and pregunta.tipo_evaluacion == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Tipo de pregunta</label>
+        <select class="val-form__select" name="tipo_pregunta">
+          {% for code, label in tipo_pregunta_choices %}
+          <option value="{{ code }}" {% if pregunta and pregunta.tipo_pregunta == code %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Enunciado</label>
+      <textarea class="val-form__textarea" name="enunciado" required>{{ pregunta.enunciado|default:'' }}</textarea>
+    </div>
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__label">Peso</label>
+        <input class="val-form__input" name="peso" type="number" step="0.01" min="0" value="{{ pregunta.peso|default:1 }}">
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Orden</label>
+        <input class="val-form__input" name="orden" type="number" min="0" value="{{ pregunta.orden|default:0 }}">
+      </div>
+    </div>
+    <div class="val-form__row">
+      <div class="val-form__group">
+        <label class="val-form__checkbox">
+          <input type="checkbox" name="obligatoria" {% if pregunta is None or pregunta.obligatoria %}checked{% endif %}>
+          Obligatoria
+        </label>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__checkbox">
+          <input type="checkbox" name="activa" {% if pregunta is None or pregunta.activa %}checked{% endif %}>
+          Activa
+        </label>
+      </div>
+    </div>
+    <div class="val-form__actions">
+      <button class="val-btn val-btn--primary" type="submit">Guardar</button>
+      <a class="val-btn val-btn--secondary" href="{% url 'modulo_valoracion:gestionar_preguntas' %}">Cancelar</a>
+    </div>
+  </form>
+</section>
+
+    </main>
+  </div>

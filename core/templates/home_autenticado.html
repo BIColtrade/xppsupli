@@ -46,6 +46,13 @@
       <div class="home-card__text">Acceso al listado de compras Coltrade.</div>
     </a>
     {% endif %}
+
+    {% if can_valoracion %}
+    <a class="home-card" href="{% url 'modulo_valoracion:home_modulo_valoracion' %}">
+      <div class="home-card__title">Valoracion</div>
+      <div class="home-card__text">Acceso al modulo de valoracion.</div>
+    </a>
+    {% endif %}
   </div>
 </section>
 <script src="{% static 'js/home_autenticado.js' %}"></script>
