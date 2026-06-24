@@ -37,8 +37,7 @@
           <td>{{ c.asignaciones.count }}</td>
           <td class="val-actions">
             <a href="{% url 'modulo_valoracion:editar_ciclo' c.id %}" class="val-btn val-btn--secondary val-btn--sm">Editar</a>
-            <a href="{% url 'modulo_valoracion:asignaciones_ciclo' c.id %}" class="val-btn val-btn--primary val-btn--sm">Asignaciones</a>
-            <form method="post" action="{% url 'modulo_valoracion:consolidar_ciclo' c.id %}" style="display:inline;"
+<form method="post" action="{% url 'modulo_valoracion:consolidar_ciclo' c.id %}" style="display:inline;"
                   onsubmit="return confirm('Consolidar resultados del ciclo? Procesara todas las evaluaciones completadas.');">
               {% csrf_token %}
               <button type="submit" class="val-btn val-btn--success val-btn--sm">Consolidar resultados</button>

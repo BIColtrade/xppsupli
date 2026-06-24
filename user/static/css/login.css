@@ -237,6 +237,39 @@ body.login-page::after {
   color: rgba(172, 170, 173, 0.9);
 }
 
+.input-eye-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-eye-wrap input {
+  flex: 1;
+  padding-right: 46px !important;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: rgba(172, 170, 173, 0.7);
+  transition: color 0.2s ease;
+}
+
+.eye-btn:hover {
+  color: #e7e7f2;
+}
+
+.eye-icon.hidden {
+  display: none;
+}
+
 .field input {
   height: 48px;
   padding: 0 14px;

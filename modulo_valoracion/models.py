@@ -149,6 +149,10 @@ class CicloEvaluacion(models.Model):
     peso_equipo_lider = models.PositiveSmallIntegerField(
         default=40, help_text="Peso % del equipo en evaluacion de lider (default 40)"
     )
+    preguntas_excluidas = models.JSONField(
+        default=list, blank=True,
+        help_text="IDs de preguntas que NO se aplican en este ciclo",
+    )
     creado_por = models.ForeignKey(
         Usuario, on_delete=models.SET_NULL, null=True, blank=True,
         related_name='ciclos_creados',
@@ -186,6 +190,10 @@ class AsignacionEvaluacion(models.Model):
     tipo_evaluacion = models.CharField(max_length=20, choices=TIPO_EVALUACION_CHOICES)
     estado = models.CharField(
         max_length=20, choices=ESTADO_ASIGNACION_CHOICES, default='pendiente'
+    )
+    activa = models.BooleanField(
+        default=True,
+        help_text="Si esta desactivada, no aplica para responder ni consolidar",
     )
     observaciones_acuerdos = models.TextField(
         blank=True,

@@ -1,4 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("togglePassword");
+  if (toggleBtn) {
+    const passwordInput = document.getElementById("password");
+    const eyeShow = document.getElementById("eyeShow");
+    const eyeHide = document.getElementById("eyeHide");
+    toggleBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      eyeShow.classList.toggle("hidden", isPassword);
+      eyeHide.classList.toggle("hidden", !isPassword);
+    });
+  }
+
   const card = document.querySelector(".login-card");
   if (!card) return;
 

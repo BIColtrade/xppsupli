@@ -48,6 +48,18 @@
   </div>
   {% endif %}
 
+  {% if puede_ver_dashboard %}
+  <div class="val-section-divider"></div>
+  <div class="val-section-title">Metricas e Informes (Admin / People / BI / Tech)</div>
+  <div class="home-cards__grid">
+    <a href="{% url 'modulo_valoracion:dashboard_organizacional' %}" class="home-card home-card--primary">
+      <div class="home-card__icon">DB</div>
+      <div class="home-card__title">Dashboard Organizacional</div>
+      <div class="home-card__desc">Promedios, semaforo, top performers, brechas, tendencias y evolucion historica. Filtra por fecha, area, cargo, persona y tipo.</div>
+    </a>
+  </div>
+  {% endif %}
+
   {% if puede_configurar %}
   <div class="val-section-divider"></div>
   <div class="val-section-title">Configuracion (Admin People / BI / Tech)</div>

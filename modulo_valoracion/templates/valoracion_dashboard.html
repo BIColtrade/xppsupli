@@ -1,0 +1,221 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Dashboard Organizacional</h1>
+      <p class="val-page__subtitle">Metricas e informes de todas las evaluaciones. Filtra por fecha, area, cargo, persona y tipo.</p>
+    </div>
+  </div>
+
+  <!-- ---- Filtros ---- -->
+  <form method="get" class="dash-filters">
+    <div class="val-form__group">
+      <label class="val-form__label">Desde</label>
+      <input type="date" name="desde" value="{{ filtros.desde }}" class="val-form__input">
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Hasta</label>
+      <input type="date" name="hasta" value="{{ filtros.hasta }}" class="val-form__input">
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Ciclo</label>
+      <select name="ciclo" class="val-form__select">
+        <option value="">Todos</option>
+        {% for c in ciclos %}
+        <option value="{{ c.id }}" {% if filtros.ciclo == c.id|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Area / Direccion</label>
+      <select name="area" class="val-form__select">
+        <option value="">Todas</option>
+        {% for cod, label in area_choices %}
+        <option value="{{ cod }}" {% if filtros.area == cod %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Tipo de cargo</label>
+      <select name="cargo" class="val-form__select">
+        <option value="">Todos</option>
+        {% for c in cargos %}
+        <option value="{{ c }}" {% if filtros.cargo == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Persona</label>
+      <select name="persona" class="val-form__select">
+        <option value="">Todas</option>
+        {% for p in personas %}
+        <option value="{{ p.id }}" {% if filtros.persona == p.id|stringformat:"s" %}selected{% endif %}>{{ p }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="val-form__group">
+      <label class="val-form__label">Tipo de evaluacion</label>
+      <select name="tipo" class="val-form__select">
+        <option value="">Todos</option>
+        {% for cod, label in tipo_choices %}
+        <option value="{{ cod }}" {% if filtros.tipo == cod %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="dash-filters__actions">
+      <button type="submit" class="val-btn val-btn--primary">Aplicar filtros</button>
+      <a href="{% url 'modulo_valoracion:dashboard_organizacional' %}" class="val-btn val-btn--secondary">Limpiar</a>
+    </div>
+  </form>
+
+  {% if total == 0 %}
+  <div class="val-alert val-alert--info">No hay resultados consolidados para los filtros seleccionados.</div>
+  {% endif %}
+
+  <!-- ---- KPIs ---- -->
+  <div class="dash-kpis">
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Promedio compania</div>
+      <div class="dash-kpi__value">{{ promedio_compania }}%</div>
+      <span class="semaforo semaforo--{{ semaforo_compania }}">{{ semaforo_compania_emoji }} {{ semaforo_compania_label }}</span>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Personas evaluadas</div>
+      <div class="dash-kpi__value">{{ personas_unicas }}</div>
+      <div class="dash-kpi__hint">{{ total }} resultado(s)</div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Promedio lideres</div>
+      <div class="dash-kpi__value">{{ promedio_lideres }}%</div>
+      <div class="dash-kpi__hint">{{ lideres_count }} evaluacion(es) de liderazgo</div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Tendencia vs ciclo previo</div>
+      <div class="dash-kpi__value {% if tendencia > 0 %}dash-up{% elif tendencia < 0 %}dash-down{% endif %}">
+        {% if tendencia > 0 %}+{% endif %}{{ tendencia }} pts
+      </div>
+      <div class="dash-kpi__hint">Variacion del promedio</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- ---- Semaforo organizacional ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Semaforo organizacional</div>
+      {% for s in distribucion %}
+      <div class="dash-bar">
+        <div class="dash-bar__label"><span class="semaforo semaforo--{{ s.cod }}">{{ s.emoji }} {{ s.label }}</span></div>
+        <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ s.cod }}" style="width: {{ s.pct }}%;"></div></div>
+        <div class="dash-bar__num">{{ s.count }} ({{ s.pct }}%)</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- ---- Evolucion historica ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Evolucion historica (promedio por ciclo)</div>
+      {% if evolucion %}
+      <svg class="dash-chart" viewBox="0 0 100 40" preserveAspectRatio="none">
+        <line x1="0" y1="4" x2="100" y2="4" class="dash-chart__grid" />
+        <line x1="0" y1="14" x2="100" y2="14" class="dash-chart__grid" />
+        <line x1="0" y1="24" x2="100" y2="24" class="dash-chart__grid" />
+        <line x1="0" y1="34" x2="100" y2="34" class="dash-chart__grid" />
+        <polyline points="{{ evol_points }}" class="dash-chart__line" />
+      </svg>
+      <div class="dash-chart__labels">
+        {% for e in evolucion %}
+        <span title="{{ e.nombre }}: {{ e.promedio }}%">{{ e.nombre|truncatechars:14 }} <strong>{{ e.promedio }}%</strong></span>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="dash-empty">Sin datos historicos.</p>
+      {% endif %}
+    </div>
+
+    <!-- ---- Promedio por area / direcciones ---- -->
+    <div class="dash-card dash-card--wide">
+      <div class="dash-card__title">Promedio por area / direccion</div>
+      {% for a in por_area %}
+      <div class="dash-bar">
+        <div class="dash-bar__label">{{ a.emoji }} {{ a.area }} <span class="dash-bar__sub">({{ a.count }})</span></div>
+        <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ a.semaforo }}" style="width: {{ a.promedio }}%;"></div></div>
+        <div class="dash-bar__num">{{ a.promedio }}%</div>
+      </div>
+      {% empty %}
+      <p class="dash-empty">Sin datos por area.</p>
+      {% endfor %}
+    </div>
+
+    <!-- ---- Top performers ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Top performers</div>
+      <div class="val-table-wrap">
+        <table class="val-table">
+          <thead><tr><th>Persona</th><th>Area</th><th>%</th></tr></thead>
+          <tbody>
+            {% for r in top_performers %}
+            <tr>
+              <td><a class="dash-link" href="{% url 'modulo_valoracion:dashboard_individual' r.evaluado_id %}">{{ r.evaluado }}</a></td>
+              <td>{{ r.evaluado.get_area_display|default:"-" }}</td>
+              <td><span class="semaforo semaforo--{{ r.semaforo }}">{{ r.porcentaje }}%</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="dash-empty">Sin datos.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ---- Brechas (personas) ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Mayores brechas (personas)</div>
+      <div class="val-table-wrap">
+        <table class="val-table">
+          <thead><tr><th>Persona</th><th>Area</th><th>%</th></tr></thead>
+          <tbody>
+            {% for r in brechas_personas %}
+            <tr>
+              <td><a class="dash-link" href="{% url 'modulo_valoracion:dashboard_individual' r.evaluado_id %}">{{ r.evaluado }}</a></td>
+              <td>{{ r.evaluado.get_area_display|default:"-" }}</td>
+              <td><span class="semaforo semaforo--{{ r.semaforo }}">{{ r.porcentaje }}%</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="dash-empty">Sin datos.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ---- Fortalezas recurrentes ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Fortalezas recurrentes</div>
+      <ul class="dash-list">
+        {% for texto, num in top_fortalezas %}
+        <li><span class="dash-chip dash-chip--ok">{{ num }}</span> {{ texto }}</li>
+        {% empty %}
+        <li class="dash-empty">Sin datos.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- ---- Brechas recurrentes ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Brechas recurrentes</div>
+      <ul class="dash-list">
+        {% for texto, num in top_brechas %}
+        <li><span class="dash-chip dash-chip--gap">{{ num }}</span> {{ texto }}</li>
+        {% empty %}
+        <li class="dash-empty">Sin datos.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+
+    </main>
+  </div>

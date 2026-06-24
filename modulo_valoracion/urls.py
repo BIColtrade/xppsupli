@@ -32,6 +32,7 @@ urlpatterns = [
     # Asignaciones por ciclo
     path("ciclos/<int:ciclo_id>/asignaciones/", views.asignaciones_ciclo, name="asignaciones_ciclo"),
     path("ciclos/<int:ciclo_id>/asignaciones/crear/", views.crear_asignacion, name="crear_asignacion"),
+    path("ciclos/<int:ciclo_id>/asignaciones/generar-jerarquia/", views.generar_asignaciones_jerarquia, name="generar_asignaciones_jerarquia"),
     path("asignaciones/<int:asignacion_id>/eliminar/", views.eliminar_asignacion, name="eliminar_asignacion"),
 
     # Evaluador
@@ -48,4 +49,10 @@ urlpatterns = [
 
     # Planes de accion
     path("planes-accion/", views.listar_planes_accion, name="listar_planes_accion"),
+    path("resultados/<int:resultado_id>/plan/crear/", views.crear_plan_accion, name="crear_plan_accion"),
+    path("planes-accion/<int:plan_id>/actualizar/", views.actualizar_plan_accion, name="actualizar_plan_accion"),
+
+    # Dashboard / Metricas e informes
+    path("dashboard/", views.dashboard_organizacional, name="dashboard_organizacional"),
+    path("dashboard/persona/<int:usuario_id>/", views.dashboard_individual, name="dashboard_individual"),
 ]

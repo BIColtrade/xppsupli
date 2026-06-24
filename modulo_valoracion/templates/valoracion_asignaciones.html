@@ -1,6 +1,126 @@
 {% load static %}
 {% include "navbar.html" %}
 <link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+<style>
+  .jerarquia-panel {
+    background: var(--val-surface, rgba(25,6,91,0.45));
+    border: 1px solid rgba(89,52,188,0.35);
+    border-radius: 14px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+  .jerarquia-panel__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    gap: 12px;
+  }
+  .jerarquia-panel__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--val-text, #e7e7f2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .jerarquia-panel__badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: rgba(89,52,188,0.25);
+    border: 1px solid rgba(89,52,188,0.5);
+    color: #a78bfa;
+    border-radius: 999px;
+    padding: 2px 10px;
+  }
+  .jerarquia-panel__body { margin-top: 20px; }
+  .jerarquia-panel__body.collapsed { display: none; }
+  .dir-options {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .dir-card {
+    flex: 1;
+    min-width: 200px;
+    border: 1.5px solid rgba(172,170,173,0.2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    background: rgba(0,0,5,0.4);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .dir-card input[type=radio] { display: none; }
+  .dir-card:has(input:checked) {
+    border-color: #5934bc;
+    background: rgba(89,52,188,0.15);
+  }
+  .dir-card__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(89,52,188,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #a78bfa;
+  }
+  .dir-card__info { flex: 1; }
+  .dir-card__label { font-size: 0.9rem; font-weight: 600; color: #e7e7f2; margin-bottom: 2px; }
+  .dir-card__desc { font-size: 0.8rem; color: rgba(172,170,173,0.75); line-height: 1.4; }
+  .areas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .area-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(172,170,173,0.2);
+    border-radius: 8px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: rgba(172,170,173,0.85);
+    background: rgba(0,0,5,0.35);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+  .area-chip input[type=checkbox] { display: none; }
+  .area-chip:has(input:checked) {
+    border-color: #5934bc;
+    background: rgba(89,52,188,0.18);
+    color: #e7e7f2;
+  }
+  .area-chip__dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: rgba(172,170,173,0.35);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .area-chip:has(input:checked) .area-chip__dot { background: #7c3aed; }
+  .select-all-btn {
+    font-size: 0.78rem;
+    color: #a78bfa;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    margin-top: 4px;
+  }
+  .val-form__row--3 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 600px) { .val-form__row--3 { grid-template-columns: 1fr; } }
+</style>
 
 <section class="val-page">
   <div class="val-page__header">
@@ -13,6 +133,86 @@
 
   {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
 
+  <!-- Generacion automatica por jerarquia -->
+  <div class="jerarquia-panel">
+    <div class="jerarquia-panel__header" onclick="togglePanel()">
+      <span class="jerarquia-panel__title">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Generar automaticamente por jerarquia
+        <span class="jerarquia-panel__badge">Nuevo</span>
+      </span>
+      <svg id="panel-chevron" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;color:rgba(172,170,173,0.6)"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="jerarquia-panel__body collapsed" id="jerarquia-body">
+      <p style="font-size:0.85rem;color:rgba(172,170,173,0.75);margin:0 0 20px;">
+        Usa la jerarquia configurada en <a href="{% url 'modulo_valoracion:gestionar_jerarquia' %}" style="color:#a78bfa;">Gestion de Jerarquia</a> para crear las asignaciones automaticamente. Solo se generan pares donde el colaborador tiene jefe directo asignado.
+      </p>
+      <!-- Indicador de tipo del ciclo -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+        {% if ciclo.tipo == "lider" %}
+          <div class="dir-card" style="pointer-events:none;border-color:rgba(89,52,188,0.6);background:rgba(89,52,188,0.12);max-width:420px;">
+            <div class="dir-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+            </div>
+            <div class="dir-card__info">
+              <div class="dir-card__label">Evaluacion de Liderazgo</div>
+              <div class="dir-card__desc">El colaborador evalua a su jefe directo. Rol: Miembro del Equipo.</div>
+            </div>
+          </div>
+        {% elif ciclo.tipo == "operativo" %}
+          <div class="dir-card" style="pointer-events:none;border-color:rgba(89,52,188,0.6);background:rgba(89,52,188,0.12);max-width:420px;">
+            <div class="dir-card__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
+            </div>
+            <div class="dir-card__info">
+              <div class="dir-card__label">Evaluacion Operativa</div>
+              <div class="dir-card__desc">El jefe directo evalua al colaborador. Rol: Jefe Inmediato.</div>
+            </div>
+          </div>
+        {% else %}
+          <div class="dir-card" style="pointer-events:none;border-color:rgba(89,52,188,0.6);background:rgba(89,52,188,0.12);flex:none;width:100%;max-width:500px;">
+            <div class="dir-card__icon" style="background:rgba(89,52,188,0.3);">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/><polyline points="5 7 12 0 19 7" opacity="0.5"/></svg>
+            </div>
+            <div class="dir-card__info">
+              <div class="dir-card__label">Evaluacion Mixta</div>
+              <div class="dir-card__desc">Se generan <strong style="color:#e7e7f2;">dos asignaciones por par</strong>: el jefe evalua al colaborador (operativa) y el colaborador evalua al jefe (liderazgo).</div>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      <form method="post" action="{% url 'modulo_valoracion:generar_asignaciones_jerarquia' ciclo.id %}">
+        {% csrf_token %}
+
+        <!-- Areas -->
+        <div style="margin-bottom:20px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+            <label class="val-form__label" style="margin:0;">Areas a incluir</label>
+            <button type="button" class="select-all-btn" onclick="toggleAllAreas(this)">Seleccionar todas</button>
+          </div>
+          <div class="areas-grid" id="areas-grid">
+            {% for code, label in area_choices %}
+            <label class="area-chip">
+              <input type="checkbox" name="areas" value="{{ code }}">
+              <span class="area-chip__dot"></span>
+              {{ label }}
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="val-form__actions">
+          <button class="val-btn val-btn--primary" type="submit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Generar asignaciones
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Formulario manual -->
   <form method="post" class="val-form" action="{% url 'modulo_valoracion:crear_asignacion' ciclo.id %}" style="max-width:none; margin-bottom: 20px;">
     {% csrf_token %}
     <div class="val-form__row">
@@ -44,7 +244,7 @@
       </div>
     </div>
     <div class="val-form__actions">
-      <button class="val-btn val-btn--primary" type="submit">+ Agregar asignacion</button>
+      <button class="val-btn val-btn--primary" type="submit">+ Agregar asignacion manual</button>
     </div>
   </form>
 
@@ -82,6 +282,22 @@
     </table>
   </div>
 </section>
+
+<script>
+  function togglePanel() {
+    const body = document.getElementById("jerarquia-body");
+    const chevron = document.getElementById("panel-chevron");
+    body.classList.toggle("collapsed");
+    chevron.style.transform = body.classList.contains("collapsed") ? "" : "rotate(180deg)";
+  }
+
+  function toggleAllAreas(btn) {
+    const checkboxes = document.querySelectorAll('#areas-grid input[type=checkbox]');
+    const allChecked = [...checkboxes].every(c => c.checked);
+    checkboxes.forEach(c => c.checked = !allChecked);
+    btn.textContent = allChecked ? "Seleccionar todas" : "Deseleccionar todas";
+  }
+</script>
 
     </main>
   </div>

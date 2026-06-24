@@ -1,6 +1,206 @@
 {% load static %}
 {% include "navbar.html" %}
 <link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+<style>
+  .areas-section {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(172,170,173,0.15);
+  }
+  .areas-section__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .areas-section__title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--val-text, #e7e7f2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .areas-hint {
+    font-size: 0.82rem;
+    color: rgba(172,170,173,0.65);
+    margin: 0 0 14px;
+    line-height: 1.5;
+  }
+  .tipo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(89,52,188,0.5);
+    background: rgba(89,52,188,0.15);
+    color: #a78bfa;
+    margin-bottom: 12px;
+    transition: opacity 0.2s;
+  }
+  .areas-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .area-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(172,170,173,0.2);
+    border-radius: 8px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    color: rgba(172,170,173,0.85);
+    background: rgba(0,0,5,0.35);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+    user-select: none;
+  }
+  .area-chip input[type=checkbox] { display: none; }
+  .area-chip:has(input:checked) {
+    border-color: #5934bc;
+    background: rgba(89,52,188,0.18);
+    color: #e7e7f2;
+  }
+  .area-chip__dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: rgba(172,170,173,0.3);
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+  .area-chip:has(input:checked) .area-chip__dot { background: #7c3aed; }
+  .select-all-btn {
+    font-size: 0.78rem;
+    color: #a78bfa;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  /* ---- Preguntas dirigidas (acordeon) ---- */
+  .preguntas-section {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(172,170,173,0.15);
+  }
+  .preg-group {
+    border: 1px solid rgba(172,170,173,0.2);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: rgba(0,0,5,0.35);
+    overflow: hidden;
+  }
+  .preg-group__head {
+    cursor: pointer;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e7e7f2;
+    user-select: none;
+    list-style: none;
+  }
+  .preg-group__head::-webkit-details-marker { display: none; }
+  .preg-group__head::before {
+    content: "\25B8";
+    margin-right: 8px;
+    color: #a78bfa;
+    transition: transform 0.2s;
+    display: inline-block;
+  }
+  .preg-group[open] .preg-group__head::before { transform: rotate(90deg); }
+  .preg-group__count { font-size: 0.78rem; font-weight: 500; color: rgba(172,170,173,0.7); }
+  .preg-list { padding: 4px 12px 14px; }
+  .preg-list__bar { display: flex; justify-content: flex-end; padding: 4px 4px 8px; }
+  .preg-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .preg-item:hover { background: rgba(89,52,188,0.1); }
+  .preg-item input { display: none; }
+  .preg-item__check {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    border-radius: 5px;
+    border: 1px solid rgba(172,170,173,0.4);
+    margin-top: 1px;
+    display: grid;
+    place-items: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .preg-item:has(input:checked) .preg-item__check { background: #5934bc; border-color: #5934bc; }
+  .preg-item:has(input:checked) .preg-item__check::after { content: "\2713"; font-size: 12px; color: #fff; }
+  .preg-item__text { font-size: 0.85rem; color: #e7e7f2; line-height: 1.45; }
+  .preg-item:has(input:not(:checked)) .preg-item__text {
+    color: rgba(172,170,173,0.5);
+    text-decoration: line-through;
+  }
+  .preg-item__cat {
+    display: inline-block;
+    font-size: 0.7rem; font-weight: 700;
+    color: #a78bfa;
+    background: rgba(89,52,188,0.15);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-right: 6px;
+  }
+  .preg-empty { font-size: 0.82rem; color: rgba(172,170,173,0.6); padding: 8px; }
+
+  /* ---- Asignaciones existentes ---- */
+  .asig-section {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(172,170,173,0.15);
+  }
+  .asig-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .asig-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .asig-item:hover { background: rgba(89,52,188,0.1); }
+  .asig-item input[type=checkbox] { display: none; }
+  .asig-item:has(input[type=checkbox]:checked) .preg-item__check { background: #5934bc; border-color: #5934bc; }
+  .asig-item:has(input[type=checkbox]:checked) .preg-item__check::after { content: "\2713"; font-size: 12px; color: #fff; }
+  .asig-item:has(input[type=checkbox]:not(:checked)) .asig-item__text { color: rgba(172,170,173,0.5); text-decoration: line-through; }
+  .asig-item__text { flex: 1; font-size: 0.85rem; color: #e7e7f2; }
+  .asig-item__tag {
+    display: inline-block;
+    margin-left: 8px;
+    font-size: 0.7rem; font-weight: 700;
+    color: #a78bfa;
+    background: rgba(89,52,188,0.15);
+    border-radius: 4px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+</style>
 
 <section class="val-page">
   <div class="val-page__header">
@@ -26,7 +226,7 @@
     <div class="val-form__row">
       <div class="val-form__group">
         <label class="val-form__label">Tipo</label>
-        <select class="val-form__select" name="tipo">
+        <select class="val-form__select" name="tipo" id="tipo-select">
           {% for code, label in tipo_choices %}
           <option value="{{ code }}" {% if ciclo and ciclo.tipo == code %}selected{% endif %}>{{ label }}</option>
           {% endfor %}
@@ -79,12 +279,172 @@
         </label>
       </div>
     </div>
-    <div class="val-form__actions">
+
+    <!-- Preguntas dirigidas (acordeon, se puede quitar alguna) -->
+    <div class="preguntas-section">
+      <div class="areas-section__head">
+        <span class="areas-section__title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Preguntas dirigidas por tipo de evaluacion
+        </span>
+      </div>
+      <p class="areas-hint">
+        Despliega cada tipo para ver las preguntas que se aplicaran. Desmarca una pregunta para quitarla de este ciclo; las marcadas son las que vera el evaluador.
+      </p>
+
+      {% for grupo in preguntas_por_tipo %}
+      <details class="preg-group" data-tipo="{{ grupo.cod }}" {% if forloop.first %}open{% endif %}>
+        <summary class="preg-group__head">
+          <span>{{ grupo.label }}</span>
+          <span class="preg-group__count">{{ grupo.preguntas|length }} pregunta(s)</span>
+        </summary>
+        <div class="preg-list">
+          {% if grupo.preguntas %}
+          <div class="preg-list__bar">
+            <button type="button" class="select-all-btn" onclick="togglePreg(this)">Quitar todas</button>
+          </div>
+          {% endif %}
+          {% for p in grupo.preguntas %}
+          <label class="preg-item">
+            <input type="checkbox" name="preguntas_incluidas" value="{{ p.id }}" {% if p.id not in excluidas %}checked{% endif %}>
+            <span class="preg-item__check"></span>
+            <span class="preg-item__text">
+              <span class="preg-item__cat">{{ p.competencia.codigo }}</span>{{ p.enunciado }}
+            </span>
+          </label>
+          {% empty %}
+          <p class="preg-empty">No hay preguntas activas para este tipo. Crealas en la seccion de Preguntas.</p>
+          {% endfor %}
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+
+    <!-- Asignacion por jerarquia -->
+    <div class="areas-section">
+      <div class="areas-section__head">
+        <span class="areas-section__title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Generar asignaciones al guardar
+          <span style="font-size:0.72rem;font-weight:500;color:rgba(172,170,173,0.6);">(opcional)</span>
+        </span>
+        <button type="button" class="select-all-btn" onclick="toggleAllAreas(this)">Seleccionar todas</button>
+      </div>
+      <div id="tipo-badge" class="tipo-badge"></div>
+      <p class="areas-hint">
+        Selecciona las areas cuya jerarquia se usara para crear las asignaciones automaticamente. Solo se incluyen colaboradores con jefe directo asignado en las mismas areas.
+      </p>
+      <div class="areas-grid" id="areas-grid">
+        {% for code, label in area_choices %}
+        <label class="area-chip">
+          <input type="checkbox" name="areas" value="{{ code }}">
+          <span class="area-chip__dot"></span>
+          {{ label }}
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Asignaciones existentes (marcar / desmarcar) -->
+    {% if asignaciones %}
+    <div class="asig-section">
+      <div class="areas-section__head">
+        <span class="areas-section__title">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+          Asignaciones del ciclo
+          <span style="font-size:0.72rem;font-weight:500;color:rgba(172,170,173,0.6);">({{ asignaciones|length }})</span>
+        </span>
+        <button type="button" class="select-all-btn" onclick="toggleAsig(this)">Desmarcar todas</button>
+      </div>
+      <p class="areas-hint">
+        Marca o desmarca asignaciones. Las desmarcadas no podran responder ni se incluiran al consolidar resultados.
+      </p>
+      <div class="asig-list">
+        {% for a in asignaciones %}
+        <label class="asig-item">
+          <input type="hidden" name="asignaciones_ids" value="{{ a.id }}">
+          <input type="checkbox" name="asignaciones_activas" value="{{ a.id }}" {% if a.activa %}checked{% endif %}>
+          <span class="preg-item__check"></span>
+          <span class="asig-item__text">
+            <strong>{{ a.evaluador }}</strong> califica a <strong>{{ a.evaluado }}</strong>
+            <span class="asig-item__tag">{% if a.tipo_evaluacion == 'lider' %}Colaborador &rarr; Jefe{% else %}Jefe &rarr; Colaborador{% endif %}</span>
+          </span>
+          <span class="status-badge status-badge--{{ a.estado }}">{{ a.get_estado_display }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="val-form__actions" style="margin-top:28px;">
       <button class="val-btn val-btn--primary" type="submit">Guardar</button>
       <a class="val-btn val-btn--secondary" href="{% url 'modulo_valoracion:gestionar_ciclos' %}">Cancelar</a>
     </div>
   </form>
 </section>
+
+<script>
+  const TIPO_LABELS = {
+    lider:     { text: "Evaluacion de Liderazgo — Colaborador evalua al jefe", icon: "↑" },
+    operativo: { text: "Evaluacion Operativa — Jefe evalua al colaborador", icon: "↓" },
+    mixta:     { text: "Mixta — Se generan ambas direcciones por par", icon: "↕" },
+  };
+
+  const tipoSelect = document.getElementById("tipo-select");
+  const badge = document.getElementById("tipo-badge");
+
+  function updateBadge() {
+    const val = tipoSelect.value;
+    const info = TIPO_LABELS[val];
+    if (info) {
+      badge.textContent = info.icon + "  " + info.text;
+      badge.style.opacity = "1";
+    } else {
+      badge.style.opacity = "0";
+    }
+  }
+
+  // Muestra solo el/los acordeon(es) de preguntas del tipo elegido.
+  function updateTipoPreguntas() {
+    const val = tipoSelect.value;
+    document.querySelectorAll(".preg-group").forEach(g => {
+      const t = g.getAttribute("data-tipo");
+      const visible = (val === "mixta" || val === t);
+      g.style.display = visible ? "" : "none";
+      if (!visible) { g.open = false; } else if (val !== "mixta") { g.open = true; }
+    });
+  }
+
+  function onTipoChange() {
+    updateBadge();
+    updateTipoPreguntas();
+  }
+
+  tipoSelect.addEventListener("change", onTipoChange);
+  onTipoChange();
+
+  function toggleAsig(btn) {
+    const boxes = document.querySelectorAll('.asig-list input[type=checkbox]');
+    const anyChecked = [...boxes].some(c => c.checked);
+    boxes.forEach(c => c.checked = !anyChecked);
+    btn.textContent = anyChecked ? "Marcar todas" : "Desmarcar todas";
+  }
+
+  function toggleAllAreas(btn) {
+    const boxes = document.querySelectorAll('#areas-grid input[type=checkbox]');
+    const allChecked = [...boxes].every(c => c.checked);
+    boxes.forEach(c => c.checked = !allChecked);
+    btn.textContent = allChecked ? "Seleccionar todas" : "Deseleccionar todas";
+  }
+
+  function togglePreg(btn) {
+    const list = btn.closest('.preg-list');
+    const boxes = list.querySelectorAll('.preg-item input[type=checkbox]');
+    const anyChecked = [...boxes].some(c => c.checked);
+    boxes.forEach(c => c.checked = !anyChecked);
+    btn.textContent = anyChecked ? "Incluir todas" : "Quitar todas";
+  }
+</script>
 
     </main>
   </div>

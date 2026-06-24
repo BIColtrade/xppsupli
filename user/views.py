@@ -121,14 +121,79 @@ def _send_reset_code_email(to_email, code):
     if error:
         return False, error
 
+    html_body = f"""<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Código de recuperación</title>
+</head>
+<body style="margin:0;padding:0;background:#0a0a14;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a14;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background:linear-gradient(160deg,#13054a,#1a064f);border-radius:20px;border:1px solid rgba(172,170,173,0.2);overflow:hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#5934bc,#01509b);padding:36px 40px;text-align:center;">
+              <p style="margin:0 0 6px;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.75);">Portal Supli</p>
+              <h1 style="margin:0;font-size:26px;font-weight:700;color:#ffffff;letter-spacing:0.5px;">Recuperación de contraseña</h1>
+            </td>
+          </tr>
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 40px 32px;">
+              <p style="margin:0 0 24px;font-size:15px;color:rgba(231,231,242,0.8);line-height:1.6;">
+                Recibimos una solicitud para restablecer la contraseña de tu cuenta. Usa el siguiente código para continuar:
+              </p>
+              <!-- Code box -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding:8px 0 32px;">
+                    <div style="display:inline-block;background:rgba(89,52,188,0.15);border:1.5px solid rgba(89,52,188,0.5);border-radius:14px;padding:20px 48px;">
+                      <span style="font-size:38px;font-weight:700;letter-spacing:10px;color:#ffffff;font-family:'Courier New',monospace;">{code}</span>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+              <!-- Expiry notice -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:rgba(1,80,155,0.15);border:1px solid rgba(1,80,155,0.35);border-radius:10px;padding:14px 18px;">
+                    <p style="margin:0;font-size:13px;color:rgba(172,170,173,0.9);line-height:1.5;">
+                      ⏱ Este código es válido por <strong style="color:#e7e7f2;">{RESET_CODE_TTL_MINUTES} minutos</strong>. Si no solicitaste este cambio, ignora este mensaje.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 40px 32px;border-top:1px solid rgba(172,170,173,0.12);">
+              <p style="margin:0;font-size:12px;color:rgba(172,170,173,0.5);text-align:center;line-height:1.6;">
+                Colombian Trade Company &bull; Este es un mensaje automático, no respondas a este correo.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>"""
+
+    plain_body = (
+        f"Tu codigo de recuperacion es: {code}\n"
+        f"Este codigo vence en {RESET_CODE_TTL_MINUTES} minutos."
+    )
+
     message = EmailMessage()
     message["To"] = to_email
     message["From"] = from_email
-    message["Subject"] = "Codigo de recuperacion de contrasena"
-    message.set_content(
-        "Tu codigo de recuperacion es: "
-        f"{code}\nEste codigo vence en {RESET_CODE_TTL_MINUTES} minutos."
-    )
+    message["Subject"] = "Código de recuperación de contraseña — Supli"
+    message.set_content(plain_body)
+    message.add_alternative(html_body, subtype="html")
 
     raw = base64.urlsafe_b64encode(message.as_bytes()).decode("utf-8")
     try:
@@ -235,12 +300,10 @@ def login_view(request):
 
 
 def recuperar_password(request):
-    context = {}
+    context = {"step": 1}
     if request.method == "POST":
         action = request.POST.get("action", "").strip()
         email = request.POST.get("email", "").strip().lower()
-        if email:
-            context["email_value"] = email
 
         if action == "send_code":
             if not email:
@@ -251,14 +314,9 @@ def recuperar_password(request):
                     PasswordResetCode.objects.filter(
                         user=user, used_at__isnull=True, expires_at__gt=timezone.now()
                     ).update(used_at=timezone.now())
-
                     code = _generate_reset_code()
                     expires_at = timezone.now() + timedelta(minutes=RESET_CODE_TTL_MINUTES)
-                    PasswordResetCode.objects.create(
-                        user=user,
-                        code=code,
-                        expires_at=expires_at,
-                    )
+                    PasswordResetCode.objects.create(user=user, code=code, expires_at=expires_at)
                     sent, error = _send_reset_code_email(email, code)
                     if not sent:
                         PasswordResetCode.objects.filter(
@@ -266,54 +324,78 @@ def recuperar_password(request):
                         ).update(used_at=timezone.now())
                         context["error"] = error
                     else:
-                        context["success"] = (
-                            "Si el correo existe, se envio un codigo de recuperacion."
-                        )
+                        context["step"] = 2
+                        context["email_value"] = email
+                        context["info"] = f"Codigo enviado a {email}."
                 else:
-                    context["success"] = (
-                        "Si el correo existe, se envio un codigo de recuperacion."
-                    )
+                    context["step"] = 2
+                    context["email_value"] = email
+                    context["info"] = f"Codigo enviado a {email}."
+
+        elif action == "verify_code":
+            code = request.POST.get("code", "").strip()
+            context["email_value"] = email
+            context["code_value"] = code
+
+            if not email or not code:
+                context["error"] = "Correo y codigo son obligatorios."
+                context["step"] = 2
+            elif not code.isdigit() or len(code) != 6:
+                context["error"] = "El codigo debe tener 6 digitos numericos."
+                context["step"] = 2
+            else:
+                user = Usuario.objects.filter(email__iexact=email).first()
+                valid = user and PasswordResetCode.objects.filter(
+                    user=user,
+                    code=code,
+                    used_at__isnull=True,
+                    expires_at__gt=timezone.now(),
+                ).exists()
+                if not valid:
+                    context["error"] = "Codigo invalido o vencido."
+                    context["step"] = 2
+                else:
+                    context["step"] = 3
 
         elif action == "reset_password":
             code = request.POST.get("code", "").strip()
             new_password = request.POST.get("new_password", "")
             confirm = request.POST.get("confirm_password", "")
+            context["email_value"] = email
             context["code_value"] = code
 
-            if not email:
-                context["error_reset"] = "El correo es obligatorio."
-            elif not code:
-                context["error_reset"] = "El codigo es obligatorio."
-            elif not code.isdigit() or len(code) != 6:
-                context["error_reset"] = "El codigo debe tener 6 digitos."
+            if not email or not code:
+                context["error"] = "Datos incompletos."
+                context["step"] = 2
             elif not new_password:
-                context["error_reset"] = "La nueva contrasena es obligatoria."
+                context["error"] = "La nueva contrasena es obligatoria."
+                context["step"] = 3
             elif new_password != confirm:
-                context["error_reset"] = "Las contrasenas no coinciden."
+                context["error"] = "Las contrasenas no coinciden."
+                context["step"] = 3
             else:
                 user = Usuario.objects.filter(email__iexact=email).first()
                 if not user:
-                    context["error_reset"] = "Codigo o correo invalidos."
+                    context["error"] = "Codigo o correo invalidos."
+                    context["step"] = 2
                 else:
                     now = timezone.now()
                     reset = (
                         PasswordResetCode.objects.filter(
-                            user=user,
-                            code=code,
-                            used_at__isnull=True,
-                            expires_at__gt=now,
+                            user=user, code=code, used_at__isnull=True, expires_at__gt=now,
                         )
                         .order_by("-created_at")
                         .first()
                     )
                     if not reset:
-                        context["error_reset"] = "Codigo invalido o vencido."
+                        context["error"] = "Codigo invalido o vencido."
+                        context["step"] = 2
                     else:
                         user.set_password(new_password)
                         user.save()
                         reset.used_at = now
                         reset.save()
-                        context["success_reset"] = "Contrasena actualizada."
+                        context["step"] = "done"
 
     return render(request, "recuperar_password.html", context)
 

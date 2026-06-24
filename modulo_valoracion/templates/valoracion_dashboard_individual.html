@@ -1,0 +1,206 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">{{ persona }}</h1>
+      <p class="val-page__subtitle">
+        {{ persona.cargo|default:"Sin cargo" }} &middot; {{ persona.get_area_display|default:"Sin area" }}
+      </p>
+    </div>
+    {% if puede_ver_dashboard %}
+    <a href="{% url 'modulo_valoracion:dashboard_organizacional' %}" class="val-btn val-btn--secondary">&larr; Dashboard</a>
+    {% endif %}
+  </div>
+
+  {% if plan_msg %}
+  <div class="val-alert val-alert--success">{{ plan_msg }}</div>
+  {% endif %}
+
+  {% if not actual %}
+  <div class="val-alert val-alert--info">Esta persona aun no tiene resultados consolidados.</div>
+  {% else %}
+
+  <!-- ---- KPIs individuales ---- -->
+  <div class="dash-kpis">
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Resultado actual</div>
+      <div class="dash-kpi__value">{{ actual.porcentaje }}%</div>
+      <span class="semaforo semaforo--{{ actual.semaforo }}">{{ semaforo_actual_emoji }} {{ actual.get_semaforo_display }}</span>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Puntaje (0-5)</div>
+      <div class="dash-kpi__value">{{ actual.puntaje_total }}</div>
+      <div class="dash-kpi__hint">{{ actual.ciclo.nombre }}</div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Tendencia</div>
+      <div class="dash-kpi__value {% if tendencia > 0 %}dash-up{% elif tendencia < 0 %}dash-down{% endif %}">
+        {% if tendencia > 0 %}+{% endif %}{{ tendencia }} pts
+      </div>
+      <div class="dash-kpi__hint">vs ciclo previo</div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Cumplimiento de planes</div>
+      <div class="dash-kpi__value">{{ cumplimiento }}%</div>
+      <div class="dash-kpi__hint">{{ planes_cumplidos }}/{{ planes_total }} cumplidos</div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- ---- Evolucion individual ---- -->
+    <div class="dash-card dash-card--wide">
+      <div class="dash-card__title">Evolucion historica</div>
+      {% if evolucion|length > 1 %}
+      <svg class="dash-chart" viewBox="0 0 100 40" preserveAspectRatio="none">
+        <line x1="0" y1="4" x2="100" y2="4" class="dash-chart__grid" />
+        <line x1="0" y1="14" x2="100" y2="14" class="dash-chart__grid" />
+        <line x1="0" y1="24" x2="100" y2="24" class="dash-chart__grid" />
+        <line x1="0" y1="34" x2="100" y2="34" class="dash-chart__grid" />
+        <polyline points="{{ evol_points }}" class="dash-chart__line" />
+      </svg>
+      {% endif %}
+      <div class="dash-chart__labels">
+        {% for e in evolucion %}
+        <span title="{{ e.nombre }}"><span class="semaforo semaforo--{{ e.semaforo }}">{{ e.porcentaje }}%</span> {{ e.nombre|truncatechars:14 }}</span>
+        {% empty %}
+        <span class="dash-empty">Sin historico.</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- ---- Fortalezas ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Fortalezas</div>
+      <ul class="dash-list">
+        {% for f in actual.fortalezas %}
+        <li><span class="dash-chip dash-chip--ok">+</span> {{ f }}</li>
+        {% empty %}
+        <li class="dash-empty">Sin fortalezas destacadas.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- ---- Brechas ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Brechas</div>
+      <ul class="dash-list">
+        {% for b in actual.brechas %}
+        <li><span class="dash-chip dash-chip--gap">!</span> {{ b }}</li>
+        {% empty %}
+        <li class="dash-empty">Sin brechas criticas.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- ---- Comentarios ---- -->
+    <div class="dash-card dash-card--wide">
+      <div class="dash-card__title">Comentarios y acuerdos</div>
+      {% for c in comentarios %}
+      <div class="dash-comment">
+        <div class="dash-comment__meta">{{ c.evaluador }} &middot; {{ c.rol }} &middot; {{ c.ciclo }}</div>
+        <div class="dash-comment__text">{{ c.texto }}</div>
+      </div>
+      {% empty %}
+      <p class="dash-empty">No hay comentarios registrados.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ---- Planes de mejoramiento ---- -->
+  <div class="dash-card dash-card--full">
+    <div class="dash-card__title">Planes de mejoramiento</div>
+
+    <div class="val-table-wrap">
+      <table class="val-table">
+        <thead>
+          <tr>
+            <th>Descripcion</th>
+            <th>Responsable</th>
+            <th>Fecha compromiso</th>
+            <th>Estado</th>
+            <th>Seguimiento</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in planes %}
+          <tr>
+            <td>{{ p.descripcion }}</td>
+            <td>{{ p.responsable }}</td>
+            <td>{{ p.fecha_compromiso|date:"d/m/Y" }}</td>
+            <td><span class="status-badge status-badge--{{ p.estado }}">{{ p.get_estado_display }}</span></td>
+            <td>
+              {% if puede_gestionar_planes %}
+              <form method="post" action="{% url 'modulo_valoracion:actualizar_plan_accion' p.id %}" class="dash-seg-form">
+                {% csrf_token %}
+                <select name="estado" class="val-form__select val-form__select--sm">
+                  {% for cod, label in estado_plan_choices %}
+                  <option value="{{ cod }}" {% if p.estado == cod %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+                <input type="text" name="observaciones" value="{{ p.observaciones }}" placeholder="Observacion de seguimiento" class="val-form__input val-form__input--sm">
+                <button type="submit" class="val-btn val-btn--secondary val-btn--sm">Guardar</button>
+              </form>
+              {% else %}
+              {{ p.observaciones|default:"-" }}
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" class="dash-empty">No hay planes de mejoramiento.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if puede_gestionar_planes %}
+    <form method="post" action="{% url 'modulo_valoracion:crear_plan_accion' actual.id %}" class="dash-plan-form">
+      {% csrf_token %}
+      <div class="dash-card__title" style="margin-top:8px;">Nuevo plan de mejoramiento</div>
+      <div class="val-form__row">
+        <div class="val-form__group">
+          <label class="val-form__label">Descripcion de la accion</label>
+          <textarea name="descripcion" class="val-form__textarea" required></textarea>
+        </div>
+      </div>
+      <div class="val-form__row">
+        <div class="val-form__group">
+          <label class="val-form__label">Responsable</label>
+          <select name="responsable" class="val-form__select" required>
+            <option value="">Selecciona...</option>
+            {% for r in responsables %}
+            <option value="{{ r.id }}" {% if r.id == persona.id %}selected{% endif %}>{{ r }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="val-form__group">
+          <label class="val-form__label">Fecha compromiso</label>
+          <input type="date" name="fecha_compromiso" class="val-form__input" required>
+        </div>
+        <div class="val-form__group">
+          <label class="val-form__label">Estado inicial</label>
+          <select name="estado" class="val-form__select">
+            {% for cod, label in estado_plan_choices %}
+            <option value="{{ cod }}">{{ label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="val-form__group">
+        <label class="val-form__label">Observaciones (opcional)</label>
+        <input type="text" name="observaciones" class="val-form__input">
+      </div>
+      <div class="val-form__actions">
+        <button type="submit" class="val-btn val-btn--primary">Crear plan</button>
+      </div>
+    </form>
+    {% endif %}
+  </div>
+
+  {% endif %}
+</section>
+
+    </main>
+  </div>
