@@ -70,28 +70,12 @@ class GroupAccessMiddleware:
             if not (_is_admin() or _in_group("abastecimientos")):
                 return render(request, "acceso_no_permitido.html", status=403)
 
-        # Portafolio mayoristas: admin o portafoliomayoristas
-        if path.startswith("/portafolio/mayoristas/"):
-            auth_resp = _require_auth()
-            if auth_resp:
-                return auth_resp
-            if not (_is_admin() or _in_group("portafoliomayoristas")):
-                return render(request, "acceso_no_permitido.html", status=403)
-
         # Bienestar Coltrade: admin o bienestarcoltrade
         if path.startswith("/bienestar/coltrxde/"):
             auth_resp = _require_auth()
             if auth_resp:
                 return auth_resp
             if not (_is_admin() or _in_group("bienestarcoltrade")):
-                return render(request, "acceso_no_permitido.html", status=403)
-
-        # Malla Operaciones: admin o mallaoperaciones
-        if path.startswith("/malla/operaciones/coltrxde/"):
-            auth_resp = _require_auth()
-            if auth_resp:
-                return auth_resp
-            if not (_is_admin() or _in_group("mallaoperaciones")):
                 return render(request, "acceso_no_permitido.html", status=403)
 
         # Modulo Valoracion: admin, grupo modulovaloracion, o roles internos
@@ -122,9 +106,7 @@ class GroupAccessMiddleware:
                 or _in_any_group(
                     [
                         "abastecimientos",
-                        "portafoliomayoristas",
                         "bienestarcoltrade",
-                        "mallaoperaciones",
                     ]
                 )
             ):

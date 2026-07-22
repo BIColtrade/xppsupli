@@ -62,10 +62,7 @@ INSTALLED_APPS = [
     'core',
     'user',
     'abastecimientos',
-    'portafolio_mayoristas',
-    'malla_operaciones_trade',
     'bienestar_coltrade',
-    'listado_compras',
     'modulo_valoracion'
 ]
 
@@ -105,22 +102,43 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME', ''),
-        'USER': os.environ.get('DB_USER', ''),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', os.environ.get('DB_HOSTNAME', '')),
-        'PORT': os.environ.get('DB_PORT', '5432'),
-    }
-}
+# Toggle temporal: por defecto usa SQLite mientras se consiguen nuevas
+# credenciales de PostgreSQL. Para volver a Postgres: USE_SQLITE=0 en .env
+# (y actualizar los DB_* con las credenciales nuevas).
+USE_SQLITE = os.environ.get("USE_SQLITE", "1") == "1"
 
-if os.environ.get("DATABASE_URL"):
-    DATABASES["default"] = dj_database_url.config(
-        conn_max_age=600,
-        ssl_require=True,
-    )
+if USE_SQLITE:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME', ''),
+            'USER': os.environ.get('DB_USER', ''),
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': os.environ.get('DB_HOST', os.environ.get('DB_HOSTNAME', '')),
+            'PORT': os.environ.get('DB_PORT', '5432'),
+        }
+    }
+
+    if os.environ.get("DATABASE_URL"):
+        DATABASES["default"] = dj_database_url.config(
+            conn_max_age=600,
+            ssl_require=True,
+        )
+
+    # Esquema de PostgreSQL donde viven las tablas (p. ej. BdModuloValoracion).
+    # Se cita para respetar mayusculas y se aisla del resto de esquemas
+    # (public, etc.) para que el historial de migraciones no se mezcle.
+    DB_SCHEMA = os.environ.get("DB_SCHEMA", "").strip()
+    if DB_SCHEMA:
+        options = DATABASES["default"].setdefault("OPTIONS", {})
+        options["options"] = f'-c search_path="{DB_SCHEMA}"'
 
 
 # Password validation

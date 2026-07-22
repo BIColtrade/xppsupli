@@ -15,9 +15,6 @@ def home_autenticado(request):
     context = {
         "can_abastecimientos": is_admin or "abastecimientos" in group_names,
         "can_bienestar": is_admin or "bienestarcoltrade" in group_names,
-        "can_listadocompras": is_admin or "listadocompras" in group_names,
-        "can_malla": is_admin or "mallaoperaciones" in group_names,
-        "can_portafolio": is_admin or "portafoliomayoristas" in group_names,
         "can_valoracion": is_admin or "modulovaloracion" in group_names,
         "can_user": True,  # Todo usuario autenticado ve la tarjeta Usuarios
     }
