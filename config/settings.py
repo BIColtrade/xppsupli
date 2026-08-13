@@ -63,7 +63,8 @@ INSTALLED_APPS = [
     'user',
     'abastecimientos',
     'bienestar_coltrade',
-    'modulo_valoracion'
+    'modulo_valoracion',
+    'leadership_pulse',
 ]
 
 MIDDLEWARE = [

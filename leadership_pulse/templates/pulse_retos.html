@@ -1,0 +1,60 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-page">
+  <div class="lp-breadcrumb">
+    <a href="{% url 'leadership_pulse:home_leadership_pulse' %}">Leadership Pulse</a> /
+    <a href="{% url 'leadership_pulse:gestionar_ciclos' %}">Ciclos</a> / {{ ciclo.nombre }}
+  </div>
+  <div class="lp-page__header">
+    <div>
+      <h1 class="lp-page__title">Retos de {{ ciclo.nombre }}</h1>
+      <p class="lp-page__subtitle">4 retos semanales, uno por pilar, {{ puntaje_reto }} puntos cada uno.</p>
+    </div>
+    <a href="{% url 'leadership_pulse:crear_reto' ciclo.id %}" class="lp-btn lp-btn--primary">+ Nuevo reto</a>
+  </div>
+
+  {% if success %}<div class="lp-alert lp-alert--success">{{ success }}</div>{% endif %}
+
+  <div class="lp-table-wrap">
+    <table class="lp-table">
+      <thead>
+        <tr>
+          <th>Semana</th>
+          <th>Reto</th>
+          <th>Pilar</th>
+          <th>Vigencia</th>
+          <th>Participaciones</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in retos %}
+        <tr>
+          <td>S{{ r.semana }}</td>
+          <td>{{ r.titulo }}</td>
+          <td>{{ r.pilar.nombre }}</td>
+          <td>{{ r.fecha_inicio|date:"d/m/Y" }} - {{ r.fecha_cierre|date:"d/m/Y" }}</td>
+          <td>{{ r.participaciones.count }}</td>
+          <td>{% if r.activo %}Activo{% else %}Inactivo{% endif %}</td>
+          <td class="lp-actions">
+            <a href="{% url 'leadership_pulse:editar_reto' r.id %}" class="lp-btn lp-btn--secondary lp-btn--sm">Editar</a>
+            <form method="post" action="{% url 'leadership_pulse:eliminar_reto' r.id %}" style="display:inline;"
+                  onsubmit="return confirm('Eliminar este reto?');">
+              {% csrf_token %}
+              <button type="submit" class="lp-btn lp-btn--danger lp-btn--sm">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="lp-table__empty">Aun no hay retos en este ciclo.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

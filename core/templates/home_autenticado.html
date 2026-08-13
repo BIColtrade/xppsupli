@@ -33,6 +33,13 @@
       <div class="home-card__text">Acceso al modulo de valoracion.</div>
     </a>
     {% endif %}
+
+    {% if can_pulse %}
+    <a class="home-card" href="{% url 'leadership_pulse:home_leadership_pulse' %}">
+      <div class="home-card__title">Leadership Pulse</div>
+      <div class="home-card__text">Retos, ranking y desarrollo del Leadership Team.</div>
+    </a>
+    {% endif %}
   </div>
 </section>
 <script src="{% static 'js/home_autenticado.js' %}"></script>

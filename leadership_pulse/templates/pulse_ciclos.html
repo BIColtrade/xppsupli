@@ -1,0 +1,62 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-page">
+  <div class="lp-breadcrumb"><a href="{% url 'leadership_pulse:home_leadership_pulse' %}">Leadership Pulse</a> / Ciclos</div>
+  <div class="lp-page__header">
+    <div>
+      <h1 class="lp-page__title">Ciclos Mensuales</h1>
+      <p class="lp-page__subtitle">Cada ciclo se compone de 4 retos semanales de 25 puntos (100 puntos mensuales).</p>
+    </div>
+    <a href="{% url 'leadership_pulse:crear_ciclo' %}" class="lp-btn lp-btn--primary">+ Nuevo ciclo</a>
+  </div>
+
+  {% if success %}<div class="lp-alert lp-alert--success">{{ success }}</div>{% endif %}
+
+  <div class="lp-table-wrap">
+    <table class="lp-table">
+      <thead>
+        <tr>
+          <th>Ciclo</th>
+          <th>Periodo</th>
+          <th>Estado</th>
+          <th>Retos</th>
+          <th>Ranking</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in ciclos %}
+        <tr>
+          <td>{{ c.nombre }}<div class="lp-form__hint">{{ c.get_mes_display }} {{ c.anio }}</div></td>
+          <td>{{ c.fecha_inicio|date:"d/m/Y" }} - {{ c.fecha_fin|date:"d/m/Y" }}</td>
+          <td><span class="lp-badge lp-badge--{{ c.estado }}">{{ c.get_estado_display }}</span></td>
+          <td>{{ c.retos.count }} / 4</td>
+          <td>{% if c.ranking_publicado %}Publicado{% else %}Oculto{% endif %}</td>
+          <td class="lp-actions">
+            <a href="{% url 'leadership_pulse:gestionar_retos' c.id %}" class="lp-btn lp-btn--secondary lp-btn--sm">Retos</a>
+            <a href="{% url 'leadership_pulse:editar_ciclo' c.id %}" class="lp-btn lp-btn--secondary lp-btn--sm">Editar</a>
+            <form method="post" action="{% url 'leadership_pulse:consolidar_ciclo' c.id %}" style="display:inline;"
+                  onsubmit="return confirm('Consolidar el ciclo? Recalcula puntajes, semaforo y ranking.');">
+              {% csrf_token %}
+              <button type="submit" class="lp-btn lp-btn--success lp-btn--sm">Consolidar</button>
+            </form>
+            <form method="post" action="{% url 'leadership_pulse:publicar_ranking' c.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="lp-btn lp-btn--primary lp-btn--sm">
+                {% if c.ranking_publicado %}Ocultar ranking{% else %}Publicar ranking{% endif %}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="lp-table__empty">Aun no hay ciclos creados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

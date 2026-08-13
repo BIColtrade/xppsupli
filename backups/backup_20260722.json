@@ -1,0 +1,1749 @@
+[
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "abastecimientos",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "bienestarcoltrade",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "modulovaloracion",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "admin",
+    "permissions": []
+  }
+},
+{
+  "model": "auth.group",
+  "fields": {
+    "name": "johana",
+    "permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$jRmYEZxRFWPAWndeSMYnOu$CseXENfTNFP4j4IHA/e7kqkOlbETViMiSv07NKrwwcI=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "mejiafabio@supli.tech",
+    "username": "mejiafabio",
+    "nombre": "Fabio Andrés",
+    "apellido": "Mejía Rueda",
+    "edad": 37,
+    "telefono": "3016592312",
+    "tipo_usuario": "colaborador",
+    "area": "ceo",
+    "cargo": "Ceo",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$sJE091wmwteTEgCkMT4ife$Xay9hLQXEGJumdHUJai2szTAs1NsD3fZ/CTck75DG90=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "ordonezjuan@supli.tech",
+    "username": "ordonezjuan",
+    "nombre": "Juan Camilo",
+    "apellido": "Ordoñez Arenas",
+    "edad": 36,
+    "telefono": "3214848217",
+    "tipo_usuario": "colaborador",
+    "area": "direccion_comercial",
+    "cargo": "Cco",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$87e1g6eKzjsmUbRCYU9wZl$JB2XM30563ctJj/pwaM9KxtesRFnKEYeO8tXDBy98UM=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "ayalalaura@supli.tech",
+    "username": "ayalalaura",
+    "nombre": "Laura Catalina",
+    "apellido": "Ayala Parra",
+    "edad": 33,
+    "telefono": "3115413088",
+    "tipo_usuario": "colaborador",
+    "area": "tecnologia",
+    "cargo": "Tech Manager",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$KpcsjhqDvBjnHx9hA4qsp7$UNNuDB8dP+b5GUx2LKD3vU9i7vlcQiK5phLZX73sVi8=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "fonnegraheidi@supli.tech",
+    "username": "fonnegraheidi",
+    "nombre": "Heidi Araly",
+    "apellido": "Fonnegra Triana",
+    "edad": 47,
+    "telefono": "3223415940",
+    "tipo_usuario": "colaborador",
+    "area": "accounting",
+    "cargo": "Accounting Analyst Senior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$OTz9vekHtbC1BnTAk5sLua$GiF3BOKmbyAl6fCmSO/immHYRHZ2orHOD9Yc/r8diHA=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "ramirezjulian@supli.tech",
+    "username": "ramirezjulian",
+    "nombre": "Julian David",
+    "apellido": "Ramirez Navarro",
+    "edad": 29,
+    "telefono": "3168397813",
+    "tipo_usuario": "colaborador",
+    "area": "finanzas",
+    "cargo": "Finance Leader",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$mLWyIMhr3VlQ7LCta7RcmC$X3Hyiy0RzIw7StDdzgiRkM2wmeru5chGpEWLp/cdge8=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "estradajessica@supli.tech",
+    "username": "estradajessica",
+    "nombre": "Yessica Dahiana",
+    "apellido": "Estrada Hincapiè",
+    "edad": 37,
+    "telefono": "3205529655",
+    "tipo_usuario": "colaborador",
+    "area": "sales",
+    "cargo": "Kam E Commerce",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$wJCVuTJGAliK26pKUfeklD$KOijC17qBXL7sFXGTDY/PBYiMbViS7WA+uxoCRBd3HQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "prietojaneth@supli.tech",
+    "username": "prietojaneth",
+    "nombre": "Janeth Alexandra",
+    "apellido": "Prieto Rodriguez",
+    "edad": 42,
+    "telefono": "3158544869",
+    "tipo_usuario": "colaborador",
+    "area": "operations",
+    "cargo": "Coo",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$zMXyGnFW2zS3wHWFQj3uEY$4nrKjyTOibi63yFGrX1ILt03VjsI9iYlz3E1HzfDdXg=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "mezapaula@supli.tech",
+    "username": "mezapaula",
+    "nombre": "Paula Andrea",
+    "apellido": "Meza Lopez",
+    "edad": 32,
+    "telefono": "3194982265",
+    "tipo_usuario": "colaborador",
+    "area": "accounting",
+    "cargo": "Accounting Analyst  Senior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$IbtFgSN4fRgYWiwlgsocVU$VEY6OfUs9QUnfMnKq7mZlntgWcB068w5TAcWysHrffI=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "arzayusnicolas@supli.tech",
+    "username": "arzayusnicolas",
+    "nombre": "Nicolás",
+    "apellido": "Arzayus Salgado",
+    "edad": 27,
+    "telefono": "3102301288",
+    "tipo_usuario": "colaborador",
+    "area": "procurement",
+    "cargo": "Procurement Manager",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$8ptHQPDThM2j0AyWdmYr7D$RKcH1Sh0eGf72FAXs7ObUwBrdroKvm7g4Uou3kiuhuU=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "sanchezandres@supli.tech",
+    "username": "sanchezandres",
+    "nombre": "Andres Felipe",
+    "apellido": "Sanchez Cardenas",
+    "edad": 33,
+    "telefono": "3232309956",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Trade Marketing Manager",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$A198LDalIHfyKtZ18QqsSX$dWkiJktp+MHcYTVqqSohbv66O3K74L3KvRxAXvp3UO8=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "cajamarcajuan@supli.tech",
+    "username": "cajamarcajuan",
+    "nombre": "Juan Manuel",
+    "apellido": "Cajamarca Mora",
+    "edad": 26,
+    "telefono": "3125119207",
+    "tipo_usuario": "colaborador",
+    "area": "operations",
+    "cargo": "Local Logistics  Leader Senior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$MzPjRdDYyxH80ThDRaMQWt$igej1oQkIyFeVAXVWQPlCA0DwYYzrSvjOGel0Qpbh5M=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "yofrajilp@gmail.com",
+    "username": "yofrajilp",
+    "nombre": "Yovany Francisco",
+    "apellido": "Peña Angarita",
+    "edad": 52,
+    "telefono": "3023301463",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$UhtPZj4QZU7FLaUtm9HjMY$PTQ6W8pQV6J40ZfL5kJkh4ulnAxNeqv8z9lgx3rMl6s=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "rodriguezangie@supli.tech",
+    "username": "rodriguezangie",
+    "nombre": "Angie",
+    "apellido": "Rodriguez Daza",
+    "edad": 36,
+    "telefono": "3014050553",
+    "tipo_usuario": "colaborador",
+    "area": "sales_corporativo",
+    "cargo": "Kam",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$2GSlED6ZIoMHRH09UtlKbY$dWttV4jJ6W9EVgKbgl4rISkSaxMBPsE04tqo88WFK0I=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "alejandroet@gmail.com",
+    "username": "alejandroet",
+    "nombre": "Alejandro",
+    "apellido": "Echeverrry Trujillo",
+    "edad": 51,
+    "telefono": "3160542594",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$am5rQP8PwccahfpweB2gal$7kzevvh2VIF0VwTnZCoXz2ptnyCVf7RZWmXqrK06Mn8=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "correadaniel@supli.tech",
+    "username": "correadaniel",
+    "nombre": "Daniel",
+    "apellido": "Correa Arias",
+    "edad": 30,
+    "telefono": "3024808888",
+    "tipo_usuario": "colaborador",
+    "area": "bi",
+    "cargo": "Bi Manager",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$lGxGuUKs43uPAnWYHyMFsv$TE1K/sQSxA3gVYE74F4ykUBWlrR6RP390ImCLTiLgkM=",
+    "last_login": null,
+    "is_superuser": true,
+    "email": "herrenojulian@supli.tech",
+    "username": "herrenojulian",
+    "nombre": "Julian Estif",
+    "apellido": "Herreño Palacios",
+    "edad": 24,
+    "telefono": "3027760395",
+    "tipo_usuario": "admin",
+    "area": "bi",
+    "cargo": "Bi  Analyst",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": true,
+    "groups": [
+      [
+        "modulovaloracion"
+      ],
+      [
+        "abastecimientos"
+      ],
+      [
+        "bienestarcoltrade"
+      ],
+      [
+        "admin"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$CBL7L3LWskFIDigfa86H3e$2zSL0dMMtjSAcdWUaPEJzqUnOjnhliE/Vw/QhXRWUbQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "heidysanjuan@hotmail.com",
+    "username": "heidysanjuan",
+    "nombre": "Heeydys",
+    "apellido": "Sanjuan Florez",
+    "edad": 49,
+    "telefono": "3144931691",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$XcTeUL2QOswjWrC49Jq1Xz$ChswdS0t8ygI22/JGFr3OttZFWuHLw8J2hbR3y/IeHQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "gutierrezfred@supli.tech",
+    "username": "gutierrezfred",
+    "nombre": "Fred Neider",
+    "apellido": "Gutierrez Collazos",
+    "edad": 25,
+    "telefono": "3105798673",
+    "tipo_usuario": "colaborador",
+    "area": "operations",
+    "cargo": "Logistics  Analyst Junior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$SnfjQszCHELeLpuXqyzSE5$ptSpXuN0EkxcV/6gVyj/PJj9F2ry3RSK2qpGXJJJfV0=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "yyyppp81@hotmail.com",
+    "username": "yyyppp81",
+    "nombre": "Yasmin",
+    "apellido": "Peralta Peralta",
+    "edad": 45,
+    "telefono": "3013153747",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$QlMBsuBQk2h6Nuhcr0q0we$MGdnigittivhFylp+E2QW63QKuiXsKZyhCSZm1Pmo/I=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "mercedesbeleno97@gmail.com",
+    "username": "mercedesbeleno97",
+    "nombre": "Mercedes",
+    "apellido": "Ortega Beleño",
+    "edad": 44,
+    "telefono": "3192746852",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$SFWjDzecibIQoTQnzqVyoC$YVF0sAioL7UFqL8xD/o8BwKR+vZOrjCEbIHGkq9O7ow=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "merysierra0107@gmail.com",
+    "username": "merysierra0107",
+    "nombre": "Luz Mery",
+    "apellido": "Sierra Bernal",
+    "edad": 42,
+    "telefono": "3102448443",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor   Senior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$aOMJ9WVhMfXWuLSednAs0X$jJHIvjKGjgDuyJE7/TlXkW7p6eczkLGK+Up9+rq7HDc=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "quinterojazbleydy@coltrade.com.co",
+    "username": "quinterojazbleydy",
+    "nombre": "Jazbleydy",
+    "apellido": "Quintero Duarte",
+    "edad": 29,
+    "telefono": "3025552072",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Trade Leader",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$XkvRKmBKdBta9W7tju94wS$YQF3uasgdwWjA4xuo6Sh2GBn64Ouf36xlpj7irpqzaE=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "mitashiro1108@hotmail.com",
+    "username": "mitashiro1108",
+    "nombre": "Paola Andrea",
+    "apellido": "Duarte Castro",
+    "edad": 40,
+    "telefono": "3204533004",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$XO5m6E9dg8y8JfmE9L8xrH$GajrBBxOhupJnFxZ7JvITm1lCgGi034MWFugHW8HL/o=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "jeduardoes@hotmail.com",
+    "username": "jeduardoes",
+    "nombre": "Jose Eduardo",
+    "apellido": "Gonzalez Espitia",
+    "edad": 39,
+    "telefono": "3112885516",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Promotor Senior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$79OeU0FoXgquqrVWaZxPfq$gSYtS8nYusHBC8Wdkl/tUskyGUrAd7/rylssBRAQ348=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "vargasmarco@supli.tech",
+    "username": "vargasmarco",
+    "nombre": "Marco Roberto",
+    "apellido": "Vargas Carvajal",
+    "edad": 42,
+    "telefono": "3163532775",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Trade Leader",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$VkCJcLURJo7SfPf3toXaA3$tYAUy3RkCNBEt1CR04jOtwv4sKG1hW5o/+Uf2od/U2Y=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "johnemm88@gmail.com",
+    "username": "johnemm88",
+    "nombre": "John Edilson",
+    "apellido": "Marin Montoya",
+    "edad": 38,
+    "telefono": "3016496940",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$7mFYi9lZW74Dgdee3K5QrI$t7v6+3CYz1BrsLVT4H6UPjWV0u8Ypx5bUB5hqJHQyf8=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "lopezcindy@supli.tech",
+    "username": "lopezcindy",
+    "nombre": "Cindy Johana",
+    "apellido": "Lopez Gutierrez",
+    "edad": 38,
+    "telefono": "3133807628",
+    "tipo_usuario": "colaborador",
+    "area": "accounting",
+    "cargo": "Accountant",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$EwVEDoUjsyuV09FpdQOpof$5mE+ke000xxG4lvg90Pf1FuoEkJwBEsbNeR7Si7u9Qo=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "urzola55@gmail.com",
+    "username": "urzola55",
+    "nombre": "Vitaliano Antonio",
+    "apellido": "Urzola Tirado",
+    "edad": 38,
+    "telefono": "3143994492",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$hloA6b97q0AwPdalPZPJpl$GqWaBYKg1mHHcHl5IiUYS+8RNN0NchbhO+6mGJ1XpXU=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "avilagerman@supli.tech",
+    "username": "avilagerman",
+    "nombre": "German Andres",
+    "apellido": "Avila Fajardo",
+    "edad": 31,
+    "telefono": "3046834019",
+    "tipo_usuario": "colaborador",
+    "area": "tecnologia",
+    "cargo": "Tech Analyst",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$kORKIipUdnoSTk3tfmmAPc$UKbT6flMgd1PpUIWWL0WykQJ7czBQI4DTl/0iP8silg=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "rodriguezrobert@supli.tech",
+    "username": "rodriguezrobert",
+    "nombre": "Robert Nicolas",
+    "apellido": "Rodriguez Florez",
+    "edad": 31,
+    "telefono": "3046139355",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Trade Marketing Specialist",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$unEYzHlTGyCjgVWDK9bAjD$a0r7aMvgx7Nal6WEJWlhqhY5Bk24kAkWMcT3SBa1tdc=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "diana_guevara91@hotmail.com",
+    "username": "diana_guevara91",
+    "nombre": "Diana Karina",
+    "apellido": "Guevara Mercado",
+    "edad": 35,
+    "telefono": "3228470057",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$8PkFl749V2mH1fBkmoYp2x$tMovLEZw1l1W020qnq2vLGGea+fkI2W7qQBrlzc6w2s=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "rodriguezandrea@supli.tech",
+    "username": "rodriguezandrea",
+    "nombre": "Andrea",
+    "apellido": "Rodriguez Rincon Yenny",
+    "edad": 32,
+    "telefono": "3057847779",
+    "tipo_usuario": "colaborador",
+    "area": "procurement",
+    "cargo": "Procurement Analyst  Junior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$XkzAzpw9we3eA5xbk9OLV5$WdbIewW2QTjYqEuw3TnOoo84OTYQegWErfrd0g0gEjI=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "montealegrewills@supli.tech",
+    "username": "montealegrewills",
+    "nombre": "Wills Alberto",
+    "apellido": "Montealegre Acero",
+    "edad": 44,
+    "telefono": "3205442187",
+    "tipo_usuario": "colaborador",
+    "area": "sales_corporativo",
+    "cargo": "Kam Senior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$gZaozr3C1KH7pXhMbCzHj2$Xj9zGnGbVxAODEUhfkTWrzxNSaq1RYSBrzKai29rmRE=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "vivianaacosta.2115@gmail.com",
+    "username": "vivianaacosta.2115",
+    "nombre": "Nubia Viviana",
+    "apellido": "Acosta Barbosa",
+    "edad": 35,
+    "telefono": "3505008023",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$2PbBFWAdC6Wa8uwwAMAnnL$AHQ0hRDS4YGGhKBWedTmdoVB8ZthkRWehI9OSzFBd4w=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "calderonlorena@supli.tech",
+    "username": "calderonlorena",
+    "nombre": "Lorena",
+    "apellido": "Calderon Mejia Angie",
+    "edad": 33,
+    "telefono": "3192499084",
+    "tipo_usuario": "colaborador",
+    "area": "sales_retail",
+    "cargo": "Sales Retail Manager",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$WiBmhgmqrFCCa8CjH2arcp$xeKecpKTaLrnjCUZKpgW6t2ysOxs0UFepXv2S2w4lMw=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "jbsiete22@gmail.com",
+    "username": "jbsiete22",
+    "nombre": "Jose Eduardo",
+    "apellido": "Bohorquez Gomez",
+    "edad": 35,
+    "telefono": "3244899145",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$V0labHOfOF4d6Bs1BQgQ9D$gdWAu+QkYJJuE+8fcjKNjk+bk+SzcIOFni4VMLDduYY=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "jjj.asneth@hotmail.com",
+    "username": "jjj.asneth",
+    "nombre": "Jasneth",
+    "apellido": "Cuesta Palacios",
+    "edad": 35,
+    "telefono": "3115897273",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$q8ENAmYookG7D9rIzlA52G$FslHEj8HPdr9yP/KqkseRKSWuDRs32A4rMglgO8OqgY=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "smithjaimesnieto123@gmail.com",
+    "username": "smithjaimesnieto123",
+    "nombre": "Smith",
+    "apellido": "Jaimes Nieto",
+    "edad": 35,
+    "telefono": "3004924299",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$SlQWsRRhWAJMgb6LJ6gAgr$lwhoKAVtc9zgAepR3hOdNjYeZfZTNCuFzvLotV1mk98=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "aleja.91suarez@gmail.com",
+    "username": "aleja.91suarez",
+    "nombre": "María Alejandra",
+    "apellido": "Suarez Rincon",
+    "edad": 35,
+    "telefono": "3337475558",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$gbKs85idY8ZmNk2EHM7XMn$b8n40T9d+Glj385cq9nWxBuQaqEp2oVRQ4CCnH4K7Pk=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "barbosaliseth@supli.tech",
+    "username": "barbosaliseth",
+    "nombre": "Liseth Carolina",
+    "apellido": "Barbosa De La Cruz",
+    "edad": 33,
+    "telefono": "311 5593506",
+    "tipo_usuario": "colaborador",
+    "area": "accounting",
+    "cargo": "Aprendiz Sena- Productiva",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$c6v6LUDw04yAsLWAsh8Ix4$xxctVLk6TWcjV3f7iidTueISQE0M5uVITAl13MJlViA=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "martinangie@supli.tech",
+    "username": "martinangie",
+    "nombre": "Angie Katherine",
+    "apellido": "Martin Avendaño",
+    "edad": 26,
+    "telefono": "3132513905",
+    "tipo_usuario": "colaborador",
+    "area": "people",
+    "cargo": "People Analyst  Junior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$4XEwo0yRYYfcs9qA87dNRl$tF2rwtsWrh4SvIKi7DQsLG4AybiWQ5JePMzNId4AYK4=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "rodriguezjorgea@supli.tech",
+    "username": "rodriguezjorgea",
+    "nombre": "Jorge Andres",
+    "apellido": "Rodriguez Restrepo",
+    "edad": 26,
+    "telefono": "3011539517",
+    "tipo_usuario": "colaborador",
+    "area": "sales_corporativo",
+    "cargo": "Kam Senior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$uZFHHeoa6xf2FIsSE9HPkq$U7JOoEnpQyWsNbZxVvXb9XHXOT+IbGYRgeZj8Zm28K8=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "mejiageraldine218@gmail.com",
+    "username": "mejiageraldine218",
+    "nombre": "Geraldine",
+    "apellido": "Mejia Navarro",
+    "edad": 34,
+    "telefono": "3143571594",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$GF5XW8nQ6d3G8j5E1gUgwL$Oxe6dIk/9AFuUk5fwgPSzo+fa9RSUAjk5fMZAhuTVNo=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "mariabpt1994@gmail.com",
+    "username": "mariabpt1994",
+    "nombre": "Maria Betania",
+    "apellido": "Perez Trillo",
+    "edad": 32,
+    "telefono": "3044325494",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$umpD0KWE0lbUSiSkcL9LQo$pTbX1DLMt+8yX/MHOr5YkT/pEAOToH84rC2A1gSscag=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "daniela19032015bastidas@gmail.com",
+    "username": "daniela19032015bastidas",
+    "nombre": "Daniela Alejandra",
+    "apellido": "Bastidas Rojas",
+    "edad": 31,
+    "telefono": "3197728701",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$XjSStt9FjZar1XiB1yTZVL$QAVOvg3AgRfuyQpbWqJt9FA3vmXYs/zYkAU3dCKpHmg=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "dexysierra13@gmail.com",
+    "username": "dexysierra13",
+    "nombre": "Dexy Daniela",
+    "apellido": "Sierra Silva",
+    "edad": 30,
+    "telefono": "3232049403",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$VD5GKkAM6lZQ0Rmqep5SMk$FlPy8Jk3YqQWa4yzkaAln7sNPuILbKX6qgCQOIq1WF8=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "ealexandervo06@gmail.com",
+    "username": "ealexandervo06",
+    "nombre": "Edgar Alexander",
+    "apellido": "Vallejo Ortiz",
+    "edad": 28,
+    "telefono": "3125263515",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$LwuTlh0GRxGrvKgqCQDo9p$NGVMRcmZ+Bj7ba+f81GMfY0NUocjaHDKX0eIkvBXMGA=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "fonsecajair@supli.tech",
+    "username": "fonsecajair",
+    "nombre": "Jair Ferney",
+    "apellido": "Fonseca Gonzalez",
+    "edad": 22,
+    "telefono": "3023956650",
+    "tipo_usuario": "colaborador",
+    "area": "procurement",
+    "cargo": "Procurement Manager",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$Q4c46jVl9qZRKaBouZ0XTN$hxUJLZ3EIOED++2ke9GJe7LQFJo4GPCici6dGx+xOmI=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "lic.carloslealrojas@gmail.com",
+    "username": "lic.carloslealrojas",
+    "nombre": "Carlos Fernando",
+    "apellido": "Leal Rojas",
+    "edad": 28,
+    "telefono": "3172659751",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$Gmae7qPfQ2y1lUnkCd6Ykr$QxEjnbdQMltX/TAeQzu3Ndq5d7qFnpKVpNIoiErC6Pw=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "munozfabian@supli.tech",
+    "username": "munozfabian",
+    "nombre": "Fabian Andres",
+    "apellido": "Muñoz",
+    "edad": 48,
+    "telefono": "3102995083",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Trade Specialist Junior",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$2w5HcUB6w05v82Jnhn74bI$p7JqdWJ+WbJryQrA5ne+jMEiWptvgX/3XdtXLpqhjWc=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "velaedver@supli.tech",
+    "username": "velaedver",
+    "nombre": "Edver Estib",
+    "apellido": "Vela Alvarez",
+    "edad": 29,
+    "telefono": "3142327562",
+    "tipo_usuario": "colaborador",
+    "area": "operations",
+    "cargo": "Vela Alvarez Edver Estib",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$LxcUpelMJeRY4SVqeBn6o7$HwjBSJlw6bN77o30/kxclYIh/Y2U5tzHcDh6iWMtNmw=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "juancamilojc5008@gmail.com",
+    "username": "juancamilojc5008",
+    "nombre": "Juan Camilo",
+    "apellido": "Rubiano Moreno",
+    "edad": 26,
+    "telefono": "3014890132",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$UMAtAinkswLCe0eDq5pShe$+aPkDr5qPj1BTVVbUCalIWAqOzm2WEjgM5bORh2jExs=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "yeimyandreaj@gmail.com",
+    "username": "yeimyandreaj",
+    "nombre": "Jeimy Andrea",
+    "apellido": "Jimenez Perez",
+    "edad": 25,
+    "telefono": "3332338132",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$Jk81D9T20MHvClpd0CwXNU$wcYB6iv9RKP9yzBJRFlfB5qoe4LErvnWBJWf0CRd3fA=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "ellenarrietaredondo@gmail.com",
+    "username": "ellenarrietaredondo",
+    "nombre": "Ellen Dayana",
+    "apellido": "Arrieta Redondo",
+    "edad": 23,
+    "telefono": "3227372779",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$HVC2NTZVJXYRNbWzGIvAXD$L1flztAayIxVrdJaUG/yLtbmrvNTFrBI4fD1axakJBY=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "yulianbartolo2003@gmail.com",
+    "username": "yulianbartolo2003",
+    "nombre": "Yulian Emilio",
+    "apellido": "Bartolo Posso",
+    "edad": 23,
+    "telefono": "3142038457",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$D2Oes4dqtT0kq6BZZkNBz9$7LjeWQkuboGrI+NR5LGl1vv07n6fFuyNKPRcdPQmGyU=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "alisonfula9@gmail.com",
+    "username": "alisonfula9",
+    "nombre": "Alison Thalia",
+    "apellido": "Fula Arias",
+    "edad": 23,
+    "telefono": "3008498256",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$oIDsGD0fjusOeE8hMjAc0x$oq9/8mgdmdBk/lWTOKoSzaWCqx9lrbsBghctZRmqSdQ=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "jyesica40@gmail.com",
+    "username": "jyesica40",
+    "nombre": "Yesica Alejandra",
+    "apellido": "Jimenez Perez",
+    "edad": 22,
+    "telefono": "3227766903",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$bMZJTmmGJMhEQOUwRjOSgE$atPheJwb2IlODYFZtQjbPIemmEPtymRwhXotUMIRNgg=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "karecontreras57@gmail.com",
+    "username": "karecontreras57",
+    "nombre": "Karen Dayana",
+    "apellido": "Contreras Marroquin",
+    "edad": 21,
+    "telefono": "3216549288",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$0Nt2dFZRGuO5ncBlJt4huC$qqk7nM8xQmkakuFrRDrCD+6rGfZrMbMhVg1iE3+qFhc=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "ab9654507@gmail.com",
+    "username": "ab9654507",
+    "nombre": "Alejandra",
+    "apellido": "Blanco Alvarez",
+    "edad": 21,
+    "telefono": "3027022539",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$1XJ43o7VQRqCAdbxlFcjxA$i1CvInrtl0aFc2EeVl8vDz5TwmnFjsCVyx/aYhzoMbo=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "reyeslida@supli.tech",
+    "username": "reyeslida",
+    "nombre": "Lida Yoana",
+    "apellido": "Reyes Murcia",
+    "edad": 36,
+    "telefono": "3206226576",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Trade Leader",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$TgX3T8D8hSsWYshDBZYBmj$31iRMXu5RvTEZflppSx6/VlG5baojhqKLXFZZQpSPg0=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "thomasb1219q@gmail.com",
+    "username": "thomasb1219q",
+    "nombre": "Thomas Santiago",
+    "apellido": "Bohorquez Garcia",
+    "edad": 18,
+    "telefono": "3057828524",
+    "tipo_usuario": "colaborador",
+    "area": "trade",
+    "cargo": "Asesor Comercial",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$JWWuCaopGDIq5x3S6k7xFs$8nIiS8q5mmEbAnDxceodpc1J1CcSBLRq9PuBxWz3KSM=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "jordanjulio@supli.tech",
+    "username": "jordanjulio",
+    "nombre": "Julio Cesar",
+    "apellido": "Jordan Cordova",
+    "edad": 50,
+    "telefono": "51941882356",
+    "tipo_usuario": "colaborador",
+    "area": "sales",
+    "cargo": "Head Of Sales",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$OamIhC5ZbzHMzq0nfHCADC$zYTVaJtDvf/LHBnBZlE06DKesVFVRJxpt1/Y8s5eRgE=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "mendezluisa@supli.tech",
+    "username": "mendezluisa",
+    "nombre": "Luisa Fernanda",
+    "apellido": "Mendez Zapata",
+    "edad": 31,
+    "telefono": "3015454907",
+    "tipo_usuario": "colaborador",
+    "area": "brands",
+    "cargo": "Brand Manager Eero",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Dv3HaeSM0rHknyEXUEeX9a$iyEwq91g/Mu5R0lcRd/4+2THxO+BUI8V428/D0+BCp0=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "vasquezjohana@supli.tech",
+    "username": "vasquezjohana",
+    "nombre": "Wendy Johana",
+    "apellido": "Vásquez Rueda",
+    "edad": 34,
+    "telefono": "317 2769728",
+    "tipo_usuario": "lider",
+    "area": "people",
+    "cargo": "People Manager",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.usuario",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$RoJWOzKnBSXyi4lxvBMvRX$k6oWZswMjiRL8eVj+nJvAKD9EVMLGNfhvSi4LGzD/20=",
+    "last_login": null,
+    "is_superuser": false,
+    "email": "novavaleria@supli.tech",
+    "username": "novavaleria",
+    "nombre": "Valeria Alejandra",
+    "apellido": "Nova Mancera",
+    "edad": 29,
+    "telefono": "301 283 3181",
+    "tipo_usuario": "colaborador",
+    "area": "brands",
+    "cargo": "Brand Leader Bluetti",
+    "jefe_directo": null,
+    "is_active": true,
+    "is_staff": false,
+    "groups": [
+      [
+        "modulovaloracion"
+      ]
+    ],
+    "user_permissions": []
+  }
+},
+{
+  "model": "user.passwordresetcode",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "herrenojulian@supli.tech"
+    ],
+    "code": "318137",
+    "created_at": "2026-07-22T22:35:05.681Z",
+    "expires_at": "2026-07-22T22:45:05.681Z",
+    "used_at": null
+  }
+}
+]

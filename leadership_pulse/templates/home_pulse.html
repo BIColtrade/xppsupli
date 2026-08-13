@@ -1,0 +1,146 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-hero">
+  <div class="lp-hero__eyebrow">Leadership OS</div>
+  <h1 class="lp-hero__title">Leadership Pulse</h1>
+  <p class="lp-hero__subtitle">
+    El sistema que convierte el liderazgo en una ventaja competitiva. Reconocimiento,
+    seguimiento y desarrollo para fortalecer la adopcion de SUPLI OS mediante una cultura
+    high performance, mejora continua y excelencia en la ejecucion.
+  </p>
+
+  {% if ciclo %}
+  <div class="lp-stats">
+    <div class="lp-stat">
+      <div class="lp-stat__value">{% if mi_puntaje %}{{ mi_puntaje.puntaje_total }}{% else %}0{% endif %}</div>
+      <div class="lp-stat__label">Mi puntaje / {{ puntaje_maximo }}</div>
+      {% if mi_puntaje %}
+      <div class="lp-stat__hint">{{ mi_semaforo_emoji }} {{ mi_semaforo_label }}</div>
+      {% endif %}
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{% if mi_puntaje.posicion %}#{{ mi_puntaje.posicion }}{% else %}-{% endif %}</div>
+      <div class="lp-stat__label">Mi posicion en el ranking</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ mis_pendientes }}</div>
+      <div class="lp-stat__label">Retos por reportar</div>
+    </div>
+    {% if puede_validar %}
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ por_validar }}</div>
+      <div class="lp-stat__label">Reportes por validar</div>
+    </div>
+    {% endif %}
+  </div>
+  <p class="lp-page__subtitle">Ciclo vigente: <strong>{{ ciclo.nombre }}</strong>
+    <span class="lp-badge lp-badge--{{ ciclo.estado }}">{{ ciclo.get_estado_display }}</span>
+    &middot; {{ ciclo.fecha_inicio|date:"d/m/Y" }} - {{ ciclo.fecha_fin|date:"d/m/Y" }}</p>
+  {% else %}
+  <div class="lp-alert lp-alert--info">
+    Aun no hay ciclos creados. {% if puede_configurar %}Crea el primer ciclo mensual para iniciar el Pulse.{% endif %}
+  </div>
+  {% endif %}
+
+  <div class="lp-section-divider"></div>
+  <div class="lp-section-title">Mi participacion</div>
+  <div class="lp-grid">
+    <a href="{% url 'leadership_pulse:mis_retos' %}" class="lp-card lp-card--primary">
+      <div class="lp-card__icon">MR</div>
+      <div class="lp-card__title">Mis Retos</div>
+      <div class="lp-card__desc">Reporta cumplimiento, evidencia e impacto de los retos semanales del ciclo.</div>
+    </a>
+    <a href="{% url 'leadership_pulse:mi_pulse' %}" class="lp-card lp-card--info">
+      <div class="lp-card__icon">MP</div>
+      <div class="lp-card__title">Mi Pulse</div>
+      <div class="lp-card__desc">Tu nivel de desempeno, semaforo, puntaje por pilar y evolucion mensual.</div>
+    </a>
+    <a href="{% url 'leadership_pulse:ranking' %}" class="lp-card lp-card--gold">
+      <div class="lp-card__icon">RK</div>
+      <div class="lp-card__title">Ranking Leadership OS</div>
+      <div class="lp-card__desc">Top 3 lideres del mes y desempeno del Leadership Team frente al estandar.</div>
+    </a>
+  </div>
+
+  {% if top3 %}
+  <div class="lp-section-divider"></div>
+  <div class="lp-section-title">Top 3 del ciclo</div>
+  <div class="lp-podio">
+    {% for f in top3 %}
+    <div class="lp-podio__item lp-podio__item--{{ forloop.counter }}">
+      <div class="lp-podio__pos">Puesto {{ forloop.counter }}</div>
+      <div class="lp-podio__medal">{% if forloop.counter == 1 %}&#x1F947;{% elif forloop.counter == 2 %}&#x1F948;{% else %}&#x1F949;{% endif %}</div>
+      <div class="lp-podio__name">{{ f.lider }}</div>
+      <div class="lp-podio__role">{{ f.lider.cargo|default:"Leadership Team" }}</div>
+      <div class="lp-podio__score">{{ f.puntaje }}<span>/{{ puntaje_maximo }}</span></div>
+      <div style="margin-top:10px;"><span class="lp-semaforo lp-semaforo--{{ f.semaforo }}">{{ f.emoji }} {{ f.semaforo_label }}</span></div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if puede_validar %}
+  <div class="lp-section-divider"></div>
+  <div class="lp-section-title">Validacion (People / Admin)</div>
+  <div class="lp-grid">
+    <a href="{% url 'leadership_pulse:bandeja_validacion' %}" class="lp-card lp-card--leader">
+      <div class="lp-card__icon">VA</div>
+      <div class="lp-card__title">Bandeja de Validacion</div>
+      <div class="lp-card__desc">Revisa evidencia objetiva y asigna los 10 + 5 + 10 puntos de cada reto.</div>
+    </a>
+    <a href="{% url 'leadership_pulse:gestionar_miembros' %}" class="lp-card lp-card--leader">
+      <div class="lp-card__icon">LT</div>
+      <div class="lp-card__title">Leadership Team</div>
+      <div class="lp-card__desc">Inscripcion automatica de lideres y control de participacion.</div>
+    </a>
+  </div>
+  {% endif %}
+
+  {% if puede_configurar %}
+  <div class="lp-section-divider"></div>
+  <div class="lp-section-title">Configuracion (Admin People / BI / Tech)</div>
+  <div class="lp-grid">
+    <a href="{% url 'leadership_pulse:gestionar_ciclos' %}" class="lp-card lp-card--purple">
+      <div class="lp-card__icon">CI</div>
+      <div class="lp-card__title">Ciclos Mensuales</div>
+      <div class="lp-card__desc">Define el mes, sus 4 retos semanales, consolida y publica el ranking.</div>
+    </a>
+    <a href="{% url 'leadership_pulse:gestionar_pilares' %}" class="lp-card lp-card--purple">
+      <div class="lp-card__icon">PI</div>
+      <div class="lp-card__title">Pilares</div>
+      <div class="lp-card__desc">Cultura High Performance, Ritmo SUPLI, Infraestructura Tecnologica y KMS.</div>
+    </a>
+  </div>
+  {% endif %}
+
+  <div class="lp-section-divider"></div>
+  <div class="lp-section-title">Como se califica</div>
+  <div class="lp-rubrica">
+    <div class="lp-rubrica__item">
+      <div class="lp-rubrica__pts">10 pts</div>
+      <div class="lp-rubrica__label">Cumplio el reto</div>
+    </div>
+    <div class="lp-rubrica__item">
+      <div class="lp-rubrica__pts">5 pts</div>
+      <div class="lp-rubrica__label">Presento evidencia</div>
+    </div>
+    <div class="lp-rubrica__item">
+      <div class="lp-rubrica__pts">10 pts</div>
+      <div class="lp-rubrica__label">Genero impacto demostrable</div>
+    </div>
+    <div class="lp-rubrica__item">
+      <div class="lp-rubrica__pts">25 pts</div>
+      <div class="lp-rubrica__label">Total por reto semanal</div>
+    </div>
+  </div>
+  <p class="lp-page__subtitle">
+    4 retos semanales x 25 puntos = {{ puntaje_maximo }} puntos mensuales
+    (Cultura High Performance, Ritmo SUPLI, Infraestructura Tecnologica y KMS).
+    Todos los resultados estan respaldados por evidencia objetiva y debidamente soportada.
+  </p>
+</section>
+
+    </main>
+  </div>

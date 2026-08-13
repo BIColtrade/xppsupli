@@ -1,0 +1,85 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-page">
+  <div class="lp-breadcrumb">
+    <a href="{% url 'leadership_pulse:home_leadership_pulse' %}">Leadership Pulse</a> /
+    <a href="{% url 'leadership_pulse:gestionar_ciclos' %}">Ciclos</a> /
+    {% if ciclo %}Editar{% else %}Nuevo{% endif %}
+  </div>
+  <div class="lp-page__header">
+    <div>
+      <h1 class="lp-page__title">{% if ciclo %}Editar ciclo{% else %}Nuevo ciclo mensual{% endif %}</h1>
+      <p class="lp-page__subtitle">El puntaje maximo mensual es 100 puntos.</p>
+    </div>
+  </div>
+
+  {% if error %}<div class="lp-alert lp-alert--error">{{ error }}</div>{% endif %}
+
+  <form method="post" class="lp-form">
+    {% csrf_token %}
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="nombre">Nombre del ciclo</label>
+      <input type="text" id="nombre" name="nombre" class="lp-form__input" required
+             value="{{ ciclo.nombre|default:'' }}" placeholder="Leadership Pulse - Enero 2026">
+    </div>
+
+    <div class="lp-form__row">
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="anio">Ano</label>
+        <input type="number" id="anio" name="anio" class="lp-form__input" required
+               value="{% if ciclo %}{{ ciclo.anio }}{% else %}{{ anio_actual }}{% endif %}">
+      </div>
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="mes">Mes</label>
+        <select id="mes" name="mes" class="lp-form__select" required>
+          {% for k, label in meses_choices %}
+          <option value="{{ k }}" {% if ciclo and ciclo.mes == k %}selected{% elif not ciclo and mes_actual == k %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="estado">Estado</label>
+        <select id="estado" name="estado" class="lp-form__select">
+          {% for k, label in estado_choices %}
+          <option value="{{ k }}" {% if ciclo and ciclo.estado == k %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="lp-form__row">
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="fecha_inicio">Fecha de inicio</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" class="lp-form__input" required
+               value="{{ ciclo.fecha_inicio|date:'Y-m-d' }}">
+      </div>
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="fecha_fin">Fecha de cierre</label>
+        <input type="date" id="fecha_fin" name="fecha_fin" class="lp-form__input" required
+               value="{{ ciclo.fecha_fin|date:'Y-m-d' }}">
+      </div>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="descripcion">Descripcion</label>
+      <textarea id="descripcion" name="descripcion" class="lp-form__textarea">{{ ciclo.descripcion|default:'' }}</textarea>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__checkbox">
+        <input type="checkbox" name="ranking_publicado" {% if ciclo.ranking_publicado %}checked{% endif %}>
+        Publicar el ranking a todo el Leadership Team
+      </label>
+    </div>
+
+    <div class="lp-form__actions">
+      <button type="submit" class="lp-btn lp-btn--primary">Guardar</button>
+      <a href="{% url 'leadership_pulse:gestionar_ciclos' %}" class="lp-btn lp-btn--secondary">Cancelar</a>
+    </div>
+  </form>
+</section>
+
+    </main>
+  </div>

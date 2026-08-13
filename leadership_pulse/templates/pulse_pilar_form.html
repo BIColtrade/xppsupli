@@ -1,0 +1,63 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-page">
+  <div class="lp-breadcrumb">
+    <a href="{% url 'leadership_pulse:gestionar_pilares' %}">Pilares</a> /
+    {% if pilar %}Editar{% else %}Nuevo{% endif %}
+  </div>
+  <div class="lp-page__header">
+    <div>
+      <h1 class="lp-page__title">{% if pilar %}Editar pilar{% else %}Nuevo pilar{% endif %}</h1>
+      <p class="lp-page__subtitle">El puntaje maximo por pilar define su aporte al puntaje mensual.</p>
+    </div>
+  </div>
+
+  {% if error %}<div class="lp-alert lp-alert--error">{{ error }}</div>{% endif %}
+
+  <form method="post" class="lp-form">
+    {% csrf_token %}
+    <div class="lp-form__row">
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="codigo">Codigo</label>
+        <input type="text" id="codigo" name="codigo" class="lp-form__input" required value="{{ pilar.codigo|default:'' }}" placeholder="cultura">
+      </div>
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" class="lp-form__input" required value="{{ pilar.nombre|default:'' }}" placeholder="Cultura High Performance">
+      </div>
+    </div>
+
+    <div class="lp-form__row">
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="puntaje_max">Puntaje maximo</label>
+        <input type="number" id="puntaje_max" name="puntaje_max" class="lp-form__input" value="{% if pilar %}{{ pilar.puntaje_max }}{% else %}25{% endif %}">
+      </div>
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="orden">Orden</label>
+        <input type="number" id="orden" name="orden" class="lp-form__input" value="{% if pilar %}{{ pilar.orden }}{% else %}0{% endif %}">
+      </div>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="descripcion">Descripcion</label>
+      <textarea id="descripcion" name="descripcion" class="lp-form__textarea">{{ pilar.descripcion|default:'' }}</textarea>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__checkbox">
+        <input type="checkbox" name="activo" {% if not pilar or pilar.activo %}checked{% endif %}>
+        Pilar activo
+      </label>
+    </div>
+
+    <div class="lp-form__actions">
+      <button type="submit" class="lp-btn lp-btn--primary">Guardar</button>
+      <a href="{% url 'leadership_pulse:gestionar_pilares' %}" class="lp-btn lp-btn--secondary">Cancelar</a>
+    </div>
+  </form>
+</section>
+
+    </main>
+  </div>

@@ -1,0 +1,126 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-page">
+  <div class="lp-breadcrumb"><a href="{% url 'leadership_pulse:home_leadership_pulse' %}">Leadership Pulse</a> /
+    {% if es_propio %}Mi Pulse{% else %}Pulse de lider{% endif %}</div>
+  <div class="lp-page__header">
+    <div>
+      <h1 class="lp-page__title">{% if es_propio %}Mi Pulse{% else %}{{ lider }}{% endif %}</h1>
+      <p class="lp-page__subtitle">
+        {{ lider.cargo|default:"Leadership Team" }}
+        {% if lider.get_area_display %}&middot; {{ lider.get_area_display }}{% endif %}
+      </p>
+    </div>
+    <a href="{% url 'leadership_pulse:mis_retos' %}" class="lp-btn lp-btn--secondary">Ir a mis retos</a>
+  </div>
+
+  <div class="lp-stats">
+    <div class="lp-stat">
+      <div class="lp-stat__value">{% if actual %}{{ actual.puntaje }}{% else %}0{% endif %}</div>
+      <div class="lp-stat__label">Puntaje del ultimo ciclo / {{ puntaje_maximo }}</div>
+      {% if actual %}
+      <div class="lp-stat__hint"><span class="lp-semaforo lp-semaforo--{{ actual.semaforo }}">{{ actual.emoji }} {{ actual.semaforo_label }}</span></div>
+      {% endif %}
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{% if actual.posicion %}#{{ actual.posicion }}{% else %}-{% endif %}</div>
+      <div class="lp-stat__label">Posicion en el ranking</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ promedio }}</div>
+      <div class="lp-stat__label">Promedio historico</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">
+        {% if tendencia is None %}-{% elif tendencia >= 0 %}<span class="lp-up">+{{ tendencia }}</span>{% else %}<span class="lp-down">{{ tendencia }}</span>{% endif %}
+      </div>
+      <div class="lp-stat__label">Variacion vs. mes anterior</div>
+    </div>
+  </div>
+
+  {% if actual and actual.detalle %}
+  <div class="lp-section-title">Puntaje por pilar - {{ actual.ciclo.nombre }}</div>
+  <div style="margin-bottom: 24px;">
+    {% for d in actual.detalle %}
+    <div class="lp-bar">
+      <div class="lp-bar__label">{{ d.nombre }}</div>
+      <div class="lp-progress">
+        <div class="lp-progress__fill lp-fill--{{ actual.semaforo }}" style="width: {% widthratio d.puntaje d.max 100 %}%;"></div>
+      </div>
+      <div class="lp-bar__num">{{ d.puntaje }} / {{ d.max }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="lp-section-title">Evolucion mensual</div>
+  <div class="lp-table-wrap" style="margin-bottom:24px;">
+    <table class="lp-table">
+      <thead>
+        <tr>
+          <th>Ciclo</th>
+          <th>Puntaje</th>
+          <th>Avance</th>
+          <th>Estado</th>
+          <th>Posicion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for h in historico %}
+        <tr>
+          <td>{{ h.ciclo.nombre }}</td>
+          <td><strong>{{ h.puntaje }}</strong> / {{ puntaje_maximo }}</td>
+          <td style="min-width:160px;">
+            <div class="lp-progress">
+              <div class="lp-progress__fill lp-fill--{{ h.semaforo }}" style="width: {{ h.puntaje }}%;"></div>
+            </div>
+          </td>
+          <td><span class="lp-semaforo lp-semaforo--{{ h.semaforo }}">{{ h.emoji }} {{ h.semaforo_label }}</span></td>
+          <td>{% if h.posicion %}#{{ h.posicion }}{% else %}-{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="lp-table__empty">Aun no hay ciclos consolidados.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="lp-section-title">Ultimos retos validados</div>
+  <div class="lp-table-wrap">
+    <table class="lp-table">
+      <thead>
+        <tr>
+          <th>Ciclo</th>
+          <th>Semana</th>
+          <th>Reto</th>
+          <th>Pilar</th>
+          <th>Cumplio</th>
+          <th>Evidencia</th>
+          <th>Impacto</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in ultimas %}
+        <tr>
+          <td>{{ p.reto.ciclo.nombre }}</td>
+          <td>S{{ p.reto.semana }}</td>
+          <td>{{ p.reto.titulo }}</td>
+          <td>{{ p.reto.pilar.nombre }}</td>
+          <td>{{ p.pts_cumplimiento }}</td>
+          <td>{{ p.pts_evidencia }}</td>
+          <td>{{ p.pts_impacto }}</td>
+          <td><strong>{{ p.puntaje_total }}</strong>/{{ p.reto.puntaje_max }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8" class="lp-table__empty">Sin retos validados por ahora.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

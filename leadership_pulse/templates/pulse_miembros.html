@@ -1,0 +1,74 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-page">
+  <div class="lp-breadcrumb"><a href="{% url 'leadership_pulse:home_leadership_pulse' %}">Leadership Pulse</a> / Leadership Team</div>
+  <div class="lp-page__header">
+    <div>
+      <h1 class="lp-page__title">Leadership Team</h1>
+      <p class="lp-page__subtitle">Todos los miembros participan automaticamente desde el inicio de la implementacion de Leadership OS.</p>
+    </div>
+    <form method="post" action="{% url 'leadership_pulse:sincronizar_miembros' %}">
+      {% csrf_token %}
+      <button type="submit" class="lp-btn lp-btn--primary">Sincronizar lideres</button>
+    </form>
+  </div>
+
+  {% if success %}<div class="lp-alert lp-alert--success">{{ success }}</div>{% endif %}
+
+  <form method="post" action="{% url 'leadership_pulse:agregar_miembro' %}" class="lp-filters">
+    {% csrf_token %}
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="usuario">Inscribir manualmente</label>
+      <select id="usuario" name="usuario" class="lp-form__select">
+        {% for u in candidatos %}
+        <option value="{{ u.id }}">{{ u }} - {{ u.cargo|default:"Sin cargo" }}</option>
+        {% empty %}
+        <option value="">No hay lideres pendientes por inscribir</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="lp-btn lp-btn--secondary">Agregar</button>
+  </form>
+
+  <div class="lp-table-wrap">
+    <table class="lp-table">
+      <thead>
+        <tr>
+          <th>Lider</th>
+          <th>Cargo</th>
+          <th>Area</th>
+          <th>Ingreso</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in miembros %}
+        <tr>
+          <td>{{ m.usuario }}</td>
+          <td>{{ m.usuario.cargo|default:"-" }}</td>
+          <td>{{ m.usuario.get_area_display|default:"-" }}</td>
+          <td>{{ m.fecha_ingreso|date:"d/m/Y" }}</td>
+          <td>{% if m.activo %}Activo{% else %}Inactivo{% endif %}</td>
+          <td class="lp-actions">
+            <a href="{% url 'leadership_pulse:pulse_lider' m.usuario.id %}" class="lp-btn lp-btn--secondary lp-btn--sm">Ver pulse</a>
+            <form method="post" action="{% url 'leadership_pulse:alternar_miembro' m.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="lp-btn lp-btn--{% if m.activo %}danger{% else %}success{% endif %} lp-btn--sm">
+                {% if m.activo %}Desactivar{% else %}Activar{% endif %}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="lp-table__empty">Aun no hay lideres inscritos. Usa "Sincronizar lideres".</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+    </main>
+  </div>

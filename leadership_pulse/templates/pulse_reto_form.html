@@ -1,0 +1,92 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-page">
+  <div class="lp-breadcrumb">
+    <a href="{% url 'leadership_pulse:gestionar_ciclos' %}">Ciclos</a> /
+    <a href="{% url 'leadership_pulse:gestionar_retos' ciclo.id %}">{{ ciclo.nombre }}</a> /
+    {% if reto %}Editar reto{% else %}Nuevo reto{% endif %}
+  </div>
+  <div class="lp-page__header">
+    <div>
+      <h1 class="lp-page__title">{% if reto %}Editar reto semanal{% else %}Nuevo reto semanal{% endif %}</h1>
+      <p class="lp-page__subtitle">Vale {{ puntaje_reto }} puntos: {{ pts_cumplimiento }} cumplimiento + {{ pts_evidencia }} evidencia + {{ pts_impacto }} impacto.</p>
+    </div>
+  </div>
+
+  {% if error %}<div class="lp-alert lp-alert--error">{{ error }}</div>{% endif %}
+
+  <form method="post" class="lp-form">
+    {% csrf_token %}
+    <div class="lp-form__row">
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="semana">Semana</label>
+        <select id="semana" name="semana" class="lp-form__select" required>
+          {% for k, label in semanas_choices %}
+          <option value="{{ k }}" {% if reto and reto.semana == k %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="pilar">Pilar</label>
+        <select id="pilar" name="pilar" class="lp-form__select" required>
+          {% for p in pilares %}
+          <option value="{{ p.id }}" {% if reto and reto.pilar_id == p.id %}selected{% endif %}>{{ p.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="titulo">Titulo del reto</label>
+      <input type="text" id="titulo" name="titulo" class="lp-form__input" required value="{{ reto.titulo|default:'' }}">
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="descripcion">Descripcion</label>
+      <textarea id="descripcion" name="descripcion" class="lp-form__textarea">{{ reto.descripcion|default:'' }}</textarea>
+    </div>
+
+    <div class="lp-form__row">
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="fecha_inicio">Fecha de inicio</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio" class="lp-form__input" required value="{{ reto.fecha_inicio|date:'Y-m-d' }}">
+      </div>
+      <div class="lp-form__group">
+        <label class="lp-form__label" for="fecha_cierre">Fecha de cierre</label>
+        <input type="date" id="fecha_cierre" name="fecha_cierre" class="lp-form__input" required value="{{ reto.fecha_cierre|date:'Y-m-d' }}">
+      </div>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="criterio_cumplimiento">Criterio de cumplimiento ({{ pts_cumplimiento }} pts)</label>
+      <textarea id="criterio_cumplimiento" name="criterio_cumplimiento" class="lp-form__textarea">{{ reto.criterio_cumplimiento|default:'' }}</textarea>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="criterio_evidencia">Criterio de evidencia ({{ pts_evidencia }} pts)</label>
+      <textarea id="criterio_evidencia" name="criterio_evidencia" class="lp-form__textarea">{{ reto.criterio_evidencia|default:'' }}</textarea>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="criterio_impacto">Criterio de impacto demostrable ({{ pts_impacto }} pts)</label>
+      <textarea id="criterio_impacto" name="criterio_impacto" class="lp-form__textarea">{{ reto.criterio_impacto|default:'' }}</textarea>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__checkbox">
+        <input type="checkbox" name="activo" {% if not reto or reto.activo %}checked{% endif %}>
+        Reto activo
+      </label>
+    </div>
+
+    <div class="lp-form__actions">
+      <button type="submit" class="lp-btn lp-btn--primary">Guardar</button>
+      <a href="{% url 'leadership_pulse:gestionar_retos' ciclo.id %}" class="lp-btn lp-btn--secondary">Cancelar</a>
+    </div>
+  </form>
+</section>
+
+    </main>
+  </div>

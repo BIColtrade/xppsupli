@@ -96,6 +96,23 @@ class GroupAccessMiddleware:
             ):
                 return render(request, "acceso_no_permitido.html", status=403)
 
+        # Leadership Pulse: admin, grupo leadershippulse, o roles internos
+        # (Admin People, BI/Tech, CEO o lider). Los views aplican el control
+        # fino por seccion (configuracion, validacion, ranking).
+        if path.startswith("/leadership/pulse/"):
+            auth_resp = _require_auth()
+            if auth_resp:
+                return auth_resp
+            area = getattr(user, "area", None)
+            tipo_usuario = getattr(user, "tipo_usuario", None)
+            if not (
+                _is_admin()
+                or _in_group("leadershippulse")
+                or area in {"people", "bi", "tecnologia", "ceo"}
+                or tipo_usuario in {"admin", "lider"}
+            ):
+                return render(request, "acceso_no_permitido.html", status=403)
+
         # home_user y settings_user: admin o cualquier grupo funcional
         if path.startswith("/coltrxde/home_user/") or path.startswith("/coltrxde/settings-user/"):
             auth_resp = _require_auth()

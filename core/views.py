@@ -12,10 +12,15 @@ def home_autenticado(request):
         return redirect("login")
     group_names = set(user.groups.values_list("name", flat=True))
     is_admin = "admin" in group_names
+    es_lider_pulse = (
+        getattr(user, "tipo_usuario", None) in {"admin", "lider"}
+        or getattr(user, "area", None) in {"people", "bi", "tecnologia", "ceo"}
+    )
     context = {
         "can_abastecimientos": is_admin or "abastecimientos" in group_names,
         "can_bienestar": is_admin or "bienestarcoltrade" in group_names,
         "can_valoracion": is_admin or "modulovaloracion" in group_names,
+        "can_pulse": is_admin or "leadershippulse" in group_names or es_lider_pulse,
         "can_user": True,  # Todo usuario autenticado ve la tarjeta Usuarios
     }
     return render(request, "home_autenticado.html", context)
