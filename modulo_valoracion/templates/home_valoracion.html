@@ -3,8 +3,8 @@
 <link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
 
 <section class="home-cards">
-  <h1 class="home-cards__title">Modulo de Valoracion - SUPLI OS</h1>
-  <p class="home-cards__subtitle">Evalua, mide y consolida resultados organizacionales.</p>
+  <h1 class="home-cards__title">SUPLI PRIME</h1>
+  <p class="home-cards__subtitle">Modulo de valoracion SUPLI OS: evalua, consolida y segmenta los resultados de las personas.</p>
 
   <div class="val-stats">
     <div class="val-stat">
@@ -55,7 +55,12 @@
     <a href="{% url 'modulo_valoracion:dashboard_organizacional' %}" class="home-card home-card--primary">
       <div class="home-card__icon">DB</div>
       <div class="home-card__title">Dashboard Organizacional</div>
-      <div class="home-card__desc">Promedios, semaforo, top performers, brechas, tendencias y evolucion historica. Filtra por fecha, area, cargo, persona y tipo.</div>
+      <div class="home-card__desc">Promedios, semaforo, top performers, brechas y evolucion historica. Segmenta por fecha, ciclo, area, equipo, rol, cargo, persona y tipo.</div>
+    </a>
+    <a href="{% url 'modulo_valoracion:consolidado_individual' %}" class="home-card home-card--info">
+      <div class="home-card__icon">CI</div>
+      <div class="home-card__title">Consolidado Individual</div>
+      <div class="home-card__desc">Un resultado ponderado por persona con todas sus calificaciones, el detalle item por item y exportacion a CSV.</div>
     </a>
   </div>
   {% endif %}

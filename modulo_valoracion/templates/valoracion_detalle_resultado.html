@@ -5,20 +5,26 @@
 <section class="val-page">
   <div class="val-page__header">
     <div>
-      <h1 class="val-page__title">Detalle del resultado: {{ resultado.evaluado }}</h1>
+      <h1 class="val-page__title">Detalle de la valoracion: {{ resultado.evaluado }}</h1>
       <p class="val-page__subtitle">
         Ciclo: <strong>{{ resultado.ciclo.nombre }}</strong> &middot;
         Tipo: {{ resultado.get_tipo_evaluacion_display }} &middot;
-        Evaluadores: {{ asignaciones_count }}
+        {{ resultado.evaluado.cargo|default:"Sin cargo" }} &middot;
+        {{ resultado.evaluado.get_area_display|default:"Sin area" }} &middot;
+        Calificaciones consolidadas: {{ asignaciones_count }}
       </p>
     </div>
-    <a href="javascript:history.back()" class="val-btn val-btn--secondary">Volver</a>
+    <div style="display:flex; gap:8px;">
+      <a href="{% url 'modulo_valoracion:dashboard_individual' resultado.evaluado_id %}" class="val-btn val-btn--secondary">Ficha individual</a>
+      <a href="javascript:history.back()" class="val-btn val-btn--secondary">Volver</a>
+    </div>
   </div>
 
+  <!-- ---- Resultado consolidado ---- -->
   <div class="val-stats">
     <div class="val-stat">
       <div class="val-stat__value">{{ resultado.porcentaje }}%</div>
-      <div class="val-stat__label">Porcentaje final</div>
+      <div class="val-stat__label">Consolidado ponderado</div>
     </div>
     <div class="val-stat">
       <div class="val-stat__value">{{ resultado.puntaje_total }}</div>
@@ -26,66 +32,183 @@
     </div>
     <div class="val-stat">
       <div class="val-stat__value">{{ resultado.puntaje_jefe }}%</div>
-      <div class="val-stat__label">Score jefe</div>
+      <div class="val-stat__label">Jefe ({{ resultado.evaluadores_jefe }})</div>
     </div>
     <div class="val-stat">
       <div class="val-stat__value">{{ resultado.puntaje_equipo }}%</div>
-      <div class="val-stat__label">Score equipo</div>
+      <div class="val-stat__label">Equipo ({{ resultado.evaluadores_equipo }})</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ resultado.puntaje_autoevaluacion }}%</div>
+      <div class="val-stat__label">Autoevaluacion ({{ resultado.evaluadores_auto }})</div>
     </div>
   </div>
 
   <div style="margin-bottom: 18px;">
     <span class="semaforo semaforo--{{ resultado.semaforo }}" style="font-size: 16px; padding: 8px 18px;">
-      {{ resultado.get_semaforo_display }}
+      {{ semaforo_emoji }} {{ resultado.get_semaforo_display }}
     </span>
   </div>
 
-  {% if resultado.fortalezas %}
-  <div class="val-form" style="max-width:none; margin-bottom:18px;">
-    <div class="val-section-title">Fortalezas</div>
-    <ul style="color: var(--val-text); padding-left: 18px;">
-      {% for f in resultado.fortalezas %}<li>{{ f }}</li>{% endfor %}
-    </ul>
+  <!-- ---- Segmentacion del detalle ---- -->
+  <form method="get" class="val-filters">
+    <div class="val-form__group" style="margin-bottom:0;">
+      <label class="val-form__label">Ver calificaciones de</label>
+      <select name="rol" class="val-form__select">
+        <option value="">Todos los evaluadores</option>
+        {% for cod, label in rol_choices %}
+        <option value="{{ cod }}" {% if rol_filtro == cod %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="val-form__group" style="margin-bottom:0;">
+      <label class="val-form__label">Buscar item / competencia</label>
+      <input type="text" name="q" value="{{ buscar }}" class="val-form__input" placeholder="Texto del item...">
+    </div>
+    <button type="submit" class="val-btn val-btn--primary">Filtrar</button>
+    <a href="{% url 'modulo_valoracion:detalle_resultado' resultado.id %}" class="val-btn val-btn--secondary">Limpiar</a>
+  </form>
+  {% if rol_filtro or buscar %}
+  <div class="val-alert val-alert--info">
+    Mostrando el detalle sobre {{ asignaciones_filtradas_count }} de {{ asignaciones_count }} calificacion(es).
+    Los KPI de arriba siempre corresponden al consolidado completo.
   </div>
   {% endif %}
 
-  {% if resultado.brechas %}
-  <div class="val-form" style="max-width:none; margin-bottom:18px;">
-    <div class="val-section-title">Brechas</div>
-    <ul style="color: var(--val-text); padding-left: 18px;">
-      {% for b in resultado.brechas %}<li>{{ b }}</li>{% endfor %}
-    </ul>
+  <!-- ---- Resultado por competencia ---- -->
+  <div class="dash-card dash-card--full" style="margin-bottom:18px;">
+    <div class="dash-card__title">Resultado por competencia</div>
+    {% for c in competencias %}
+    <div class="dash-bar">
+      <div class="dash-bar__label">{{ c.semaforo_emoji }} {{ c.etiqueta }} <span class="dash-bar__sub">({{ c.items }} items)</span></div>
+      <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ c.semaforo }}" style="width: {{ c.porcentaje }}%;"></div></div>
+      <div class="dash-bar__num">{{ c.promedio }}/5 &middot; {{ c.porcentaje }}%</div>
+    </div>
+    {% empty %}
+    <p class="dash-empty">Sin respuestas tipo escala para agrupar.</p>
+    {% endfor %}
   </div>
-  {% endif %}
 
-  <div class="val-section-title">Detalle pregunta por pregunta</div>
+  <!-- ---- Cada item evaluado y su resultado ---- -->
+  <div class="val-section-title">Cada item evaluado y su resultado</div>
   <div class="val-table-wrap" style="margin-bottom: 18px;">
     <table class="val-table">
       <thead>
         <tr>
           <th>Competencia</th>
-          <th>Enunciado</th>
-          <th># Resp.</th>
+          <th>Item evaluado</th>
+          <th>Calif.</th>
           <th>Promedio (1-5)</th>
+          <th>Nivel</th>
+          <th>Jefe</th>
+          <th>Equipo</th>
+          <th>Auto</th>
+          <th>Brecha auto</th>
+          <th>Distribucion</th>
         </tr>
       </thead>
       <tbody>
-        {% for p in preguntas_data %}
+        {% for i in items %}
         <tr>
-          <td>{{ p.competencia }}</td>
-          <td>{{ p.enunciado }}</td>
-          <td>{{ p.respuestas_count }}</td>
-          <td><strong>{{ p.promedio }}</strong></td>
+          <td>{{ i.competencia }}</td>
+          <td>{{ i.enunciado }}</td>
+          <td>{{ i.respuestas_count }}</td>
+          <td>
+            <div class="dash-bar__track" style="width:90px; display:inline-block; vertical-align:middle;">
+              <div class="dash-bar__fill dash-fill--{{ i.semaforo }}" style="width: {{ i.porcentaje }}%;"></div>
+            </div>
+            <strong style="margin-left:8px;">{{ i.promedio }}</strong>
+          </td>
+          <td><span class="semaforo semaforo--{{ i.semaforo }}">{{ i.semaforo_emoji }} {{ i.nivel }}</span></td>
+          <td>{% if i.promedio_jefe != None %}{{ i.promedio_jefe }} <span class="dash-bar__sub">({{ i.n_jefe }})</span>{% else %}-{% endif %}</td>
+          <td>{% if i.promedio_equipo != None %}{{ i.promedio_equipo }} <span class="dash-bar__sub">({{ i.n_equipo }})</span>{% else %}-{% endif %}</td>
+          <td>{% if i.promedio_auto != None %}{{ i.promedio_auto }}{% else %}-{% endif %}</td>
+          <td class="{% if i.brecha_auto > 0 %}dash-down{% elif i.brecha_auto < 0 %}dash-up{% endif %}">
+            {% if i.brecha_auto != None %}{% if i.brecha_auto > 0 %}+{% endif %}{{ i.brecha_auto }}{% else %}-{% endif %}
+          </td>
+          <td>
+            <div class="dash-dist">
+              {% for d in i.distribucion %}
+              <span class="dash-dist__cell" title="{{ d.label }}: {{ d.count }}">{{ d.valor }}<b>{{ d.count }}</b></span>
+              {% endfor %}
+            </div>
+          </td>
         </tr>
         {% empty %}
-        <tr><td colspan="4" style="text-align:center; color:var(--val-muted); padding: 20px;">Sin respuestas tipo Likert.</td></tr>
+        <tr><td colspan="10" class="dash-empty">Sin respuestas tipo escala para los filtros aplicados.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 
+  <div class="dash-grid">
+    <!-- ---- Mejores items ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Items mejor calificados</div>
+      <ul class="dash-list">
+        {% for i in mejores_items %}
+        <li><span class="dash-chip dash-chip--ok">{{ i.promedio }}</span> {{ i.enunciado|truncatechars:110 }}</li>
+        {% empty %}
+        <li class="dash-empty">Sin datos.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- ---- Items a trabajar ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Items a trabajar</div>
+      <ul class="dash-list">
+        {% for i in peores_items %}
+        <li><span class="dash-chip dash-chip--gap">{{ i.promedio }}</span> {{ i.enunciado|truncatechars:110 }}</li>
+        {% empty %}
+        <li class="dash-empty">Sin datos.</li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- ---- Calificaciones recibidas ---- -->
+    <div class="dash-card dash-card--wide">
+      <div class="dash-card__title">Calificaciones recibidas ({{ asignaciones_count }})</div>
+      <div class="val-table-wrap">
+        <table class="val-table">
+          <thead><tr><th>Evaluador</th><th>Rol</th><th>Puntaje</th><th>%</th><th>Semaforo</th><th>Fecha</th></tr></thead>
+          <tbody>
+            {% for c in calificaciones %}
+            <tr>
+              <td>{{ c.evaluador }}</td>
+              <td>{{ c.rol }}</td>
+              <td>{{ c.puntaje }}/5</td>
+              <td>{{ c.porcentaje }}%</td>
+              <td><span class="semaforo semaforo--{{ c.semaforo }}">{{ c.semaforo_emoji }}</span></td>
+              <td>{{ c.fecha|date:"d/m/Y H:i"|default:"-" }}</td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="dash-empty">Sin calificaciones completadas.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <p class="dash-note">
+        Estas calificaciones no se muestran como resultados independientes: el consolidado de arriba las pondera
+        segun el rol del evaluador y los pesos del ciclo.
+      </p>
+    </div>
+  </div>
+
+  {% if abiertas %}
+  <div class="val-section-title" style="margin-top:18px;">Respuestas abiertas</div>
+  {% for a in abiertas %}
+  <div class="val-form" style="max-width:none; margin-bottom:12px;">
+    <div style="font-size:13px; color:var(--val-muted); margin-bottom:6px;">
+      <strong>{{ a.evaluador }}</strong> &middot; {{ a.rol }} &middot; {{ a.enunciado }}
+    </div>
+    <div style="white-space:pre-wrap;">{{ a.texto }}</div>
+  </div>
+  {% endfor %}
+  {% endif %}
+
   {% if observaciones %}
-  <div class="val-section-title">Observaciones y acuerdos</div>
+  <div class="val-section-title" style="margin-top:18px;">Observaciones y acuerdos</div>
   {% for o in observaciones %}
     <div class="val-form" style="max-width:none; margin-bottom:12px;">
       <div style="font-size:13px; color:var(--val-muted); margin-bottom:6px;">

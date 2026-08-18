@@ -7,7 +7,10 @@
     <div>
       <h1 class="val-page__title">{{ persona }}</h1>
       <p class="val-page__subtitle">
-        {{ persona.cargo|default:"Sin cargo" }} &middot; {{ persona.get_area_display|default:"Sin area" }}
+        {{ persona.cargo|default:"Sin cargo" }} &middot;
+        {{ persona.get_area_display|default:"Sin area" }} &middot;
+        Rol: {{ persona.get_tipo_usuario_display|default:"Sin rol" }} &middot;
+        Equipo: {{ persona.jefe_directo|default:"Sin jefe directo" }}
       </p>
     </div>
     {% if puede_ver_dashboard %}
@@ -26,14 +29,18 @@
   <!-- ---- KPIs individuales ---- -->
   <div class="dash-kpis">
     <div class="dash-kpi">
-      <div class="dash-kpi__label">Resultado actual</div>
-      <div class="dash-kpi__value">{{ actual.porcentaje }}%</div>
-      <span class="semaforo semaforo--{{ actual.semaforo }}">{{ semaforo_actual_emoji }} {{ actual.get_semaforo_display }}</span>
+      <div class="dash-kpi__label">Consolidado global</div>
+      <div class="dash-kpi__value">{{ consolidado.porcentaje }}%</div>
+      <span class="semaforo semaforo--{{ consolidado.semaforo }}">{{ consolidado.semaforo_emoji }} {{ consolidado.semaforo_label }}</span>
+      <div class="dash-kpi__hint">
+        Pondera {{ consolidado.evaluaciones }} calificacion(es) en {{ consolidado.ciclos }} ciclo(s)
+      </div>
     </div>
     <div class="dash-kpi">
-      <div class="dash-kpi__label">Puntaje (0-5)</div>
-      <div class="dash-kpi__value">{{ actual.puntaje_total }}</div>
-      <div class="dash-kpi__hint">{{ actual.ciclo.nombre }}</div>
+      <div class="dash-kpi__label">Resultado ultimo ciclo</div>
+      <div class="dash-kpi__value">{{ actual.porcentaje }}%</div>
+      <span class="semaforo semaforo--{{ actual.semaforo }}">{{ semaforo_actual_emoji }} {{ actual.get_semaforo_display }}</span>
+      <div class="dash-kpi__hint">{{ actual.ciclo.nombre }} &middot; {{ actual.puntaje_total }}/5</div>
     </div>
     <div class="dash-kpi">
       <div class="dash-kpi__label">Tendencia</div>
@@ -46,6 +53,103 @@
       <div class="dash-kpi__label">Cumplimiento de planes</div>
       <div class="dash-kpi__value">{{ cumplimiento }}%</div>
       <div class="dash-kpi__hint">{{ planes_cumplidos }}/{{ planes_total }} cumplidos</div>
+    </div>
+  </div>
+
+  <!-- ---- Como se compone el consolidado ---- -->
+  <div class="dash-card dash-card--full" style="margin-bottom:18px;">
+    <div class="dash-card__title">Como se compone el consolidado</div>
+    <div class="val-stats">
+      <div class="val-stat">
+        <div class="val-stat__value">{% if consolidado.promedio_jefe != None %}{{ consolidado.promedio_jefe }}%{% else %}-{% endif %}</div>
+        <div class="val-stat__label">Jefe inmediato ({{ consolidado.n_jefe }} calif.)</div>
+      </div>
+      <div class="val-stat">
+        <div class="val-stat__value">{% if consolidado.promedio_equipo != None %}{{ consolidado.promedio_equipo }}%{% else %}-{% endif %}</div>
+        <div class="val-stat__label">Equipo ({{ consolidado.n_equipo }} calif.)</div>
+      </div>
+      <div class="val-stat">
+        <div class="val-stat__value">{% if consolidado.promedio_auto != None %}{{ consolidado.promedio_auto }}%{% else %}-{% endif %}</div>
+        <div class="val-stat__label">Autoevaluacion ({{ consolidado.n_auto }} calif.)</div>
+      </div>
+      <div class="val-stat">
+        <div class="val-stat__value">{{ consolidado.puntaje }}</div>
+        <div class="val-stat__label">Puntaje consolidado (0-5)</div>
+      </div>
+    </div>
+    <p class="dash-note">
+      Las calificaciones no se muestran por separado: se promedian por rol del evaluador y luego se
+      ponderan con los pesos definidos en cada ciclo.
+    </p>
+  </div>
+
+  <!-- ---- Competencias consolidadas ---- -->
+  <div class="dash-card dash-card--full" style="margin-bottom:18px;">
+    <div class="dash-card__title">Resultado consolidado por competencia</div>
+    {% for c in consolidado.competencias %}
+    <div class="dash-bar">
+      <div class="dash-bar__label">{{ c.semaforo_emoji }} {{ c.etiqueta }}</div>
+      <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ c.semaforo }}" style="width: {{ c.porcentaje }}%;"></div></div>
+      <div class="dash-bar__num">{{ c.promedio }}/5 &middot; {{ c.porcentaje }}%</div>
+    </div>
+    {% empty %}
+    <p class="dash-empty">Consolida el ciclo para ver el resultado por competencia.</p>
+    {% endfor %}
+  </div>
+
+  <!-- ---- Detalle de items evaluados ---- -->
+  <div class="dash-card dash-card--full" style="margin-bottom:18px;">
+    <div class="dash-card__title">Detalle de items evaluados</div>
+    <form method="get" class="val-filters">
+      <div class="val-form__group" style="margin-bottom:0;">
+        <label class="val-form__label">Ciclo</label>
+        <select name="ciclo" class="val-form__select">
+          {% for e in evolucion %}
+          <option value="{{ e.id }}" {% if resultado_detalle.id == e.id %}selected{% endif %}>{{ e.nombre }} ({{ e.porcentaje }}%)</option>
+          {% endfor %}
+        </select>
+      </div>
+      <button type="submit" class="val-btn val-btn--primary">Ver</button>
+      {% if resultado_detalle %}
+      <a href="{% url 'modulo_valoracion:detalle_resultado' resultado_detalle.id %}" class="val-btn val-btn--secondary">Detalle completo</a>
+      {% endif %}
+    </form>
+    <div class="val-table-wrap">
+      <table class="val-table">
+        <thead>
+          <tr>
+            <th>Competencia</th>
+            <th>Item evaluado</th>
+            <th>Calif.</th>
+            <th>Promedio (1-5)</th>
+            <th>Nivel</th>
+            <th>Jefe</th>
+            <th>Equipo</th>
+            <th>Auto</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in items %}
+          <tr>
+            <td>{{ i.competencia }}</td>
+            <td>{{ i.enunciado }}</td>
+            <td>{{ i.respuestas_count }}</td>
+            <td>
+              <div class="dash-bar__track" style="width:90px; display:inline-block; vertical-align:middle;">
+                <div class="dash-bar__fill dash-fill--{{ i.semaforo }}" style="width: {{ i.porcentaje }}%;"></div>
+              </div>
+              <strong style="margin-left:8px;">{{ i.promedio }}</strong>
+            </td>
+            <td><span class="semaforo semaforo--{{ i.semaforo }}">{{ i.semaforo_emoji }} {{ i.nivel }}</span></td>
+            <td>{% if i.promedio_jefe != None %}{{ i.promedio_jefe }}{% else %}-{% endif %}</td>
+            <td>{% if i.promedio_equipo != None %}{{ i.promedio_equipo }}{% else %}-{% endif %}</td>
+            <td>{% if i.promedio_auto != None %}{{ i.promedio_auto }}{% else %}-{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8" class="dash-empty">Sin items evaluados en este ciclo.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 
@@ -64,7 +168,9 @@
       {% endif %}
       <div class="dash-chart__labels">
         {% for e in evolucion %}
-        <span title="{{ e.nombre }}"><span class="semaforo semaforo--{{ e.semaforo }}">{{ e.porcentaje }}%</span> {{ e.nombre|truncatechars:14 }}</span>
+        <span title="{{ e.nombre }} - {{ e.evaluadores }} calificacion(es)">
+          <a class="dash-link" href="?ciclo={{ e.id }}"><span class="semaforo semaforo--{{ e.semaforo }}">{{ e.porcentaje }}%</span> {{ e.nombre|truncatechars:14 }}</a>
+        </span>
         {% empty %}
         <span class="dash-empty">Sin historico.</span>
         {% endfor %}

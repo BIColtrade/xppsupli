@@ -5,17 +5,63 @@
 <section class="val-page">
   <div class="val-page__header">
     <div>
-      <h1 class="val-page__title">Mis Resultados</h1>
-      <p class="val-page__subtitle">Resultados consolidados por ciclo - puntaje, semaforo, fortalezas y brechas.</p>
+      <h1 class="val-page__title">SUPLI PRIME &middot; Mis Resultados</h1>
+      <p class="val-page__subtitle">Tu resultado consolidado y el detalle de cada ciclo.</p>
     </div>
   </div>
 
+  {% if consolidado %}
+  <div class="dash-kpis">
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Mi consolidado</div>
+      <div class="dash-kpi__value">{{ consolidado.porcentaje }}%</div>
+      <span class="semaforo semaforo--{{ consolidado.semaforo }}">{{ consolidado.semaforo_emoji }} {{ consolidado.semaforo_label }}</span>
+      <div class="dash-kpi__hint">{{ consolidado.evaluaciones }} calificacion(es) en {{ consolidado.ciclos }} ciclo(s)</div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Puntaje (0-5)</div>
+      <div class="dash-kpi__value">{{ consolidado.puntaje }}</div>
+      <div class="dash-kpi__hint">Ultimo ciclo: {{ consolidado.ultimo_ciclo }}</div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Como se compone</div>
+      <div class="dash-kpi__hint" style="font-size:13px; line-height:1.8;">
+        Jefe: {% if consolidado.promedio_jefe != None %}{{ consolidado.promedio_jefe }}% ({{ consolidado.n_jefe }}){% else %}-{% endif %}<br>
+        Equipo: {% if consolidado.promedio_equipo != None %}{{ consolidado.promedio_equipo }}% ({{ consolidado.n_equipo }}){% else %}-{% endif %}<br>
+        Autoevaluacion: {% if consolidado.promedio_auto != None %}{{ consolidado.promedio_auto }}%{% else %}-{% endif %}
+      </div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Tendencia</div>
+      <div class="dash-kpi__value {% if consolidado.tendencia > 0 %}dash-up{% elif consolidado.tendencia < 0 %}dash-down{% endif %}">
+        {% if consolidado.tendencia > 0 %}+{% endif %}{{ consolidado.tendencia }} pts
+      </div>
+      <div class="dash-kpi__hint">vs ciclo previo</div>
+    </div>
+  </div>
+
+  {% if consolidado.competencias %}
+  <div class="dash-card dash-card--full" style="margin-bottom:18px;">
+    <div class="dash-card__title">Mi resultado por competencia</div>
+    {% for c in consolidado.competencias %}
+    <div class="dash-bar">
+      <div class="dash-bar__label">{{ c.semaforo_emoji }} {{ c.etiqueta }}</div>
+      <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ c.semaforo }}" style="width: {{ c.porcentaje }}%;"></div></div>
+      <div class="dash-bar__num">{{ c.promedio }}/5 &middot; {{ c.porcentaje }}%</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endif %}
+
+  <div class="val-section-title">Detalle por ciclo</div>
   <div class="val-table-wrap">
     <table class="val-table">
       <thead>
         <tr>
           <th>Ciclo</th>
           <th>Tipo</th>
+          <th>Calif.</th>
           <th>Puntaje</th>
           <th>%</th>
           <th>Semaforo</th>
@@ -29,15 +75,16 @@
         <tr>
           <td>{{ r.ciclo.nombre }}</td>
           <td>{{ r.get_tipo_evaluacion_display }}</td>
+          <td>{{ r.total_evaluadores }}</td>
           <td>{{ r.puntaje_total }}</td>
           <td>{{ r.porcentaje }}%</td>
           <td><span class="semaforo semaforo--{{ r.semaforo }}">{{ r.get_semaforo_display }}</span></td>
           <td>{{ r.fortalezas|join:", "|default:"-" }}</td>
           <td>{{ r.brechas|join:", "|default:"-" }}</td>
-          <td><a href="{% url 'modulo_valoracion:detalle_resultado' r.id %}" class="val-btn val-btn--secondary val-btn--sm">Ver detalle</a></td>
+          <td><a href="{% url 'modulo_valoracion:detalle_resultado' r.id %}" class="val-btn val-btn--secondary val-btn--sm">Ver items</a></td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" style="text-align:center; color: var(--val-muted); padding: 24px;">Aun no tienes resultados publicados.</td></tr>
+        <tr><td colspan="9" style="text-align:center; color: var(--val-muted); padding: 24px;">Aun no tienes resultados publicados.</td></tr>
         {% endfor %}
       </tbody>
     </table>

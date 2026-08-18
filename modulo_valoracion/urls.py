@@ -55,4 +55,9 @@ urlpatterns = [
     # Dashboard / Metricas e informes
     path("dashboard/", views.dashboard_organizacional, name="dashboard_organizacional"),
     path("dashboard/persona/<int:usuario_id>/", views.dashboard_individual, name="dashboard_individual"),
+
+    # Consolidado individual y exportes
+    path("consolidado/", views.consolidado_individual, name="consolidado_individual"),
+    path("consolidado/exportar/", views.exportar_consolidado_csv, name="exportar_consolidado_csv"),
+    path("consolidado/exportar-items/", views.exportar_items_csv, name="exportar_items_csv"),
 ]

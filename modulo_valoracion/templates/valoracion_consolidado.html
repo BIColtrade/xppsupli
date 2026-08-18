@@ -1,0 +1,163 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">SUPLI PRIME &middot; Consolidado individual</h1>
+      <p class="val-page__subtitle">
+        Un resultado ponderado por persona con todas sus calificaciones, y el detalle de cada item evaluado.
+      </p>
+    </div>
+    <a href="{% url 'modulo_valoracion:dashboard_organizacional' %}?{{ qs_filtros }}" class="val-btn val-btn--secondary">&larr; Dashboard</a>
+  </div>
+
+  {% url 'modulo_valoracion:consolidado_individual' as filtros_action %}
+  {% include "valoracion_filtros.html" %}
+
+  <div class="dash-kpis">
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Personas en la segmentacion</div>
+      <div class="dash-kpi__value">{{ consolidado|length }}</div>
+      <div class="dash-kpi__hint">{{ total }} resultado(s) de ciclo</div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Promedio del grupo</div>
+      <div class="dash-kpi__value">{{ promedio_general }}%</div>
+      <div class="dash-kpi__hint">Promedio de los consolidados individuales</div>
+    </div>
+  </div>
+
+  <div class="dash-card dash-card--full" style="margin-bottom:18px;">
+    <div class="dash-card__title">Consolidado por persona</div>
+    <div class="dash-toolbar">
+      <span class="dash-toolbar__label">Ordenar por:</span>
+      {% for cod, label in orden_opciones %}
+      <a class="dash-tab {% if orden == cod %}dash-tab--on{% endif %}"
+         href="?{{ qs_filtros }}&orden={{ cod }}{% if ver_items %}&items=1{% endif %}">{{ label }}</a>
+      {% endfor %}
+    </div>
+    <div class="val-table-wrap">
+      <table class="val-table">
+        <thead>
+          <tr>
+            <th>Persona</th>
+            <th>Area / Direccion</th>
+            <th>Cargo</th>
+            <th>Rol</th>
+            <th>Equipo (jefe)</th>
+            <th>Ciclos</th>
+            <th>Calificaciones</th>
+            <th>Jefe</th>
+            <th>Equipo</th>
+            <th>Auto</th>
+            <th>Consolidado</th>
+            <th>Puntaje</th>
+            <th>Semaforo</th>
+            <th>Tendencia</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in consolidado %}
+          <tr>
+            <td><a class="dash-link" href="{% url 'modulo_valoracion:dashboard_individual' c.persona_id %}">{{ c.persona }}</a></td>
+            <td>{{ c.area }}</td>
+            <td>{{ c.cargo }}</td>
+            <td>{{ c.rol }}</td>
+            <td>{{ c.jefe }}</td>
+            <td title="{{ c.ciclos_nombres }}">{{ c.ciclos }}</td>
+            <td><span class="dash-chip dash-chip--n">{{ c.evaluaciones }}</span></td>
+            <td>{% if c.promedio_jefe != None %}{{ c.promedio_jefe }}% <span class="dash-bar__sub">({{ c.n_jefe }})</span>{% else %}-{% endif %}</td>
+            <td>{% if c.promedio_equipo != None %}{{ c.promedio_equipo }}% <span class="dash-bar__sub">({{ c.n_equipo }})</span>{% else %}-{% endif %}</td>
+            <td>{% if c.promedio_auto != None %}{{ c.promedio_auto }}% <span class="dash-bar__sub">({{ c.n_auto }})</span>{% else %}-{% endif %}</td>
+            <td><strong>{{ c.porcentaje }}%</strong></td>
+            <td>{{ c.puntaje }}/5</td>
+            <td><span class="semaforo semaforo--{{ c.semaforo }}">{{ c.semaforo_emoji }} {{ c.semaforo_label }}</span></td>
+            <td class="{% if c.tendencia > 0 %}dash-up{% elif c.tendencia < 0 %}dash-down{% endif %}">
+              {% if c.tendencia > 0 %}+{% endif %}{{ c.tendencia }}
+            </td>
+            <td>
+              {% if c.ultimo_resultado %}
+              <a class="dash-link" href="{% url 'modulo_valoracion:detalle_resultado' c.ultimo_resultado.id %}">Items</a>
+              {% else %}-{% endif %}
+            </td>
+          </tr>
+          {% if c.competencias %}
+          <tr class="dash-subrow">
+            <td colspan="15">
+              <span class="dash-subrow__label">Competencias:</span>
+              {% for k in c.competencias %}
+              <span class="semaforo semaforo--{{ k.semaforo }} dash-pill">{{ k.emoji }} {{ k.etiqueta }}: {{ k.promedio }}/5</span>
+              {% endfor %}
+            </td>
+          </tr>
+          {% endif %}
+          {% empty %}
+          <tr><td colspan="15" class="dash-empty">Sin resultados para esta segmentacion.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="dash-card dash-card--full">
+    <div class="dash-card__title">Detalle de items evaluados</div>
+    {% if not ver_items %}
+    <p class="dash-note">
+      Muestra una fila por persona e item evaluado, con el promedio recibido y el desglose por rol del evaluador.
+    </p>
+    <a class="val-btn val-btn--primary val-btn--sm" href="?{{ qs_filtros }}&orden={{ orden }}&items=1">Ver detalle de items</a>
+    {% else %}
+    <div class="dash-toolbar">
+      <a class="val-btn val-btn--secondary val-btn--sm" href="?{{ qs_filtros }}&orden={{ orden }}">Ocultar detalle</a>
+      <a class="val-btn val-btn--secondary val-btn--sm" href="{% url 'modulo_valoracion:exportar_items_csv' %}?{{ qs_filtros }}">Exportar a CSV</a>
+      <span class="dash-toolbar__label">{{ items|length }} fila(s)</span>
+    </div>
+    <div class="val-table-wrap">
+      <table class="val-table">
+        <thead>
+          <tr>
+            <th>Persona</th>
+            <th>Area</th>
+            <th>Cargo</th>
+            <th>Ciclo</th>
+            <th>Competencia</th>
+            <th>Item evaluado</th>
+            <th>Calif.</th>
+            <th>Promedio</th>
+            <th>%</th>
+            <th>Jefe</th>
+            <th>Equipo</th>
+            <th>Auto</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in items %}
+          <tr>
+            <td>{{ i.persona }}</td>
+            <td>{{ i.area }}</td>
+            <td>{{ i.cargo }}</td>
+            <td>{{ i.ciclo }}</td>
+            <td>{{ i.competencia }}</td>
+            <td>{{ i.enunciado }}</td>
+            <td>{{ i.respuestas_count }}</td>
+            <td><strong>{{ i.promedio }}</strong>/5</td>
+            <td><span class="semaforo semaforo--{{ i.semaforo }}">{{ i.porcentaje }}%</span></td>
+            <td>{% if i.promedio_jefe != None %}{{ i.promedio_jefe }}{% else %}-{% endif %}</td>
+            <td>{% if i.promedio_equipo != None %}{{ i.promedio_equipo }}{% else %}-{% endif %}</td>
+            <td>{% if i.promedio_auto != None %}{{ i.promedio_auto }}{% else %}-{% endif %}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="12" class="dash-empty">Sin items para esta segmentacion.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+    </main>
+  </div>

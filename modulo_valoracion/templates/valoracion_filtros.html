@@ -1,0 +1,96 @@
+{% comment %}
+Segmentacion compartida por el Dashboard y el Consolidado individual.
+Espera en contexto: filtros, ciclos, area_choices, equipos, rol_choices,
+cargos, personas, tipo_choices, semaforo_choices y la variable
+`filtros_action` con la url del formulario.
+{% endcomment %}
+<form method="get" class="dash-filters" action="{{ filtros_action }}">
+  <div class="val-form__group">
+    <label class="val-form__label">Desde</label>
+    <input type="date" name="desde" value="{{ filtros.desde }}" class="val-form__input">
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Hasta</label>
+    <input type="date" name="hasta" value="{{ filtros.hasta }}" class="val-form__input">
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Ciclo</label>
+    <select name="ciclo" class="val-form__select">
+      <option value="">Todos</option>
+      {% for c in ciclos %}
+      <option value="{{ c.id }}" {% if filtros.ciclo == c.id|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Area / Direccion</label>
+    <select name="area" class="val-form__select">
+      <option value="">Todas</option>
+      {% for cod, label in area_choices %}
+      <option value="{{ cod }}" {% if filtros.area == cod %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Equipo (jefe directo)</label>
+    <select name="equipo" class="val-form__select">
+      <option value="">Todos</option>
+      {% for e in equipos %}
+      <option value="{{ e.id }}" {% if filtros.equipo == e.id|stringformat:"s" %}selected{% endif %}>{{ e }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Rol organizacional</label>
+    <select name="rol" class="val-form__select">
+      <option value="">Todos</option>
+      {% for cod, label in rol_choices %}
+      <option value="{{ cod }}" {% if filtros.rol == cod %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Cargo</label>
+    <select name="cargo" class="val-form__select">
+      <option value="">Todos</option>
+      {% for c in cargos %}
+      <option value="{{ c }}" {% if filtros.cargo == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Persona</label>
+    <select name="persona" class="val-form__select">
+      <option value="">Todas</option>
+      {% for p in personas %}
+      <option value="{{ p.id }}" {% if filtros.persona == p.id|stringformat:"s" %}selected{% endif %}>{{ p }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Tipo de evaluacion</label>
+    <select name="tipo" class="val-form__select">
+      <option value="">Todos</option>
+      {% for cod, label in tipo_choices %}
+      <option value="{{ cod }}" {% if filtros.tipo == cod %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="val-form__group">
+    <label class="val-form__label">Semaforo consolidado</label>
+    <select name="semaforo" class="val-form__select">
+      <option value="">Todos</option>
+      {% for cod, label in semaforo_choices %}
+      <option value="{{ cod }}" {% if filtros.semaforo == cod %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="dash-filters__actions">
+    <button type="submit" class="val-btn val-btn--primary">Aplicar segmentacion</button>
+    <a href="{{ filtros_action }}" class="val-btn val-btn--secondary">Limpiar</a>
+    {% if puede_ver_dashboard %}
+    <a href="{% url 'modulo_valoracion:exportar_consolidado_csv' %}?{{ qs_filtros }}" class="val-btn val-btn--secondary">Exportar consolidado (CSV)</a>
+    <a href="{% url 'modulo_valoracion:exportar_items_csv' %}?{{ qs_filtros }}" class="val-btn val-btn--secondary">Exportar detalle de items (CSV)</a>
+    {% endif %}
+  </div>
+</form>

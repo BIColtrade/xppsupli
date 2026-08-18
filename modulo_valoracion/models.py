@@ -251,6 +251,17 @@ class ResultadoEvaluacion(models.Model):
     )
     puntaje_jefe = models.DecimalField(max_digits=6, decimal_places=2, default=0)
     puntaje_equipo = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    puntaje_autoevaluacion = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    total_evaluadores = models.PositiveIntegerField(
+        default=0, help_text="Cantidad de calificaciones completadas que se consolidaron"
+    )
+    evaluadores_jefe = models.PositiveIntegerField(default=0)
+    evaluadores_equipo = models.PositiveIntegerField(default=0)
+    evaluadores_auto = models.PositiveIntegerField(default=0)
+    detalle_competencias = models.JSONField(
+        default=list, blank=True,
+        help_text="Promedio por competencia: [{codigo, nombre, promedio, porcentaje, semaforo, items}]",
+    )
     fortalezas = models.JSONField(default=list, blank=True)
     brechas = models.JSONField(default=list, blank=True)
     fecha_calculo = models.DateTimeField(auto_now=True)

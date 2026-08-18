@@ -1,13 +1,16 @@
+import csv
 from collections import Counter, defaultdict
+from urllib.parse import quote
 
 from django.db import transaction
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 
 from user.jwt_utils import get_user_from_request
-from user.models import AREA_CHOICES, Usuario
+from user.models import AREA_CHOICES, TIPO_USUARIO_CHOICES, Usuario
 
 from .models import (
     Competencia,
@@ -767,12 +770,149 @@ def _puntaje_asignacion(asignacion):
     return (suma_ponderada / suma_pesos_max) * 100.0, detalle
 
 
+def _promedio(valores):
+    return sum(valores) / len(valores) if valores else None
+
+
+def _detalle_items_evaluado(ciclo, evaluado, asignaciones=None):
+    """Detalle item por item (pregunta) de un evaluado en un ciclo.
+
+    Devuelve (items, competencias):
+      - items: una fila por pregunta con el promedio global y desagregado por
+        rol del evaluador (jefe / equipo / autoevaluacion) y la distribucion
+        de calificaciones recibidas.
+      - competencias: promedio agrupado por competencia.
+    """
+    if asignaciones is None:
+        asignaciones = list(
+            AsignacionEvaluacion.objects.filter(
+                ciclo=ciclo, evaluado=evaluado, estado="completada", activa=True
+            ).select_related("evaluador")
+        )
+    if not asignaciones:
+        return [], []
+
+    rol_por_asignacion = {a.id: a.rol_evaluador for a in asignaciones}
+    respuestas = (
+        RespuestaEvaluacion.objects.filter(asignacion__in=asignaciones)
+        .select_related("pregunta", "pregunta__competencia")
+    )
+
+    acumulado = {}
+    for r in respuestas:
+        if r.pregunta.tipo_pregunta != "likert" or r.valor is None:
+            continue
+        d = acumulado.setdefault(r.pregunta_id, {
+            "pregunta": r.pregunta,
+            "todos": [],
+            "jefe": [],
+            "equipo": [],
+            "auto": [],
+            "dist": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0},
+        })
+        valor = int(r.valor)
+        d["todos"].append(valor)
+        d["dist"][valor] = d["dist"].get(valor, 0) + 1
+        rol = rol_por_asignacion.get(r.asignacion_id)
+        if rol == "jefe":
+            d["jefe"].append(valor)
+        elif rol == "equipo":
+            d["equipo"].append(valor)
+        elif rol == "autoevaluacion":
+            d["auto"].append(valor)
+
+    escala_labels = dict(ESCALA_LIKERT_CHOICES)
+    items = []
+    for d in acumulado.values():
+        pregunta = d["pregunta"]
+        prom = _promedio(d["todos"]) or 0.0
+        prom_jefe = _promedio(d["jefe"])
+        prom_equipo = _promedio(d["equipo"])
+        prom_auto = _promedio(d["auto"])
+        externos = d["jefe"] + d["equipo"]
+        prom_externos = _promedio(externos)
+        brecha_auto = None
+        if prom_auto is not None and prom_externos is not None:
+            brecha_auto = round(prom_auto - prom_externos, 2)
+        pct = prom / 5.0 * 100.0
+        semaforo_item = calcular_semaforo(pct)
+        items.append({
+            "pregunta_id": pregunta.id,
+            "competencia_codigo": pregunta.competencia.codigo,
+            "competencia_nombre": pregunta.competencia.nombre,
+            "competencia": "{}. {}".format(pregunta.competencia.codigo, pregunta.competencia.nombre),
+            "competencia_orden": pregunta.competencia.orden,
+            "orden": pregunta.orden,
+            "enunciado": pregunta.enunciado,
+            "peso": float(pregunta.peso or 1),
+            "respuestas_count": len(d["todos"]),
+            "promedio": round(prom, 2),
+            "porcentaje": round(pct, 1),
+            "semaforo": semaforo_item,
+            "semaforo_emoji": SEMAFORO_EMOJI[semaforo_item],
+            "nivel": escala_labels.get(int(round(prom)), ""),
+            "promedio_jefe": round(prom_jefe, 2) if prom_jefe is not None else None,
+            "promedio_equipo": round(prom_equipo, 2) if prom_equipo is not None else None,
+            "promedio_auto": round(prom_auto, 2) if prom_auto is not None else None,
+            "n_jefe": len(d["jefe"]),
+            "n_equipo": len(d["equipo"]),
+            "n_auto": len(d["auto"]),
+            "brecha_auto": brecha_auto,
+            "distribucion": [
+                {"valor": v, "label": escala_labels.get(v, str(v)), "count": d["dist"].get(v, 0)}
+                for v in (5, 4, 3, 2, 1)
+            ],
+        })
+    items.sort(key=lambda x: (x["competencia_orden"], x["competencia_codigo"], x["orden"], x["pregunta_id"]))
+
+    comp_acc = {}
+    for it in items:
+        c = comp_acc.setdefault(it["competencia"], {
+            "codigo": it["competencia_codigo"],
+            "nombre": it["competencia_nombre"],
+            "orden": it["competencia_orden"],
+            "suma": 0.0,
+            "peso": 0.0,
+            "items": 0,
+            "respuestas": 0,
+        })
+        c["suma"] += it["promedio"] * it["peso"]
+        c["peso"] += it["peso"]
+        c["items"] += 1
+        c["respuestas"] += it["respuestas_count"]
+
+    competencias = []
+    for etiqueta, c in comp_acc.items():
+        prom = c["suma"] / c["peso"] if c["peso"] else 0.0
+        pct = prom / 5.0 * 100.0
+        sem = calcular_semaforo(pct)
+        competencias.append({
+            "codigo": c["codigo"],
+            "nombre": c["nombre"],
+            "etiqueta": etiqueta,
+            "orden": c["orden"],
+            "promedio": round(prom, 2),
+            "porcentaje": round(pct, 1),
+            "semaforo": sem,
+            "semaforo_emoji": SEMAFORO_EMOJI[sem],
+            "items": c["items"],
+            "respuestas": c["respuestas"],
+        })
+    competencias.sort(key=lambda x: (x["orden"], x["codigo"]))
+    return items, competencias
+
+
 def _recalcular_resultado_evaluado(ciclo, evaluado):
-    """Calcula y guarda el ResultadoEvaluacion de un evaluado en un ciclo."""
+    """Calcula y guarda el ResultadoEvaluacion (consolidado) de un evaluado.
+
+    Todas las calificaciones recibidas se promedian por rol y luego se
+    ponderan segun los pesos del ciclo, de forma que la persona queda con
+    UN solo resultado por ciclo y no con una fila por evaluador.
+    """
     asignaciones = list(
         AsignacionEvaluacion.objects.filter(
             ciclo=ciclo, evaluado=evaluado, estado="completada", activa=True
-        )
+        ).select_related("evaluador")
     )
     if not asignaciones:
         ResultadoEvaluacion.objects.filter(ciclo=ciclo, evaluado=evaluado).delete()
@@ -783,50 +923,54 @@ def _recalcular_resultado_evaluado(ciclo, evaluado):
 
     scores_jefe = []
     scores_equipo = []
-    promedios_por_pregunta = {}
+    scores_auto = []
 
     for a in asignaciones:
-        pct, detalle = _puntaje_asignacion(a)
+        pct, _detalle = _puntaje_asignacion(a)
         if a.rol_evaluador == "jefe":
             scores_jefe.append(pct)
         elif a.rol_evaluador == "equipo":
             scores_equipo.append(pct)
-        for pid, valor in detalle.items():
-            promedios_por_pregunta.setdefault(pid, []).append(valor)
+        elif a.rol_evaluador == "autoevaluacion":
+            scores_auto.append(pct)
 
     avg_jefe = sum(scores_jefe) / len(scores_jefe) if scores_jefe else 0.0
     avg_equipo = sum(scores_equipo) / len(scores_equipo) if scores_equipo else 0.0
+    avg_auto = sum(scores_auto) / len(scores_auto) if scores_auto else 0.0
 
     if tipo_eval == "lider" and scores_jefe and scores_equipo:
         peso_jefe = (ciclo.peso_jefe_lider or 60) / 100.0
         peso_equipo = (ciclo.peso_equipo_lider or 40) / 100.0
         porcentaje = avg_jefe * peso_jefe + avg_equipo * peso_equipo
+    elif scores_jefe and scores_equipo:
+        # Operativo con jefe y equipo: promedio simple de las dos miradas
+        porcentaje = (avg_jefe + avg_equipo) / 2.0
     elif scores_jefe:
         porcentaje = avg_jefe
-    else:
+    elif scores_equipo:
         porcentaje = avg_equipo
+    else:
+        # Solo hay autoevaluacion: se usa como referencia
+        porcentaje = avg_auto
 
     porcentaje = round(porcentaje, 2)
     puntaje_total = round(porcentaje / 100.0 * 5.0, 2)
     semaforo_cod = calcular_semaforo(porcentaje)
 
-    fortalezas = []
-    brechas = []
-    if promedios_por_pregunta:
-        preg_promedios = []
-        preg_ids = list(promedios_por_pregunta.keys())
-        preg_map = {p.id: p for p in Pregunta.objects.filter(id__in=preg_ids)}
-        for pid, valores in promedios_por_pregunta.items():
-            prom = sum(valores) / len(valores)
-            pregunta = preg_map.get(pid)
-            if pregunta is None:
-                continue
-            preg_promedios.append((prom, pregunta.enunciado[:120]))
-        preg_promedios.sort(key=lambda x: x[0], reverse=True)
-        fortalezas = [t for p, t in preg_promedios if p >= 4][:5]
-        brechas = [t for p, t in sorted(preg_promedios, key=lambda x: x[0]) if p <= 2.5][:5]
+    items, competencias = _detalle_items_evaluado(ciclo, evaluado, asignaciones)
 
-    resultado, _ = ResultadoEvaluacion.objects.update_or_create(
+    fortalezas = [
+        it["enunciado"][:120]
+        for it in sorted(items, key=lambda x: x["promedio"], reverse=True)
+        if it["promedio"] >= 4
+    ][:5]
+    brechas = [
+        it["enunciado"][:120]
+        for it in sorted(items, key=lambda x: x["promedio"])
+        if it["promedio"] <= 2.5
+    ][:5]
+
+    resultado, _creado = ResultadoEvaluacion.objects.update_or_create(
         ciclo=ciclo,
         evaluado=evaluado,
         defaults={
@@ -836,6 +980,12 @@ def _recalcular_resultado_evaluado(ciclo, evaluado):
             "semaforo": semaforo_cod,
             "puntaje_jefe": round(avg_jefe, 2),
             "puntaje_equipo": round(avg_equipo, 2),
+            "puntaje_autoevaluacion": round(avg_auto, 2),
+            "total_evaluadores": len(asignaciones),
+            "evaluadores_jefe": len(scores_jefe),
+            "evaluadores_equipo": len(scores_equipo),
+            "evaluadores_auto": len(scores_auto),
+            "detalle_competencias": competencias,
             "fortalezas": fortalezas,
             "brechas": brechas,
         },
@@ -894,52 +1044,98 @@ def detalle_resultado(request, resultado_id):
 
     asignaciones = list(
         AsignacionEvaluacion.objects.filter(
-            ciclo=resultado.ciclo, evaluado=resultado.evaluado, estado="completada", activa=True
+            ciclo=resultado.ciclo, evaluado=resultado.evaluado,
+            estado="completada", activa=True,
         ).select_related("evaluador")
     )
 
-    respuestas = (
-        RespuestaEvaluacion.objects.filter(asignacion__in=asignaciones)
-        .select_related("pregunta", "pregunta__competencia", "asignacion")
+    # ---- Segmentacion del detalle por rol del evaluador ----
+    rol_filtro = request.GET.get("rol", "").strip()
+    roles_validos = {k for k, _ in ROL_EVALUADOR_CHOICES}
+    if rol_filtro in roles_validos:
+        asignaciones_filtradas = [a for a in asignaciones if a.rol_evaluador == rol_filtro]
+    else:
+        rol_filtro = ""
+        asignaciones_filtradas = asignaciones
+
+    buscar = request.GET.get("q", "").strip()
+
+    items, competencias = _detalle_items_evaluado(
+        resultado.ciclo, resultado.evaluado, asignaciones_filtradas
     )
+    if buscar:
+        clave = buscar.lower()
+        items = [
+            it for it in items
+            if clave in it["enunciado"].lower() or clave in it["competencia"].lower()
+        ]
 
-    promedios = {}
-    for r in respuestas:
-        if r.valor is None:
+    # Ranking de items dentro del detalle
+    items_ordenados = sorted(items, key=lambda x: x["promedio"], reverse=True)
+    mejores_items = items_ordenados[:5]
+    peores_items = list(reversed(items_ordenados[-5:])) if items_ordenados else []
+
+    show_evaluador = not resultado.ciclo.anonimato or _puede_ver_todo(user)
+
+    # ---- Desglose: puntaje de cada calificacion recibida ----
+    calificaciones = []
+    for a in asignaciones:
+        pct, _detalle = _puntaje_asignacion(a)
+        sem = calcular_semaforo(pct)
+        calificaciones.append({
+            "evaluador": str(a.evaluador) if show_evaluador else "Anonimo",
+            "rol": a.get_rol_evaluador_display(),
+            "rol_cod": a.rol_evaluador,
+            "porcentaje": round(pct, 1),
+            "puntaje": round(pct / 100.0 * 5.0, 2),
+            "semaforo": sem,
+            "semaforo_emoji": SEMAFORO_EMOJI[sem],
+            "fecha": a.fecha_completada,
+        })
+    calificaciones.sort(key=lambda x: x["porcentaje"], reverse=True)
+
+    # ---- Respuestas abiertas ----
+    rol_por_asignacion = {a.id: a for a in asignaciones}
+    abiertas = []
+    for r in (
+        RespuestaEvaluacion.objects.filter(asignacion__in=asignaciones)
+        .exclude(respuesta_abierta="")
+        .select_related("pregunta")
+    ):
+        a = rol_por_asignacion.get(r.asignacion_id)
+        if a is None:
             continue
-        d = promedios.setdefault(r.pregunta_id, {
-            "pregunta": r.pregunta,
-            "valores": [],
+        abiertas.append({
+            "enunciado": r.pregunta.enunciado,
+            "texto": r.respuesta_abierta,
+            "evaluador": str(a.evaluador) if show_evaluador else "Anonimo",
+            "rol": a.get_rol_evaluador_display(),
         })
-        d["valores"].append(r.valor)
-
-    preguntas_data = []
-    for d in promedios.values():
-        valores = d["valores"]
-        promedio = sum(valores) / len(valores)
-        preguntas_data.append({
-            "competencia": f"{d['pregunta'].competencia.codigo}. {d['pregunta'].competencia.nombre}",
-            "enunciado": d["pregunta"].enunciado,
-            "respuestas_count": len(valores),
-            "promedio": round(promedio, 2),
-        })
-    preguntas_data.sort(key=lambda x: x["promedio"], reverse=True)
 
     observaciones = []
-    show_evaluador = not resultado.ciclo.anonimato or _puede_ver_todo(user)
     for a in asignaciones:
         if a.observaciones_acuerdos:
             observaciones.append({
-                "evaluador": a.evaluador if show_evaluador else "Anonimo",
+                "evaluador": str(a.evaluador) if show_evaluador else "Anonimo",
                 "rol": a.get_rol_evaluador_display(),
                 "texto": a.observaciones_acuerdos,
             })
 
     return render(request, "valoracion_detalle_resultado.html", {
         "resultado": resultado,
-        "preguntas_data": preguntas_data,
+        "items": items,
+        "competencias": competencias,
+        "mejores_items": mejores_items,
+        "peores_items": peores_items,
+        "calificaciones": calificaciones,
+        "abiertas": abiertas,
         "asignaciones_count": len(asignaciones),
+        "asignaciones_filtradas_count": len(asignaciones_filtradas),
         "observaciones": observaciones,
+        "rol_filtro": rol_filtro,
+        "buscar": buscar,
+        "rol_choices": ROL_EVALUADOR_CHOICES,
+        "semaforo_emoji": SEMAFORO_EMOJI.get(resultado.semaforo, ""),
         **_context_perms(user),
     })
 
@@ -1115,13 +1311,16 @@ def mis_resultados(request):
     if redir:
         return redir
 
-    resultados = (
+    resultados = list(
         ResultadoEvaluacion.objects.filter(evaluado=user)
-        .select_related("ciclo")
+        .select_related("ciclo", "evaluado", "evaluado__jefe_directo")
         .order_by("-fecha_calculo")
     )
+    consolidado_lista = _consolidar_personas(resultados)
+    consolidado = consolidado_lista[0] if consolidado_lista else None
     return render(request, "valoracion_mis_resultados.html", {
         "resultados": resultados,
+        "consolidado": consolidado,
         **_context_perms(user),
     })
 
@@ -1139,23 +1338,26 @@ def resultados_equipo(request):
         return render(request, "acceso_no_permitido.html", status=403)
 
     if _puede_ver_todo(user):
-        resultados = ResultadoEvaluacion.objects.all()
+        base = ResultadoEvaluacion.objects.all()
     else:
         subordinados_ids = list(
             Usuario.objects.filter(jefe_directo=user).values_list("id", flat=True)
         )
-        resultados = ResultadoEvaluacion.objects.filter(
-            evaluado_id__in=subordinados_ids
-        )
+        base = ResultadoEvaluacion.objects.filter(evaluado_id__in=subordinados_ids)
 
-    resultados = resultados.select_related("ciclo", "evaluado").order_by(
-        "-ciclo__fecha_inicio", "-porcentaje"
-    )
+    resultados, consolidado, filtros = _resultados_filtrados(request, base)
+    resultados.sort(key=lambda r: (-r.ciclo.fecha_inicio.timestamp(), -float(r.porcentaje)))
 
-    return render(request, "valoracion_resultados_equipo.html", {
+    contexto = {
         "resultados": resultados,
-        **_context_perms(user),
-    })
+        "consolidado": consolidado,
+        "filtros": filtros,
+        "qs_filtros": _query_string_filtros(filtros),
+        "promedio_general": _prom([c["porcentaje"] for c in consolidado]),
+    }
+    contexto.update(_opciones_segmentacion())
+    contexto.update(_context_perms(user))
+    return render(request, "valoracion_resultados_equipo.html", contexto)
 
 
 # ----------------------------------------
@@ -1272,16 +1474,24 @@ def _parse_fecha_input(value, fin_dia=False):
     return _parse_dt_local(value + sufijo)
 
 
-def _filtros_dashboard(request):
-    """Aplica los filtros del dashboard sobre ResultadoEvaluacion.
-    Devuelve (queryset, dict_filtros_seleccionados)."""
-    qs = ResultadoEvaluacion.objects.select_related("ciclo", "evaluado")
+def _filtros_dashboard(request, base_qs=None):
+    """Aplica la segmentacion sobre ResultadoEvaluacion.
+
+    Segmentacion soportada: ciclo, fechas, area/direccion, equipo (jefe
+    directo), rol organizacional, cargo, persona, tipo de evaluacion y
+    semaforo. Devuelve (queryset, dict_filtros_seleccionados).
+    """
+    qs = base_qs if base_qs is not None else ResultadoEvaluacion.objects.all()
+    qs = qs.select_related("ciclo", "evaluado", "evaluado__jefe_directo")
 
     ciclo_id = request.GET.get("ciclo", "").strip()
     area = request.GET.get("area", "").strip()
+    equipo_id = request.GET.get("equipo", "").strip()
+    rol = request.GET.get("rol", "").strip()
     cargo = request.GET.get("cargo", "").strip()
     persona_id = request.GET.get("persona", "").strip()
     tipo = request.GET.get("tipo", "").strip()
+    semaforo = request.GET.get("semaforo", "").strip()
     desde = request.GET.get("desde", "").strip()
     hasta = request.GET.get("hasta", "").strip()
 
@@ -1289,6 +1499,10 @@ def _filtros_dashboard(request):
         qs = qs.filter(ciclo_id=int(ciclo_id))
     if area in {k for k, _ in AREA_CHOICES}:
         qs = qs.filter(evaluado__area=area)
+    if equipo_id.isdigit():
+        qs = qs.filter(evaluado__jefe_directo_id=int(equipo_id))
+    if rol in {k for k, _ in TIPO_USUARIO_CHOICES}:
+        qs = qs.filter(evaluado__tipo_usuario=rol)
     if cargo:
         qs = qs.filter(evaluado__cargo=cargo)
     if persona_id.isdigit():
@@ -1303,20 +1517,323 @@ def _filtros_dashboard(request):
     if d_hasta:
         qs = qs.filter(ciclo__fecha_inicio__lte=d_hasta)
 
+    if semaforo not in {k for k, _ in SEMAFORO_CHOICES}:
+        semaforo = ""
+
     filtros = {
         "ciclo": ciclo_id,
         "area": area,
+        "equipo": equipo_id,
+        "rol": rol,
         "cargo": cargo,
         "persona": persona_id,
         "tipo": tipo,
+        "semaforo": semaforo,
         "desde": desde,
         "hasta": hasta,
     }
     return qs, filtros
 
 
+def _opciones_segmentacion():
+    """Catalogos para los selectores de segmentacion del dashboard."""
+    cargos = list(
+        Usuario.objects.exclude(cargo__isnull=True).exclude(cargo="")
+        .values_list("cargo", flat=True).distinct().order_by("cargo")
+    )
+    jefes_ids = list(
+        Usuario.objects.filter(reportes_directos__isnull=False)
+        .values_list("id", flat=True).distinct()
+    )
+    equipos = Usuario.objects.filter(id__in=jefes_ids).order_by("nombre", "apellido")
+    return {
+        "area_choices": AREA_CHOICES,
+        "tipo_choices": TIPO_EVALUACION_CHOICES,
+        "rol_choices": TIPO_USUARIO_CHOICES,
+        "semaforo_choices": SEMAFORO_CHOICES,
+        "cargos": cargos,
+        "equipos": equipos,
+        "personas": Usuario.objects.filter(is_active=True).order_by("nombre", "apellido"),
+        "ciclos": CicloEvaluacion.objects.all().order_by("-fecha_inicio"),
+    }
+
+
+def _query_string_filtros(filtros, excluir=()):
+    partes = []
+    for clave, valor in filtros.items():
+        if clave in excluir or not valor:
+            continue
+        partes.append("%s=%s" % (clave, quote(str(valor))))
+    return "&".join(partes)
+
+
 def _prom(valores):
     return round(sum(valores) / len(valores), 1) if valores else 0.0
+
+
+def _ponderado(pares):
+    """Promedio ponderado a partir de una lista de (valor, peso)."""
+    total_peso = sum(peso for _v, peso in pares)
+    if not total_peso:
+        valores = [v for v, _p in pares]
+        return sum(valores) / len(valores) if valores else 0.0
+    return sum(v * peso for v, peso in pares) / total_peso
+
+
+def _consolidar_personas(resultados):
+    """Consolida TODAS las calificaciones de una persona en un unico resultado.
+
+    Cada ResultadoEvaluacion ya agrupa las calificaciones de un ciclo; aqui se
+    ponderan los ciclos entre si por la cantidad de evaluadores que aportaron,
+    de modo que una persona con 5 calificaciones ve un solo numero consolidado
+    y no 5 filas independientes.
+    """
+    grupos = defaultdict(list)
+    for r in resultados:
+        grupos[r.evaluado_id].append(r)
+
+    semaforo_display = dict(SEMAFORO_CHOICES)
+    tipo_display = dict(TIPO_EVALUACION_CHOICES)
+    rol_display = dict(TIPO_USUARIO_CHOICES)
+    consolidado = []
+
+    for rs in grupos.values():
+        rs.sort(key=lambda r: r.ciclo.fecha_inicio)
+        persona = rs[0].evaluado
+
+        def peso(r):
+            return max(int(r.total_evaluadores or 0), 1)
+
+        porcentaje = _ponderado([(float(r.porcentaje), peso(r)) for r in rs])
+
+        pares_jefe = [
+            (float(r.puntaje_jefe), int(r.evaluadores_jefe or 0))
+            for r in rs if (r.evaluadores_jefe or 0) > 0
+        ]
+        pares_equipo = [
+            (float(r.puntaje_equipo), int(r.evaluadores_equipo or 0))
+            for r in rs if (r.evaluadores_equipo or 0) > 0
+        ]
+        pares_auto = [
+            (float(r.puntaje_autoevaluacion), int(r.evaluadores_auto or 0))
+            for r in rs if (r.evaluadores_auto or 0) > 0
+        ]
+
+        prom_jefe = _ponderado(pares_jefe) if pares_jefe else None
+        prom_equipo = _ponderado(pares_equipo) if pares_equipo else None
+        prom_auto = _ponderado(pares_auto) if pares_auto else None
+
+        tendencia = 0.0
+        if len(rs) >= 2:
+            tendencia = round(float(rs[-1].porcentaje) - float(rs[-2].porcentaje), 1)
+
+        total_evaluadores = sum(int(r.total_evaluadores or 0) for r in rs)
+        sem = calcular_semaforo(porcentaje)
+        ultimo = rs[-1]
+
+        # Consolidado por competencia a lo largo de los ciclos
+        comp_acc = {}
+        for r in rs:
+            for c in (r.detalle_competencias or []):
+                clave = c.get("etiqueta") or c.get("nombre") or ""
+                acc = comp_acc.setdefault(clave, {
+                    "codigo": c.get("codigo", ""),
+                    "nombre": c.get("nombre", ""),
+                    "etiqueta": clave,
+                    "orden": c.get("orden", 0),
+                    "pares": [],
+                })
+                acc["pares"].append((float(c.get("promedio") or 0), peso(r)))
+        competencias = []
+        for acc in comp_acc.values():
+            prom_c = _ponderado(acc["pares"])
+            pct_c = prom_c / 5.0 * 100.0
+            sem_c = calcular_semaforo(pct_c)
+            competencias.append({
+                "codigo": acc["codigo"],
+                "nombre": acc["nombre"],
+                "etiqueta": acc["etiqueta"],
+                "orden": acc["orden"],
+                "promedio": round(prom_c, 2),
+                "porcentaje": round(pct_c, 1),
+                "semaforo": sem_c,
+                "semaforo_emoji": SEMAFORO_EMOJI[sem_c],
+            })
+        competencias.sort(key=lambda x: (x["orden"], x["codigo"]))
+
+        consolidado.append({
+            "persona": persona,
+            "persona_id": persona.pk,
+            "area": persona.get_area_display() if persona.area else "Sin area",
+            "area_cod": persona.area or "__sin__",
+            "cargo": persona.cargo or "Sin cargo",
+            "rol": rol_display.get(persona.tipo_usuario, "Sin rol"),
+            "rol_cod": persona.tipo_usuario or "__sin__",
+            "jefe": str(persona.jefe_directo) if persona.jefe_directo_id else "Sin jefe",
+            "jefe_id": persona.jefe_directo_id,
+            "tipo": tipo_display.get(ultimo.tipo_evaluacion, ultimo.tipo_evaluacion),
+            "tipo_cod": ultimo.tipo_evaluacion,
+            "ciclos": len(rs),
+            "ciclos_nombres": ", ".join(r.ciclo.nombre for r in rs),
+            "evaluaciones": total_evaluadores,
+            "porcentaje": round(porcentaje, 1),
+            "puntaje": round(porcentaje / 100.0 * 5.0, 2),
+            "semaforo": sem,
+            "semaforo_label": semaforo_display.get(sem, sem),
+            "semaforo_emoji": SEMAFORO_EMOJI[sem],
+            "promedio_jefe": round(prom_jefe, 1) if prom_jefe is not None else None,
+            "promedio_equipo": round(prom_equipo, 1) if prom_equipo is not None else None,
+            "promedio_auto": round(prom_auto, 1) if prom_auto is not None else None,
+            "n_jefe": sum(int(r.evaluadores_jefe or 0) for r in rs),
+            "n_equipo": sum(int(r.evaluadores_equipo or 0) for r in rs),
+            "n_auto": sum(int(r.evaluadores_auto or 0) for r in rs),
+            "tendencia": tendencia,
+            "ultimo_resultado": ultimo,
+            "ultimo_ciclo": ultimo.ciclo.nombre,
+            "competencias": competencias,
+            "resultados": rs,
+        })
+
+    consolidado.sort(key=lambda x: x["porcentaje"], reverse=True)
+    return consolidado
+
+
+def _agrupar_consolidado(consolidado, clave_cod, clave_label):
+    """Promedio del consolidado individual agrupado por una dimension."""
+    acc = defaultdict(list)
+    etiquetas = {}
+    for c in consolidado:
+        acc[c[clave_cod]].append(c["porcentaje"])
+        etiquetas[c[clave_cod]] = c[clave_label]
+    filas = []
+    for cod, vals in acc.items():
+        prom = _prom(vals)
+        sem = calcular_semaforo(prom)
+        filas.append({
+            "cod": cod,
+            "label": etiquetas.get(cod, cod),
+            "promedio": prom,
+            "count": len(vals),
+            "semaforo": sem,
+            "emoji": SEMAFORO_EMOJI[sem],
+        })
+    filas.sort(key=lambda x: x["promedio"], reverse=True)
+    return filas
+
+
+def _competencias_organizacionales(resultados):
+    """Promedio por competencia sobre el conjunto filtrado de resultados."""
+    acc = {}
+    for r in resultados:
+        peso = max(int(r.total_evaluadores or 0), 1)
+        for c in (r.detalle_competencias or []):
+            clave = c.get("etiqueta") or c.get("nombre") or ""
+            d = acc.setdefault(clave, {
+                "etiqueta": clave,
+                "codigo": c.get("codigo", ""),
+                "nombre": c.get("nombre", ""),
+                "orden": c.get("orden", 0),
+                "pares": [],
+                "personas": set(),
+            })
+            d["pares"].append((float(c.get("promedio") or 0), peso))
+            d["personas"].add(r.evaluado_id)
+    filas = []
+    for d in acc.values():
+        prom = _ponderado(d["pares"])
+        pct = prom / 5.0 * 100.0
+        sem = calcular_semaforo(pct)
+        filas.append({
+            "etiqueta": d["etiqueta"],
+            "codigo": d["codigo"],
+            "nombre": d["nombre"],
+            "promedio": round(prom, 2),
+            "porcentaje": round(pct, 1),
+            "semaforo": sem,
+            "emoji": SEMAFORO_EMOJI[sem],
+            "personas": len(d["personas"]),
+        })
+    filas.sort(key=lambda x: x["porcentaje"], reverse=True)
+    return filas
+
+
+def _items_consolidados(resultados):
+    """Detalle item por item para el conjunto filtrado (una fila por persona/pregunta).
+
+    Se resuelve en pocas consultas para poder exportar sin degradar.
+    """
+    pares = {(r.ciclo_id, r.evaluado_id) for r in resultados}
+    if not pares:
+        return []
+    ciclos_ids = {c for c, _e in pares}
+    evaluados_ids = {e for _c, e in pares}
+
+    asignaciones = (
+        AsignacionEvaluacion.objects.filter(
+            ciclo_id__in=ciclos_ids, evaluado_id__in=evaluados_ids,
+            estado="completada", activa=True,
+        ).select_related("ciclo", "evaluado")
+    )
+    asignaciones = [a for a in asignaciones if (a.ciclo_id, a.evaluado_id) in pares]
+    if not asignaciones:
+        return []
+
+    info_asignacion = {
+        a.id: (a.ciclo, a.evaluado, a.rol_evaluador) for a in asignaciones
+    }
+    respuestas = (
+        RespuestaEvaluacion.objects.filter(asignacion_id__in=info_asignacion.keys())
+        .select_related("pregunta", "pregunta__competencia")
+    )
+
+    acc = {}
+    for r in respuestas:
+        if r.pregunta.tipo_pregunta != "likert" or r.valor is None:
+            continue
+        ciclo, evaluado, rol = info_asignacion[r.asignacion_id]
+        clave = (evaluado.pk, ciclo.pk, r.pregunta_id)
+        d = acc.setdefault(clave, {
+            "evaluado": evaluado,
+            "ciclo": ciclo,
+            "pregunta": r.pregunta,
+            "todos": [], "jefe": [], "equipo": [], "auto": [],
+        })
+        valor = int(r.valor)
+        d["todos"].append(valor)
+        if rol == "jefe":
+            d["jefe"].append(valor)
+        elif rol == "equipo":
+            d["equipo"].append(valor)
+        elif rol == "autoevaluacion":
+            d["auto"].append(valor)
+
+    filas = []
+    for d in acc.values():
+        prom = _promedio(d["todos"]) or 0.0
+        pct = prom / 5.0 * 100.0
+        sem = calcular_semaforo(pct)
+        persona = d["evaluado"]
+        filas.append({
+            "persona": persona,
+            "area": persona.get_area_display() if persona.area else "Sin area",
+            "cargo": persona.cargo or "Sin cargo",
+            "jefe": str(persona.jefe_directo) if persona.jefe_directo_id else "Sin jefe",
+            "rol": dict(TIPO_USUARIO_CHOICES).get(persona.tipo_usuario, "Sin rol"),
+            "ciclo": d["ciclo"].nombre,
+            "competencia": "%s. %s" % (
+                d["pregunta"].competencia.codigo, d["pregunta"].competencia.nombre
+            ),
+            "enunciado": d["pregunta"].enunciado,
+            "respuestas_count": len(d["todos"]),
+            "promedio": round(prom, 2),
+            "porcentaje": round(pct, 1),
+            "semaforo": sem,
+            "promedio_jefe": round(_promedio(d["jefe"]), 2) if d["jefe"] else None,
+            "promedio_equipo": round(_promedio(d["equipo"]), 2) if d["equipo"] else None,
+            "promedio_auto": round(_promedio(d["auto"]), 2) if d["auto"] else None,
+        })
+    filas.sort(key=lambda x: (str(x["persona"]), x["competencia"], x["enunciado"]))
+    return filas
 
 
 def _puntos_svg(serie, ancho=100.0, alto=40.0):
@@ -1328,8 +1845,20 @@ def _puntos_svg(serie, ancho=100.0, alto=40.0):
     for i, valor in enumerate(serie):
         x = (i / (n - 1)) * ancho if n > 1 else ancho / 2
         y = alto - (max(0.0, min(100.0, valor)) / 100.0) * alto
-        puntos.append(f"{x:.1f},{y:.1f}")
+        puntos.append("%.1f,%.1f" % (x, y))
     return " ".join(puntos)
+
+
+def _resultados_filtrados(request, base_qs=None):
+    """Resultados + consolidado individual aplicando toda la segmentacion."""
+    qs, filtros = _filtros_dashboard(request, base_qs)
+    resultados = list(qs)
+    consolidado = _consolidar_personas(resultados)
+    if filtros["semaforo"]:
+        consolidado = [c for c in consolidado if c["semaforo"] == filtros["semaforo"]]
+        vigentes = {c["persona_id"] for c in consolidado}
+        resultados = [r for r in resultados if r.evaluado_id in vigentes]
+    return resultados, consolidado, filtros
 
 
 def dashboard_organizacional(request):
@@ -1337,53 +1866,45 @@ def dashboard_organizacional(request):
     if resp:
         return resp
 
-    qs, filtros = _filtros_dashboard(request)
-    resultados = list(qs)
+    resultados, consolidado, filtros = _resultados_filtrados(request)
     total = len(resultados)
-    area_display = dict(AREA_CHOICES)
     semaforo_display = dict(SEMAFORO_CHOICES)
 
-    # ---- Promedio compania ----
-    promedio_compania = _prom([float(r.porcentaje) for r in resultados])
+    # ---- Promedio compania: promedio de los consolidados individuales ----
+    promedio_compania = _prom([c["porcentaje"] for c in consolidado])
     semaforo_compania = calcular_semaforo(promedio_compania)
-    personas_unicas = len({r.evaluado_id for r in resultados})
+    personas_unicas = len(consolidado)
+    calificaciones_totales = sum(c["evaluaciones"] for c in consolidado)
 
-    # ---- Promedio por area (direcciones) ----
-    area_map = defaultdict(list)
-    for r in resultados:
-        area_map[r.evaluado.area or "__sin__"].append(float(r.porcentaje))
-    por_area = []
-    for cod, vals in area_map.items():
-        prom = _prom(vals)
-        por_area.append({
-            "area": area_display.get(cod, "Sin area"),
-            "promedio": prom,
-            "count": len(vals),
-            "semaforo": calcular_semaforo(prom),
-            "emoji": SEMAFORO_EMOJI[calcular_semaforo(prom)],
-        })
-    por_area.sort(key=lambda x: x["promedio"], reverse=True)
+    # ---- Segmentacion ----
+    por_area = _agrupar_consolidado(consolidado, "area_cod", "area")
+    por_rol = _agrupar_consolidado(consolidado, "rol_cod", "rol")
+    por_equipo = _agrupar_consolidado(consolidado, "jefe_id", "jefe")
+    por_cargo = _agrupar_consolidado(consolidado, "cargo", "cargo")
 
     # ---- Lideres ----
-    lideres = [r for r in resultados if r.tipo_evaluacion == "lider"]
-    promedio_lideres = _prom([float(r.porcentaje) for r in lideres])
+    lideres = [c for c in consolidado if c["tipo_cod"] == "lider"]
+    promedio_lideres = _prom([c["porcentaje"] for c in lideres])
 
-    # ---- Distribucion semaforo ----
+    # ---- Distribucion semaforo (sobre el consolidado individual) ----
     conteo = {k: 0 for k in SEMAFORO_ORDEN}
-    for r in resultados:
-        conteo[r.semaforo] = conteo.get(r.semaforo, 0) + 1
+    for c in consolidado:
+        conteo[c["semaforo"]] = conteo.get(c["semaforo"], 0) + 1
+    base = len(consolidado)
     distribucion = [{
         "cod": k,
         "label": semaforo_display.get(k, k),
         "emoji": SEMAFORO_EMOJI[k],
         "count": conteo[k],
-        "pct": round(conteo[k] / total * 100) if total else 0,
+        "pct": round(conteo[k] / base * 100) if base else 0,
     } for k in SEMAFORO_ORDEN]
 
-    # ---- Top performers y brechas (personas) ----
-    ordenados = sorted(resultados, key=lambda r: float(r.porcentaje), reverse=True)
-    top_performers = ordenados[:8]
-    brechas_personas = sorted(resultados, key=lambda r: float(r.porcentaje))[:8]
+    # ---- Top performers y brechas (consolidado, no calificaciones sueltas) ----
+    top_performers = consolidado[:8]
+    brechas_personas = list(reversed(consolidado[-8:])) if consolidado else []
+
+    # ---- Competencias / items a nivel organizacional ----
+    competencias_org = _competencias_organizacionales(resultados)
 
     # ---- Evolucion historica (por ciclo) ----
     ciclo_map = {}
@@ -1415,25 +1936,24 @@ def dashboard_organizacional(request):
     top_fortalezas = cont_f.most_common(6)
     top_brechas = cont_b.most_common(6)
 
-    # ---- Opciones de filtros ----
-    cargos = list(
-        Usuario.objects.exclude(cargo__isnull=True).exclude(cargo="")
-        .values_list("cargo", flat=True).distinct().order_by("cargo")
-    )
-    personas = Usuario.objects.filter(is_active=True).order_by("nombre", "apellido")
-    ciclos = CicloEvaluacion.objects.all().order_by("-fecha_inicio")
-
-    return render(request, "valoracion_dashboard.html", {
+    contexto = {
         "filtros": filtros,
+        "qs_filtros": _query_string_filtros(filtros),
         "total": total,
         "personas_unicas": personas_unicas,
+        "calificaciones_totales": calificaciones_totales,
         "promedio_compania": promedio_compania,
         "semaforo_compania": semaforo_compania,
         "semaforo_compania_label": semaforo_display.get(semaforo_compania, ""),
         "semaforo_compania_emoji": SEMAFORO_EMOJI[semaforo_compania],
         "promedio_lideres": promedio_lideres,
         "lideres_count": len(lideres),
+        "consolidado": consolidado,
         "por_area": por_area,
+        "por_rol": por_rol,
+        "por_equipo": por_equipo,
+        "por_cargo": por_cargo,
+        "competencias_org": competencias_org,
         "distribucion": distribucion,
         "top_performers": top_performers,
         "brechas_personas": brechas_personas,
@@ -1442,13 +1962,120 @@ def dashboard_organizacional(request):
         "tendencia": tendencia,
         "top_fortalezas": top_fortalezas,
         "top_brechas": top_brechas,
-        "area_choices": AREA_CHOICES,
-        "tipo_choices": TIPO_EVALUACION_CHOICES,
-        "cargos": cargos,
-        "personas": personas,
-        "ciclos": ciclos,
-        **_context_perms(user),
-    })
+    }
+    contexto.update(_opciones_segmentacion())
+    contexto.update(_context_perms(user))
+    return render(request, "valoracion_dashboard.html", contexto)
+
+
+def consolidado_individual(request):
+    """Tabla completa del consolidado por persona con toda la segmentacion."""
+    user, resp = _require_role(request, _puede_ver_dashboard)
+    if resp:
+        return resp
+
+    resultados, consolidado, filtros = _resultados_filtrados(request)
+
+    orden = request.GET.get("orden", "porcentaje").strip()
+    claves_validas = {
+        "porcentaje": lambda c: c["porcentaje"],
+        "nombre": lambda c: str(c["persona"]).lower(),
+        "area": lambda c: c["area"].lower(),
+        "cargo": lambda c: c["cargo"].lower(),
+        "equipo": lambda c: c["jefe"].lower(),
+        "evaluaciones": lambda c: c["evaluaciones"],
+    }
+    if orden not in claves_validas:
+        orden = "porcentaje"
+    reverso = orden in {"porcentaje", "evaluaciones"}
+    consolidado = sorted(consolidado, key=claves_validas[orden], reverse=reverso)
+
+    ver_items = request.GET.get("items", "") == "1"
+    items = _items_consolidados(resultados) if ver_items else []
+
+    contexto = {
+        "filtros": filtros,
+        "qs_filtros": _query_string_filtros(filtros),
+        "consolidado": consolidado,
+        "items": items,
+        "ver_items": ver_items,
+        "orden": orden,
+        "orden_opciones": [
+            ("porcentaje", "Consolidado"),
+            ("nombre", "Nombre"),
+            ("area", "Area"),
+            ("cargo", "Cargo"),
+            ("equipo", "Equipo"),
+            ("evaluaciones", "Calificaciones"),
+        ],
+        "total": len(resultados),
+        "promedio_general": _prom([c["porcentaje"] for c in consolidado]),
+    }
+    contexto.update(_opciones_segmentacion())
+    contexto.update(_context_perms(user))
+    return render(request, "valoracion_consolidado.html", contexto)
+
+
+def exportar_consolidado_csv(request):
+    """Exporta el consolidado individual segmentado (CSV)."""
+    user, resp = _require_role(request, _puede_ver_dashboard)
+    if resp:
+        return resp
+
+    _resultados, consolidado, _filtros = _resultados_filtrados(request)
+
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="supli_prime_consolidado.csv"'
+    response.write("\ufeff")
+    writer = csv.writer(response, delimiter=";")
+    writer.writerow([
+        "Persona", "Correo", "Area/Direccion", "Cargo", "Rol", "Equipo (jefe directo)",
+        "Tipo evaluacion", "Ciclos", "Calificaciones recibidas",
+        "Consolidado %", "Puntaje (0-5)", "Semaforo",
+        "Prom. jefe %", "Prom. equipo %", "Autoevaluacion %", "Tendencia",
+    ])
+    for c in consolidado:
+        writer.writerow([
+            str(c["persona"]), c["persona"].email, c["area"], c["cargo"], c["rol"],
+            c["jefe"], c["tipo"], c["ciclos"], c["evaluaciones"],
+            c["porcentaje"], c["puntaje"], c["semaforo_label"],
+            c["promedio_jefe"] if c["promedio_jefe"] is not None else "",
+            c["promedio_equipo"] if c["promedio_equipo"] is not None else "",
+            c["promedio_auto"] if c["promedio_auto"] is not None else "",
+            c["tendencia"],
+        ])
+    return response
+
+
+def exportar_items_csv(request):
+    """Exporta el detalle item por item (pregunta) segmentado (CSV)."""
+    user, resp = _require_role(request, _puede_ver_dashboard)
+    if resp:
+        return resp
+
+    resultados, _consolidado, _filtros = _resultados_filtrados(request)
+    filas = _items_consolidados(resultados)
+    semaforo_display = dict(SEMAFORO_CHOICES)
+
+    response = HttpResponse(content_type="text/csv; charset=utf-8")
+    response["Content-Disposition"] = 'attachment; filename="supli_prime_detalle_items.csv"'
+    response.write("\ufeff")
+    writer = csv.writer(response, delimiter=";")
+    writer.writerow([
+        "Persona", "Area/Direccion", "Cargo", "Rol", "Equipo (jefe directo)", "Ciclo",
+        "Competencia", "Item evaluado", "Calificaciones", "Promedio (1-5)", "%",
+        "Semaforo", "Jefe", "Equipo", "Autoevaluacion",
+    ])
+    for f in filas:
+        writer.writerow([
+            str(f["persona"]), f["area"], f["cargo"], f["rol"], f["jefe"], f["ciclo"],
+            f["competencia"], f["enunciado"], f["respuestas_count"],
+            f["promedio"], f["porcentaje"], semaforo_display.get(f["semaforo"], ""),
+            f["promedio_jefe"] if f["promedio_jefe"] is not None else "",
+            f["promedio_equipo"] if f["promedio_equipo"] is not None else "",
+            f["promedio_auto"] if f["promedio_auto"] is not None else "",
+        ])
+    return response
 
 
 def dashboard_individual(request, usuario_id):
@@ -1464,22 +2091,43 @@ def dashboard_individual(request, usuario_id):
 
     resultados = list(
         ResultadoEvaluacion.objects.filter(evaluado=persona)
-        .select_related("ciclo")
+        .select_related("ciclo", "evaluado", "evaluado__jefe_directo")
         .order_by("ciclo__fecha_inicio")
     )
     actual = resultados[-1] if resultados else None
 
+    # ---- Consolidado de TODAS las calificaciones recibidas ----
+    consolidado_lista = _consolidar_personas(resultados)
+    consolidado = consolidado_lista[0] if consolidado_lista else None
+
     # Evolucion individual
     evolucion = [{
+        "id": r.id,
         "nombre": r.ciclo.nombre,
         "fecha": r.ciclo.fecha_inicio,
         "porcentaje": float(r.porcentaje),
         "semaforo": r.semaforo,
+        "evaluadores": r.total_evaluadores,
     } for r in resultados]
     evol_points = _puntos_svg([e["porcentaje"] for e in evolucion])
     tendencia = 0.0
     if len(evolucion) >= 2:
         tendencia = round(evolucion[-1]["porcentaje"] - evolucion[-2]["porcentaje"], 1)
+
+    # ---- Detalle de items del ciclo seleccionado (por defecto el ultimo) ----
+    ciclo_sel = request.GET.get("ciclo", "").strip()
+    resultado_detalle = actual
+    if ciclo_sel.isdigit():
+        for r in resultados:
+            if r.ciclo_id == int(ciclo_sel):
+                resultado_detalle = r
+                break
+    items = []
+    competencias_detalle = []
+    if resultado_detalle is not None:
+        items, competencias_detalle = _detalle_items_evaluado(
+            resultado_detalle.ciclo, persona
+        )
 
     # Comentarios (observaciones de las asignaciones recibidas)
     comentarios = []
@@ -1517,6 +2165,11 @@ def dashboard_individual(request, usuario_id):
         "persona": persona,
         "plan_msg": plan_msg,
         "actual": actual,
+        "consolidado": consolidado,
+        "resultado_detalle": resultado_detalle,
+        "items": items,
+        "competencias_detalle": competencias_detalle,
+        "ciclo_sel": ciclo_sel,
         "semaforo_actual_emoji": SEMAFORO_EMOJI[actual.semaforo] if actual else "",
         "evolucion": evolucion,
         "evol_points": evol_points,

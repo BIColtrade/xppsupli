@@ -1,6 +1,8 @@
-# Módulo de Valoración SUPLI OS — Guía de uso
+# SUPLI PRIME — Guía de uso
 
-Esta guía explica, paso a paso y sin tecnicismos, cómo se usa el módulo de valoración. Está pensada para que cualquier persona del equipo (People, Líderes, Colaboradores, CEO) entienda qué hacer y dónde hacerlo.
+> **SUPLI PRIME** es el nombre del módulo de valoración de SUPLI OS.
+
+Esta guía explica, paso a paso y sin tecnicismos, cómo se usa el módulo. Está pensada para que cualquier persona del equipo (People, Líderes, Colaboradores, CEO) entienda qué hacer y dónde hacerlo.
 
 ---
 
@@ -213,19 +215,30 @@ Para cada persona evaluada en ese ciclo:
 
 1. **Recoge todas las respuestas** que le dieron los distintos evaluadores.
 2. **Calcula el score de cada evaluador** sobre esa persona (0 a 100%).
-3. **Combina los scores según el tipo de evaluación:**
-   - Si es **Liderazgo**: promedio del jefe × 60% + promedio del equipo × 40%
-   - Si es **Operativo**: 100% el score del jefe
-4. **Asigna un semáforo** según el porcentaje final:
+3. **Promedia por rol del evaluador**: un promedio para el jefe, otro para el equipo y otro para la autoevaluación (esta última queda como referencia, no suma al puntaje).
+4. **Combina los promedios según el tipo de evaluación:**
+   - Si es **Liderazgo** y hay jefe y equipo: promedio del jefe × 60% + promedio del equipo × 40% (los pesos se configuran en cada ciclo).
+   - Si es **Operativo** y hay jefe y equipo: promedio simple de las dos miradas.
+   - Si solo hay una fuente: se usa esa.
+   - Si solo hay autoevaluación: se usa como referencia.
+5. **Guarda cuántas calificaciones se consolidaron** (total y por rol), para que el resultado nunca se muestre como calificaciones sueltas.
+6. **Calcula el promedio por competencia** (A. Cultura, B. Estructura Operacional, etc.).
+7. **Asigna un semáforo** según el porcentaje final:
    - 🟢 ≥90% → Es un referente
    - 🟡 75-89% → Está consolidado
    - 🟠 60-74% → En desarrollo
    - 🔴 40-59% → Requiere acompañamiento
    - ⚫ <40% → Requiere intervención inmediata
-5. **Identifica fortalezas** (las preguntas donde sacó promedio ≥4).
-6. **Identifica brechas** (las preguntas donde sacó promedio ≤2.5).
+8. **Identifica fortalezas** (los ítems donde sacó promedio ≥4).
+9. **Identifica brechas** (los ítems donde sacó promedio ≤2.5).
 
 > ⚠️ El motor se ejecuta cuando le das clic al botón. Puedes correrlo varias veces a medida que más evaluadores van completando sus respuestas.
+
+> 🔁 **Ciclos consolidados antes de esta versión:** vuelve a darle "Consolidar resultados" (o ejecuta `python manage.py recalcular_valoracion`) para que se llenen el número de evaluadores, la autoevaluación y el detalle por competencia.
+
+### El consolidado entre ciclos
+
+Cuando una persona tiene resultados en varios ciclos, SUPLI PRIME **no los muestra como filas independientes**: los pondera por la cantidad de calificaciones que aportó cada ciclo y entrega un único **% consolidado** por persona. Ejemplo: 1 calificación al 60% en el ciclo 1 y 4 calificaciones al 90% en el ciclo 2 → consolidado **84%** con 5 calificaciones.
 
 ---
 
@@ -244,22 +257,29 @@ Aquí ves SOLO tus propios resultados. Por cada ciclo en el que te evaluaron, ve
 - Fortalezas y brechas detectadas
 - Botón **"Ver detalle"**
 
-Al darle a **Ver detalle** entras a una pantalla con:
-- KPIs grandes: % final, puntaje, score del jefe, score del equipo.
+Arriba de la tabla ves tu **consolidado**: un solo porcentaje que pondera todas las calificaciones que recibiste, con el desglose de jefe / equipo / autoevaluación y tu resultado por competencia.
+
+Al darle a **Ver ítems** entras a una pantalla con:
+- KPIs grandes: % consolidado, puntaje, score del jefe, del equipo y de la autoevaluación (con el número de calificaciones de cada uno).
 - El semáforo con su descripción.
-- Lista completa de **fortalezas** y **brechas**.
-- Tabla pregunta-por-pregunta con el promedio que sacaste en cada una.
-- **Observaciones y acuerdos** que dejaron tus evaluadores (si el ciclo es anónimo, no se ven los nombres).
+- **Resultado por competencia** en barras.
+- **Cada ítem evaluado y su resultado**: promedio 1-5, nivel de la escala, promedio del jefe, del equipo, de la autoevaluación, la brecha de autopercepción y la distribución de las calificaciones recibidas.
+- Filtro para ver el detalle solo de un rol de evaluador (jefe / equipo / autoevaluación) o buscar un ítem.
+- **Calificaciones recibidas**: qué puntaje dio cada evaluador (anónimo si el ciclo lo es).
+- **Respuestas abiertas** y **observaciones y acuerdos**.
 
 ### 5.2 Como **Líder de un equipo**
 
 > 📍 Tarjeta **"Resultados del Equipo"**
 
-Aquí ves los resultados de TODAS las personas que tienes como subordinados directos (las que tienen tu nombre en el campo "Jefe directo"). Por cada una verás:
-- Nombre y cargo
-- Área
-- Ciclo, tipo, puntaje, %, semáforo
-- Botón **Ver detalle**
+Aquí ves los resultados de TODAS las personas que tienes como subordinados directos (las que tienen tu nombre en el campo "Jefe directo").
+
+La pantalla tiene dos tablas:
+
+1. **Consolidado por persona** — una sola fila por persona: cuántas calificaciones recibió, el promedio del jefe, del equipo y de la autoevaluación, el **% consolidado** y su semáforo.
+2. **Detalle por ciclo** — el resultado de cada ciclo, por si necesitas ver la evolución.
+
+Además puedes **segmentar** por fecha, ciclo, área/dirección, equipo, rol, cargo, persona, tipo de evaluación y semáforo.
 
 Así puedes identificar quiénes están en verde y a quiénes les debes prestar atención.
 
@@ -268,6 +288,18 @@ Así puedes identificar quiénes están en verde y a quiénes les debes prestar 
 > 📍 Tarjeta **"Resultados del Equipo"** (misma tarjeta, pero con visibilidad ampliada)
 
 Cuando tu rol es CEO o Admin People, la misma tarjeta te muestra los resultados de **TODA la compañía**, no solo de un equipo. Puedes ver el detalle de cualquier persona.
+
+### 5.4 Dashboard Organizacional y Consolidado Individual
+
+> 📍 Tarjetas **"Dashboard Organizacional"** y **"Consolidado Individual"** (Admin People / CEO / BI / Tech)
+
+- **Dashboard Organizacional**: promedio compañía calculado sobre el consolidado de cada persona, semáforo organizacional, evolución histórica, resultado por competencia y promedios por **área/dirección, rol, equipo (jefe directo) y cargo**, además de top performers y mayores brechas — todos sobre el consolidado, nunca sobre calificaciones sueltas.
+- **Consolidado Individual**: la tabla completa, una fila por persona con sus competencias, ordenable por consolidado, nombre, área, cargo, equipo o número de calificaciones; y el **detalle de ítems** (una fila por persona e ítem evaluado).
+- **Exportación a CSV** del consolidado y del detalle de ítems, respetando la segmentación aplicada, para analizar en Excel o Power BI.
+
+### 5.5 Segmentación disponible
+
+En el dashboard, el consolidado y los resultados del equipo se puede filtrar por: **fechas, ciclo, área/dirección, equipo (jefe directo), rol organizacional, cargo, persona, tipo de evaluación y semáforo consolidado**. Los filtros se conservan al exportar a CSV.
 
 ---
 

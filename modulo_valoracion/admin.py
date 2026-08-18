@@ -91,6 +91,7 @@ class ResultadoEvaluacionAdmin(admin.ModelAdmin):
         "evaluado",
         "ciclo",
         "tipo_evaluacion",
+        "total_evaluadores",
         "puntaje_total",
         "porcentaje",
         "semaforo",

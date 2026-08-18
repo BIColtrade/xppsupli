@@ -5,11 +5,76 @@
 <section class="val-page">
   <div class="val-page__header">
     <div>
-      <h1 class="val-page__title">Resultados del Equipo</h1>
-      <p class="val-page__subtitle">{% if puede_ver_todo %}Visibilidad organizacional total.{% else %}Resultados de las personas a tu cargo.{% endif %}</p>
+      <h1 class="val-page__title">SUPLI PRIME &middot; Resultados del Equipo</h1>
+      <p class="val-page__subtitle">
+        {% if puede_ver_todo %}Visibilidad organizacional total.{% else %}Resultados de las personas a tu cargo.{% endif %}
+        Cada persona muestra un consolidado ponderado de todas sus calificaciones.
+      </p>
     </div>
   </div>
 
+  {% url 'modulo_valoracion:resultados_equipo' as filtros_action %}
+  {% include "valoracion_filtros.html" %}
+
+  <div class="dash-kpis">
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Personas</div>
+      <div class="dash-kpi__value">{{ consolidado|length }}</div>
+      <div class="dash-kpi__hint">{{ resultados|length }} resultado(s) de ciclo</div>
+    </div>
+    <div class="dash-kpi">
+      <div class="dash-kpi__label">Promedio del grupo</div>
+      <div class="dash-kpi__value">{{ promedio_general }}%</div>
+      <div class="dash-kpi__hint">Promedio de los consolidados individuales</div>
+    </div>
+  </div>
+
+  <div class="val-section-title">Consolidado por persona</div>
+  <div class="val-table-wrap" style="margin-bottom:22px;">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Persona</th>
+          <th>Cargo</th>
+          <th>Area / Direccion</th>
+          <th>Equipo (jefe)</th>
+          <th>Calificaciones</th>
+          <th>Jefe</th>
+          <th>Equipo</th>
+          <th>Auto</th>
+          <th>Consolidado</th>
+          <th>Semaforo</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in consolidado %}
+        <tr>
+          <td>{{ c.persona }}</td>
+          <td>{{ c.cargo }}</td>
+          <td>{{ c.area }}</td>
+          <td>{{ c.jefe }}</td>
+          <td><span class="dash-chip dash-chip--n">{{ c.evaluaciones }}</span></td>
+          <td>{% if c.promedio_jefe != None %}{{ c.promedio_jefe }}%{% else %}-{% endif %}</td>
+          <td>{% if c.promedio_equipo != None %}{{ c.promedio_equipo }}%{% else %}-{% endif %}</td>
+          <td>{% if c.promedio_auto != None %}{{ c.promedio_auto }}%{% else %}-{% endif %}</td>
+          <td><strong>{{ c.porcentaje }}%</strong> <span class="dash-bar__sub">({{ c.puntaje }}/5)</span></td>
+          <td><span class="semaforo semaforo--{{ c.semaforo }}">{{ c.semaforo_emoji }} {{ c.semaforo_label }}</span></td>
+          <td>
+            <a href="{% url 'modulo_valoracion:dashboard_individual' c.persona_id %}" class="val-btn val-btn--secondary val-btn--sm">Ficha</a>
+            {% if c.ultimo_resultado %}
+            <a href="{% url 'modulo_valoracion:detalle_resultado' c.ultimo_resultado.id %}" class="val-btn val-btn--secondary val-btn--sm">Items</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="11" class="dash-empty">No hay resultados disponibles.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="val-section-title">Detalle por ciclo</div>
   <div class="val-table-wrap">
     <table class="val-table">
       <thead>
@@ -19,6 +84,7 @@
           <th>Area</th>
           <th>Ciclo</th>
           <th>Tipo</th>
+          <th>Calif.</th>
           <th>Puntaje</th>
           <th>%</th>
           <th>Semaforo</th>
@@ -33,13 +99,14 @@
           <td>{{ r.evaluado.get_area_display|default:"-" }}</td>
           <td>{{ r.ciclo.nombre }}</td>
           <td>{{ r.get_tipo_evaluacion_display }}</td>
+          <td>{{ r.total_evaluadores }}</td>
           <td>{{ r.puntaje_total }}</td>
           <td>{{ r.porcentaje }}%</td>
           <td><span class="semaforo semaforo--{{ r.semaforo }}">{{ r.get_semaforo_display }}</span></td>
           <td><a href="{% url 'modulo_valoracion:detalle_resultado' r.id %}" class="val-btn val-btn--secondary val-btn--sm">Ver detalle</a></td>
         </tr>
         {% empty %}
-        <tr><td colspan="9" style="text-align:center; color: var(--val-muted); padding: 24px;">No hay resultados disponibles.</td></tr>
+        <tr><td colspan="10" class="dash-empty">No hay resultados disponibles.</td></tr>
         {% endfor %}
       </tbody>
     </table>

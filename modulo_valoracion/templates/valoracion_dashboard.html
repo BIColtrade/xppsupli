@@ -5,92 +5,39 @@
 <section class="val-page">
   <div class="val-page__header">
     <div>
-      <h1 class="val-page__title">Dashboard Organizacional</h1>
-      <p class="val-page__subtitle">Metricas e informes de todas las evaluaciones. Filtra por fecha, area, cargo, persona y tipo.</p>
+      <h1 class="val-page__title">SUPLI PRIME &middot; Dashboard Organizacional</h1>
+      <p class="val-page__subtitle">
+        Cada persona aparece con UN resultado consolidado (ponderado por todas las calificaciones recibidas).
+        Segmenta por fecha, ciclo, area/direccion, equipo, rol, cargo, persona, tipo y semaforo.
+      </p>
     </div>
+    <a href="{% url 'modulo_valoracion:consolidado_individual' %}?{{ qs_filtros }}" class="val-btn val-btn--primary">Consolidado individual &rarr;</a>
   </div>
 
-  <!-- ---- Filtros ---- -->
-  <form method="get" class="dash-filters">
-    <div class="val-form__group">
-      <label class="val-form__label">Desde</label>
-      <input type="date" name="desde" value="{{ filtros.desde }}" class="val-form__input">
-    </div>
-    <div class="val-form__group">
-      <label class="val-form__label">Hasta</label>
-      <input type="date" name="hasta" value="{{ filtros.hasta }}" class="val-form__input">
-    </div>
-    <div class="val-form__group">
-      <label class="val-form__label">Ciclo</label>
-      <select name="ciclo" class="val-form__select">
-        <option value="">Todos</option>
-        {% for c in ciclos %}
-        <option value="{{ c.id }}" {% if filtros.ciclo == c.id|stringformat:"s" %}selected{% endif %}>{{ c.nombre }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="val-form__group">
-      <label class="val-form__label">Area / Direccion</label>
-      <select name="area" class="val-form__select">
-        <option value="">Todas</option>
-        {% for cod, label in area_choices %}
-        <option value="{{ cod }}" {% if filtros.area == cod %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="val-form__group">
-      <label class="val-form__label">Tipo de cargo</label>
-      <select name="cargo" class="val-form__select">
-        <option value="">Todos</option>
-        {% for c in cargos %}
-        <option value="{{ c }}" {% if filtros.cargo == c %}selected{% endif %}>{{ c }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="val-form__group">
-      <label class="val-form__label">Persona</label>
-      <select name="persona" class="val-form__select">
-        <option value="">Todas</option>
-        {% for p in personas %}
-        <option value="{{ p.id }}" {% if filtros.persona == p.id|stringformat:"s" %}selected{% endif %}>{{ p }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="val-form__group">
-      <label class="val-form__label">Tipo de evaluacion</label>
-      <select name="tipo" class="val-form__select">
-        <option value="">Todos</option>
-        {% for cod, label in tipo_choices %}
-        <option value="{{ cod }}" {% if filtros.tipo == cod %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="dash-filters__actions">
-      <button type="submit" class="val-btn val-btn--primary">Aplicar filtros</button>
-      <a href="{% url 'modulo_valoracion:dashboard_organizacional' %}" class="val-btn val-btn--secondary">Limpiar</a>
-    </div>
-  </form>
+  <!-- ---- Segmentacion ---- -->
+  {% url 'modulo_valoracion:dashboard_organizacional' as filtros_action %}
+  {% include "valoracion_filtros.html" %}
 
   {% if total == 0 %}
-  <div class="val-alert val-alert--info">No hay resultados consolidados para los filtros seleccionados.</div>
+  <div class="val-alert val-alert--info">No hay resultados consolidados para la segmentacion seleccionada.</div>
   {% endif %}
 
   <!-- ---- KPIs ---- -->
   <div class="dash-kpis">
     <div class="dash-kpi">
-      <div class="dash-kpi__label">Promedio compania</div>
+      <div class="dash-kpi__label">Promedio compania (consolidado)</div>
       <div class="dash-kpi__value">{{ promedio_compania }}%</div>
       <span class="semaforo semaforo--{{ semaforo_compania }}">{{ semaforo_compania_emoji }} {{ semaforo_compania_label }}</span>
     </div>
     <div class="dash-kpi">
       <div class="dash-kpi__label">Personas evaluadas</div>
       <div class="dash-kpi__value">{{ personas_unicas }}</div>
-      <div class="dash-kpi__hint">{{ total }} resultado(s)</div>
+      <div class="dash-kpi__hint">{{ calificaciones_totales }} calificacion(es) en {{ total }} ciclo-persona</div>
     </div>
     <div class="dash-kpi">
       <div class="dash-kpi__label">Promedio lideres</div>
       <div class="dash-kpi__value">{{ promedio_lideres }}%</div>
-      <div class="dash-kpi__hint">{{ lideres_count }} evaluacion(es) de liderazgo</div>
+      <div class="dash-kpi__hint">{{ lideres_count }} lider(es) consolidado(s)</div>
     </div>
     <div class="dash-kpi">
       <div class="dash-kpi__label">Tendencia vs ciclo previo</div>
@@ -101,10 +48,66 @@
     </div>
   </div>
 
+  <!-- ---- Consolidado individual ---- -->
+  <div class="dash-card dash-card--full" style="margin-bottom: 18px;">
+    <div class="dash-card__title">Consolidado individual (top 15)</div>
+    <p class="dash-note">
+      El % consolidado pondera todas las calificaciones recibidas por la persona: promedio por rol
+      (jefe / equipo / autoevaluacion) y luego los pesos definidos en el ciclo.
+    </p>
+    <div class="val-table-wrap">
+      <table class="val-table">
+        <thead>
+          <tr>
+            <th>Persona</th>
+            <th>Area / Direccion</th>
+            <th>Cargo</th>
+            <th>Equipo</th>
+            <th>Calif.</th>
+            <th>Jefe</th>
+            <th>Equipo</th>
+            <th>Auto</th>
+            <th>Consolidado</th>
+            <th>Semaforo</th>
+            <th>Detalle</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in consolidado|slice:":15" %}
+          <tr>
+            <td><a class="dash-link" href="{% url 'modulo_valoracion:dashboard_individual' c.persona_id %}">{{ c.persona }}</a></td>
+            <td>{{ c.area }}</td>
+            <td>{{ c.cargo }}</td>
+            <td>{{ c.jefe }}</td>
+            <td><span class="dash-chip dash-chip--n">{{ c.evaluaciones }}</span></td>
+            <td>{% if c.promedio_jefe != None %}{{ c.promedio_jefe }}%{% else %}-{% endif %}</td>
+            <td>{% if c.promedio_equipo != None %}{{ c.promedio_equipo }}%{% else %}-{% endif %}</td>
+            <td>{% if c.promedio_auto != None %}{{ c.promedio_auto }}%{% else %}-{% endif %}</td>
+            <td><strong>{{ c.porcentaje }}%</strong> <span class="dash-bar__sub">({{ c.puntaje }}/5)</span></td>
+            <td><span class="semaforo semaforo--{{ c.semaforo }}">{{ c.semaforo_emoji }} {{ c.semaforo_label }}</span></td>
+            <td>
+              {% if c.ultimo_resultado %}
+              <a class="dash-link" href="{% url 'modulo_valoracion:detalle_resultado' c.ultimo_resultado.id %}">Ver items</a>
+              {% else %}-{% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="11" class="dash-empty">Sin datos consolidados.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if consolidado %}
+    <div style="margin-top:12px;">
+      <a href="{% url 'modulo_valoracion:consolidado_individual' %}?{{ qs_filtros }}" class="val-btn val-btn--secondary val-btn--sm">Ver los {{ personas_unicas }} consolidados</a>
+    </div>
+    {% endif %}
+  </div>
+
   <div class="dash-grid">
     <!-- ---- Semaforo organizacional ---- -->
     <div class="dash-card">
-      <div class="dash-card__title">Semaforo organizacional</div>
+      <div class="dash-card__title">Semaforo organizacional (personas)</div>
       {% for s in distribucion %}
       <div class="dash-bar">
         <div class="dash-bar__label"><span class="semaforo semaforo--{{ s.cod }}">{{ s.emoji }} {{ s.label }}</span></div>
@@ -136,11 +139,11 @@
     </div>
 
     <!-- ---- Promedio por area / direcciones ---- -->
-    <div class="dash-card dash-card--wide">
-      <div class="dash-card__title">Promedio por area / direccion</div>
+    <div class="dash-card">
+      <div class="dash-card__title">Por area / direccion</div>
       {% for a in por_area %}
       <div class="dash-bar">
-        <div class="dash-bar__label">{{ a.emoji }} {{ a.area }} <span class="dash-bar__sub">({{ a.count }})</span></div>
+        <div class="dash-bar__label">{{ a.emoji }} {{ a.label }} <span class="dash-bar__sub">({{ a.count }})</span></div>
         <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ a.semaforo }}" style="width: {{ a.promedio }}%;"></div></div>
         <div class="dash-bar__num">{{ a.promedio }}%</div>
       </div>
@@ -149,21 +152,78 @@
       {% endfor %}
     </div>
 
+    <!-- ---- Promedio por rol ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Por rol organizacional</div>
+      {% for a in por_rol %}
+      <div class="dash-bar">
+        <div class="dash-bar__label">{{ a.emoji }} {{ a.label }} <span class="dash-bar__sub">({{ a.count }})</span></div>
+        <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ a.semaforo }}" style="width: {{ a.promedio }}%;"></div></div>
+        <div class="dash-bar__num">{{ a.promedio }}%</div>
+      </div>
+      {% empty %}
+      <p class="dash-empty">Sin datos por rol.</p>
+      {% endfor %}
+    </div>
+
+    <!-- ---- Promedio por equipo ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Por equipo (jefe directo)</div>
+      {% for a in por_equipo %}
+      <div class="dash-bar">
+        <div class="dash-bar__label">{{ a.emoji }} {{ a.label }} <span class="dash-bar__sub">({{ a.count }})</span></div>
+        <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ a.semaforo }}" style="width: {{ a.promedio }}%;"></div></div>
+        <div class="dash-bar__num">{{ a.promedio }}%</div>
+      </div>
+      {% empty %}
+      <p class="dash-empty">Sin datos por equipo.</p>
+      {% endfor %}
+    </div>
+
+    <!-- ---- Promedio por cargo ---- -->
+    <div class="dash-card">
+      <div class="dash-card__title">Por cargo</div>
+      {% for a in por_cargo|slice:":12" %}
+      <div class="dash-bar">
+        <div class="dash-bar__label">{{ a.emoji }} {{ a.label }} <span class="dash-bar__sub">({{ a.count }})</span></div>
+        <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ a.semaforo }}" style="width: {{ a.promedio }}%;"></div></div>
+        <div class="dash-bar__num">{{ a.promedio }}%</div>
+      </div>
+      {% empty %}
+      <p class="dash-empty">Sin datos por cargo.</p>
+      {% endfor %}
+    </div>
+
+    <!-- ---- Competencias evaluadas ---- -->
+    <div class="dash-card dash-card--wide">
+      <div class="dash-card__title">Resultado por competencia evaluada</div>
+      {% for c in competencias_org %}
+      <div class="dash-bar">
+        <div class="dash-bar__label">{{ c.emoji }} {{ c.etiqueta }} <span class="dash-bar__sub">({{ c.personas }} persona/s)</span></div>
+        <div class="dash-bar__track"><div class="dash-bar__fill dash-fill--{{ c.semaforo }}" style="width: {{ c.porcentaje }}%;"></div></div>
+        <div class="dash-bar__num">{{ c.promedio }}/5 &middot; {{ c.porcentaje }}%</div>
+      </div>
+      {% empty %}
+      <p class="dash-empty">Consolida un ciclo para ver el resultado por competencia.</p>
+      {% endfor %}
+    </div>
+
     <!-- ---- Top performers ---- -->
     <div class="dash-card">
-      <div class="dash-card__title">Top performers</div>
+      <div class="dash-card__title">Top performers (consolidado)</div>
       <div class="val-table-wrap">
         <table class="val-table">
-          <thead><tr><th>Persona</th><th>Area</th><th>%</th></tr></thead>
+          <thead><tr><th>Persona</th><th>Area</th><th>Calif.</th><th>%</th></tr></thead>
           <tbody>
-            {% for r in top_performers %}
+            {% for c in top_performers %}
             <tr>
-              <td><a class="dash-link" href="{% url 'modulo_valoracion:dashboard_individual' r.evaluado_id %}">{{ r.evaluado }}</a></td>
-              <td>{{ r.evaluado.get_area_display|default:"-" }}</td>
-              <td><span class="semaforo semaforo--{{ r.semaforo }}">{{ r.porcentaje }}%</span></td>
+              <td><a class="dash-link" href="{% url 'modulo_valoracion:dashboard_individual' c.persona_id %}">{{ c.persona }}</a></td>
+              <td>{{ c.area }}</td>
+              <td>{{ c.evaluaciones }}</td>
+              <td><span class="semaforo semaforo--{{ c.semaforo }}">{{ c.porcentaje }}%</span></td>
             </tr>
             {% empty %}
-            <tr><td colspan="3" class="dash-empty">Sin datos.</td></tr>
+            <tr><td colspan="4" class="dash-empty">Sin datos.</td></tr>
             {% endfor %}
           </tbody>
         </table>
@@ -172,19 +232,20 @@
 
     <!-- ---- Brechas (personas) ---- -->
     <div class="dash-card">
-      <div class="dash-card__title">Mayores brechas (personas)</div>
+      <div class="dash-card__title">Mayores brechas (consolidado)</div>
       <div class="val-table-wrap">
         <table class="val-table">
-          <thead><tr><th>Persona</th><th>Area</th><th>%</th></tr></thead>
+          <thead><tr><th>Persona</th><th>Area</th><th>Calif.</th><th>%</th></tr></thead>
           <tbody>
-            {% for r in brechas_personas %}
+            {% for c in brechas_personas %}
             <tr>
-              <td><a class="dash-link" href="{% url 'modulo_valoracion:dashboard_individual' r.evaluado_id %}">{{ r.evaluado }}</a></td>
-              <td>{{ r.evaluado.get_area_display|default:"-" }}</td>
-              <td><span class="semaforo semaforo--{{ r.semaforo }}">{{ r.porcentaje }}%</span></td>
+              <td><a class="dash-link" href="{% url 'modulo_valoracion:dashboard_individual' c.persona_id %}">{{ c.persona }}</a></td>
+              <td>{{ c.area }}</td>
+              <td>{{ c.evaluaciones }}</td>
+              <td><span class="semaforo semaforo--{{ c.semaforo }}">{{ c.porcentaje }}%</span></td>
             </tr>
             {% empty %}
-            <tr><td colspan="3" class="dash-empty">Sin datos.</td></tr>
+            <tr><td colspan="4" class="dash-empty">Sin datos.</td></tr>
             {% endfor %}
           </tbody>
         </table>
