@@ -12,9 +12,10 @@ from user.models import Usuario
 PUNTAJE_MAXIMO_MENSUAL = 100
 PUNTAJE_MAXIMO_RETO = 25
 
-PUNTOS_CUMPLIMIENTO = 10   # Cumplio el reto
-PUNTOS_EVIDENCIA = 5       # Presento evidencia
-PUNTOS_IMPACTO = 10        # Genero impacto demostrable
+# Modo de medicion vigente: por ahora solo se mide si el lider CUMPLE o NO
+# cumple el reto asignado. El reto se otorga completo (25 pts) o en cero; la
+# participacion se registra aparte para poder seguir el % de participacion.
+PUNTOS_CUMPLIMIENTO = PUNTAJE_MAXIMO_RETO
 
 SEMANAS_CHOICES = [
     (1, 'Semana 1'),
@@ -37,11 +38,24 @@ ESTADO_CICLO_CHOICES = [
 ]
 
 ESTADO_PARTICIPACION_CHOICES = [
-    ('pendiente', 'Pendiente'),
-    ('en_revision', 'En revision'),
-    ('validado', 'Validado'),
-    ('devuelto', 'Devuelto'),
+    ('pendiente', 'Sin registrar'),
+    ('en_revision', 'Reportado por el lider'),
+    ('validado', 'Registrado'),
+    ('devuelto', 'Devuelto al lider'),
 ]
+
+# Como quedo registrada la persona frente al reto (para el seguimiento visual)
+REGISTRO_SIN = 'sin_registro'
+REGISTRO_CUMPLIO = 'cumplio'
+REGISTRO_PARTICIPO = 'participo_no_cumplio'
+REGISTRO_NO_PARTICIPO = 'no_participo'
+
+REGISTRO_LABEL = {
+    REGISTRO_SIN: 'Sin registrar',
+    REGISTRO_CUMPLIO: 'Participo y cumplio',
+    REGISTRO_PARTICIPO: 'Participo, no cumplio',
+    REGISTRO_NO_PARTICIPO: 'No participo',
+}
 
 # Semaforo Leadership Pulse (segun especificacion)
 SEMAFORO_CHOICES = [
@@ -202,7 +216,10 @@ class RetoSemanal(models.Model):
 
 class ParticipacionReto(models.Model):
     """Registro de un lider frente a un reto semanal.
-    Estructura de calificacion: 10 (cumplio) + 5 (evidencia) + 10 (impacto) = 25."""
+
+    Medicion vigente: se registra si la persona PARTICIPO o no, y si CUMPLIO o
+    no el reto. El puntaje es binario (el maximo del reto si cumplio, 0 si no)
+    y se acompana de un campo libre de observaciones para el seguimiento."""
     reto = models.ForeignKey(
         RetoSemanal, on_delete=models.CASCADE, related_name='participaciones'
     )
@@ -213,13 +230,24 @@ class ParticipacionReto(models.Model):
         max_length=20, choices=ESTADO_PARTICIPACION_CHOICES, default='pendiente'
     )
 
-    # Reporte del lider
+    # Reporte del lider (opcional: el registro oficial lo hace People)
     declara_cumplimiento = models.BooleanField(default=False)
     evidencia_url = models.URLField(blank=True)
     evidencia_descripcion = models.TextField(blank=True)
     impacto_descripcion = models.TextField(blank=True)
 
-    # Calificacion validada (soportada en evidencia objetiva)
+    # Registro oficial: participacion y cumplimiento
+    participo = models.BooleanField(
+        default=False, help_text="La persona participo en el reto asignado"
+    )
+    cumplio = models.BooleanField(
+        default=False, help_text="La persona cumplio el reto asignado"
+    )
+    observaciones = models.TextField(
+        blank=True, help_text="Seguimiento del reto: contexto, soportes o acuerdos"
+    )
+
+    # Puntaje binario: el maximo del reto si cumplio, 0 si no.
     pts_cumplimiento = models.PositiveSmallIntegerField(default=0)
     pts_evidencia = models.PositiveSmallIntegerField(default=0)
     pts_impacto = models.PositiveSmallIntegerField(default=0)
@@ -243,13 +271,36 @@ class ParticipacionReto(models.Model):
     def __str__(self):
         return f"{self.lider} - {self.reto} ({self.puntaje_total}/{self.reto.puntaje_max})"
 
+    @property
+    def puntaje_max(self):
+        return self.reto.puntaje_max if self.reto_id else PUNTAJE_MAXIMO_RETO
+
     def recalcular_puntaje(self):
-        self.puntaje_total = (
-            (self.pts_cumplimiento or 0)
-            + (self.pts_evidencia or 0)
-            + (self.pts_impacto or 0)
-        )
+        """Puntaje binario derivado de `cumplio`. No se puede cumplir sin participar."""
+        if not self.participo:
+            self.cumplio = False
+        self.pts_cumplimiento = self.puntaje_max if self.cumplio else 0
+        self.pts_evidencia = 0
+        self.pts_impacto = 0
+        self.puntaje_total = self.pts_cumplimiento
         return self.puntaje_total
+
+    @property
+    def registro(self):
+        """Codigo de como quedo la persona frente al reto."""
+        if self.estado not in {"validado", "devuelto"}:
+            return REGISTRO_SIN
+        if not self.participo:
+            return REGISTRO_NO_PARTICIPO
+        return REGISTRO_CUMPLIO if self.cumplio else REGISTRO_PARTICIPO
+
+    @property
+    def registro_label(self):
+        return REGISTRO_LABEL.get(self.registro, "")
+
+    @property
+    def esta_registrado(self):
+        return self.estado in {"validado", "devuelto"}
 
     @property
     def tiene_evidencia(self):
@@ -269,8 +320,20 @@ class PuntajeMensual(models.Model):
         default=dict, blank=True,
         help_text="{codigo_pilar: {'nombre':..., 'puntaje':..., 'max':...}}",
     )
-    retos_evaluados = models.PositiveSmallIntegerField(default=0)
+    retos_evaluados = models.PositiveSmallIntegerField(
+        default=0, help_text="Retos asignados en el ciclo"
+    )
+    retos_registrados = models.PositiveSmallIntegerField(
+        default=0, help_text="Retos con registro de seguimiento"
+    )
+    retos_participados = models.PositiveSmallIntegerField(default=0)
     retos_cumplidos = models.PositiveSmallIntegerField(default=0)
+    pct_participacion = models.FloatField(
+        default=0, help_text="Participados / asignados (%)"
+    )
+    pct_cumplimiento = models.FloatField(
+        default=0, help_text="Cumplidos / asignados (%)"
+    )
     semaforo = models.CharField(
         max_length=20, choices=SEMAFORO_CHOICES, default='intervencion'
     )
@@ -280,7 +343,7 @@ class PuntajeMensual(models.Model):
     class Meta:
         db_table = 'pulse_puntajes_mensuales'
         unique_together = ('ciclo', 'lider')
-        ordering = ['-puntaje_total', 'lider__nombre']
+        ordering = ['-pct_cumplimiento', '-pct_participacion', 'lider__nombre']
 
     def __str__(self):
         return f"{self.lider} - {self.ciclo.nombre}: {self.puntaje_total} pts"
@@ -288,3 +351,7 @@ class PuntajeMensual(models.Model):
     @property
     def semaforo_emoji(self):
         return SEMAFORO_EMOJI.get(self.semaforo, '')
+
+    @property
+    def retos_no_participados(self):
+        return max((self.retos_evaluados or 0) - (self.retos_participados or 0), 0)

@@ -14,8 +14,15 @@
   {% if ciclo %}
   <div class="lp-stats">
     <div class="lp-stat">
-      <div class="lp-stat__value">{% if mi_puntaje %}{{ mi_puntaje.puntaje_total }}{% else %}0{% endif %}</div>
-      <div class="lp-stat__label">Mi puntaje / {{ puntaje_maximo }}</div>
+      <div class="lp-stat__value">{% if mi_puntaje %}{{ mi_puntaje.pct_participacion }}{% else %}0{% endif %}%</div>
+      <div class="lp-stat__label">Mi participacion</div>
+      {% if mi_puntaje %}
+      <div class="lp-stat__hint">{{ mi_puntaje.retos_participados }} de {{ mi_puntaje.retos_evaluados }} retos</div>
+      {% endif %}
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{% if mi_puntaje %}{{ mi_puntaje.pct_cumplimiento }}{% else %}0{% endif %}%</div>
+      <div class="lp-stat__label">Mi cumplimiento</div>
       {% if mi_puntaje %}
       <div class="lp-stat__hint">{{ mi_semaforo_emoji }} {{ mi_semaforo_label }}</div>
       {% endif %}
@@ -30,8 +37,8 @@
     </div>
     {% if puede_validar %}
     <div class="lp-stat">
-      <div class="lp-stat__value">{{ por_validar }}</div>
-      <div class="lp-stat__label">Reportes por validar</div>
+      <div class="lp-stat__value">{{ por_registrar }}</div>
+      <div class="lp-stat__label">Retos por registrar</div>
     </div>
     {% endif %}
   </div>
@@ -50,12 +57,12 @@
     <a href="{% url 'leadership_pulse:mis_retos' %}" class="lp-card lp-card--primary">
       <div class="lp-card__icon">MR</div>
       <div class="lp-card__title">Mis Retos</div>
-      <div class="lp-card__desc">Reporta cumplimiento, evidencia e impacto de los retos semanales del ciclo.</div>
+      <div class="lp-card__desc">Reporta tu participacion y cumplimiento de los retos semanales del ciclo.</div>
     </a>
     <a href="{% url 'leadership_pulse:mi_pulse' %}" class="lp-card lp-card--info">
       <div class="lp-card__icon">MP</div>
       <div class="lp-card__title">Mi Pulse</div>
-      <div class="lp-card__desc">Tu nivel de desempeno, semaforo, puntaje por pilar y evolucion mensual.</div>
+      <div class="lp-card__desc">Tu % de participacion y cumplimiento, semaforo y evolucion mensual.</div>
     </a>
     <a href="{% url 'leadership_pulse:ranking' %}" class="lp-card lp-card--gold">
       <div class="lp-card__icon">RK</div>
@@ -74,7 +81,7 @@
       <div class="lp-podio__medal">{% if forloop.counter == 1 %}&#x1F947;{% elif forloop.counter == 2 %}&#x1F948;{% else %}&#x1F949;{% endif %}</div>
       <div class="lp-podio__name">{{ f.lider }}</div>
       <div class="lp-podio__role">{{ f.lider.cargo|default:"Leadership Team" }}</div>
-      <div class="lp-podio__score">{{ f.puntaje }}<span>/{{ puntaje_maximo }}</span></div>
+      <div class="lp-podio__score">{{ f.pct_cumplimiento }}<span>%</span></div>
       <div style="margin-top:10px;"><span class="lp-semaforo lp-semaforo--{{ f.semaforo }}">{{ f.emoji }} {{ f.semaforo_label }}</span></div>
     </div>
     {% endfor %}
@@ -83,12 +90,12 @@
 
   {% if puede_validar %}
   <div class="lp-section-divider"></div>
-  <div class="lp-section-title">Validacion (People / Admin)</div>
+  <div class="lp-section-title">Seguimiento (People / Admin)</div>
   <div class="lp-grid">
     <a href="{% url 'leadership_pulse:bandeja_validacion' %}" class="lp-card lp-card--leader">
-      <div class="lp-card__icon">VA</div>
-      <div class="lp-card__title">Bandeja de Validacion</div>
-      <div class="lp-card__desc">Revisa evidencia objetiva y asigna los 10 + 5 + 10 puntos de cada reto.</div>
+      <div class="lp-card__icon">SR</div>
+      <div class="lp-card__title">Seguimiento de Retos</div>
+      <div class="lp-card__desc">Registra si cada persona participo, si cumplio, y deja tus observaciones.</div>
     </a>
     <a href="{% url 'leadership_pulse:gestionar_miembros' %}" class="lp-card lp-card--leader">
       <div class="lp-card__icon">LT</div>
@@ -116,29 +123,29 @@
   {% endif %}
 
   <div class="lp-section-divider"></div>
-  <div class="lp-section-title">Como se califica</div>
+  <div class="lp-section-title">Como se mide</div>
   <div class="lp-rubrica">
     <div class="lp-rubrica__item">
-      <div class="lp-rubrica__pts">10 pts</div>
-      <div class="lp-rubrica__label">Cumplio el reto</div>
+      <div class="lp-rubrica__pts">Participo</div>
+      <div class="lp-rubrica__label">Se registra si la persona participo o no en el reto</div>
     </div>
     <div class="lp-rubrica__item">
-      <div class="lp-rubrica__pts">5 pts</div>
-      <div class="lp-rubrica__label">Presento evidencia</div>
+      <div class="lp-rubrica__pts">Cumplio</div>
+      <div class="lp-rubrica__label">Unico criterio de calificacion: cumple o no cumple</div>
     </div>
     <div class="lp-rubrica__item">
-      <div class="lp-rubrica__pts">10 pts</div>
-      <div class="lp-rubrica__label">Genero impacto demostrable</div>
+      <div class="lp-rubrica__pts">{{ puntaje_reto }} pts</div>
+      <div class="lp-rubrica__label">Vale el reto completo si se cumple; 0 si no</div>
     </div>
     <div class="lp-rubrica__item">
-      <div class="lp-rubrica__pts">25 pts</div>
-      <div class="lp-rubrica__label">Total por reto semanal</div>
+      <div class="lp-rubrica__pts">Observaciones</div>
+      <div class="lp-rubrica__label">Campo libre de seguimiento por persona y reto</div>
     </div>
   </div>
   <p class="lp-page__subtitle">
-    4 retos semanales x 25 puntos = {{ puntaje_maximo }} puntos mensuales
+    4 retos semanales x {{ puntaje_reto }} puntos = {{ puntaje_maximo }} puntos mensuales
     (Cultura High Performance, Ritmo SUPLI, Infraestructura Tecnologica y KMS).
-    Todos los resultados estan respaldados por evidencia objetiva y debidamente soportada.
+    El semaforo y el ranking se leen sobre el <strong>% de cumplimiento</strong> de los retos asignados.
   </p>
 </section>
 

@@ -47,17 +47,22 @@ class RetoSemanalAdmin(admin.ModelAdmin):
 @admin.register(ParticipacionReto)
 class ParticipacionRetoAdmin(admin.ModelAdmin):
     list_display = (
-        "lider", "reto", "estado", "pts_cumplimiento", "pts_evidencia",
-        "pts_impacto", "puntaje_total", "validado_por",
+        "lider", "reto", "estado", "participo", "cumplio", "puntaje_total",
+        "observaciones", "validado_por",
     )
-    list_filter = ("estado", "reto__ciclo", "reto__pilar")
-    search_fields = ("lider__nombre", "lider__apellido", "reto__titulo")
+    list_filter = ("estado", "participo", "cumplio", "reto__ciclo", "reto__pilar")
+    search_fields = (
+        "lider__nombre", "lider__apellido", "reto__titulo", "observaciones",
+    )
     ordering = ("reto__semana", "lider__nombre")
 
 
 @admin.register(PuntajeMensual)
 class PuntajeMensualAdmin(admin.ModelAdmin):
-    list_display = ("lider", "ciclo", "puntaje_total", "semaforo", "posicion", "fecha_calculo")
+    list_display = (
+        "lider", "ciclo", "retos_evaluados", "retos_participados", "retos_cumplidos",
+        "pct_participacion", "pct_cumplimiento", "semaforo", "posicion", "fecha_calculo",
+    )
     list_filter = ("ciclo", "semaforo")
     search_fields = ("lider__nombre", "lider__apellido")
     ordering = ("ciclo", "posicion")

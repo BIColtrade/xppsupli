@@ -13,14 +13,15 @@
       <p class="lp-page__subtitle">{{ reto.pilar.nombre }} &middot; Semana {{ reto.semana }} &middot;
         Cierre {{ reto.fecha_cierre|date:"d/m/Y" }} &middot; {{ puntaje_reto }} puntos</p>
     </div>
-    <span class="lp-badge lp-badge--{{ participacion.estado }}">{{ participacion.get_estado_display }}</span>
+    <span class="lp-registro lp-registro--{{ participacion.registro }}">{{ participacion.registro_label }}</span>
   </div>
 
   {% if error %}<div class="lp-alert lp-alert--error">{{ error }}</div>{% endif %}
   {% if bloqueado %}
   <div class="lp-alert lp-alert--info">
-    Este reto ya fue validado: {{ participacion.puntaje_total }}/{{ puntaje_reto }} puntos.
-    {% if participacion.observaciones_validador %}Observacion: {{ participacion.observaciones_validador }}{% endif %}
+    Este reto ya fue registrado: {{ participacion.registro_label }}
+    ({{ participacion.puntaje_total }}/{{ puntaje_reto }} puntos).
+    {% if participacion.observaciones %}<br><strong>Observacion:</strong> {{ participacion.observaciones }}{% endif %}
   </div>
   {% endif %}
 
@@ -28,54 +29,48 @@
   <div class="lp-alert lp-alert--info">{{ reto.descripcion }}</div>
   {% endif %}
 
+  {% if reto.criterio_cumplimiento %}
   <div class="lp-rubrica">
     <div class="lp-rubrica__item">
-      <div class="lp-rubrica__pts">{{ pts_cumplimiento }} pts</div>
+      <div class="lp-rubrica__pts">{{ puntaje_reto }} pts</div>
       <div class="lp-rubrica__label">Cumplio el reto</div>
-      {% if reto.criterio_cumplimiento %}<div class="lp-form__hint">{{ reto.criterio_cumplimiento }}</div>{% endif %}
-    </div>
-    <div class="lp-rubrica__item">
-      <div class="lp-rubrica__pts">{{ pts_evidencia }} pts</div>
-      <div class="lp-rubrica__label">Presento evidencia</div>
-      {% if reto.criterio_evidencia %}<div class="lp-form__hint">{{ reto.criterio_evidencia }}</div>{% endif %}
-    </div>
-    <div class="lp-rubrica__item">
-      <div class="lp-rubrica__pts">{{ pts_impacto }} pts</div>
-      <div class="lp-rubrica__label">Genero impacto demostrable</div>
-      {% if reto.criterio_impacto %}<div class="lp-form__hint">{{ reto.criterio_impacto }}</div>{% endif %}
+      <div class="lp-form__hint">{{ reto.criterio_cumplimiento }}</div>
     </div>
   </div>
+  {% endif %}
 
   <form method="post" class="lp-form">
     {% csrf_token %}
     <div class="lp-form__group">
       <label class="lp-form__checkbox">
-        <input type="checkbox" name="declara_cumplimiento" {% if participacion.declara_cumplimiento %}checked{% endif %} {% if bloqueado %}disabled{% endif %}>
-        Declaro que cumpli el reto de esta semana
+        <input type="checkbox" name="participo" {% if participacion.participo %}checked{% endif %} {% if bloqueado %}disabled{% endif %}>
+        Participe en el reto de esta semana
       </label>
     </div>
 
     <div class="lp-form__group">
-      <label class="lp-form__label" for="evidencia_url">Enlace de evidencia</label>
+      <label class="lp-form__checkbox">
+        <input type="checkbox" name="declara_cumplimiento" {% if participacion.declara_cumplimiento %}checked{% endif %} {% if bloqueado %}disabled{% endif %}>
+        Declaro que cumpli el reto
+      </label>
+      <div class="lp-form__hint">People confirma el registro final del cumplimiento.</div>
+    </div>
+
+    <div class="lp-form__group">
+      <label class="lp-form__label" for="evidencia_url">Enlace de soporte (opcional)</label>
       <input type="url" id="evidencia_url" name="evidencia_url" class="lp-form__input"
              value="{{ participacion.evidencia_url }}" placeholder="https://..." {% if bloqueado %}disabled{% endif %}>
-      <div class="lp-form__hint">Documento, tablero, acta o registro que soporte objetivamente el cumplimiento.</div>
+      <div class="lp-form__hint">Documento, tablero, acta o registro que respalde lo reportado.</div>
     </div>
 
     <div class="lp-form__group">
-      <label class="lp-form__label" for="evidencia_descripcion">Descripcion de la evidencia</label>
+      <label class="lp-form__label" for="evidencia_descripcion">Comentario (opcional)</label>
       <textarea id="evidencia_descripcion" name="evidencia_descripcion" class="lp-form__textarea" {% if bloqueado %}disabled{% endif %}>{{ participacion.evidencia_descripcion }}</textarea>
-    </div>
-
-    <div class="lp-form__group">
-      <label class="lp-form__label" for="impacto_descripcion">Impacto demostrable</label>
-      <textarea id="impacto_descripcion" name="impacto_descripcion" class="lp-form__textarea" {% if bloqueado %}disabled{% endif %}>{{ participacion.impacto_descripcion }}</textarea>
-      <div class="lp-form__hint">Resultado medible en el equipo, el proceso o la adopcion de SUPLI OS.</div>
     </div>
 
     <div class="lp-form__actions">
       {% if not bloqueado %}
-      <button type="submit" class="lp-btn lp-btn--primary">Enviar a validacion</button>
+      <button type="submit" class="lp-btn lp-btn--primary">Enviar reporte</button>
       {% endif %}
       <a href="{% url 'leadership_pulse:mis_retos' %}" class="lp-btn lp-btn--secondary">Volver</a>
     </div>

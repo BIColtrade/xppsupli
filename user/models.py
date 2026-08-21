@@ -30,11 +30,12 @@ TIPO_USUARIO_CHOICES = [
 AREA_CHOICES = [
     ('ceo', 'Presidencia'),
     ('direccion_comercial', 'Direccion Comercial'),
+    ('direccion_operaciones', 'Direccion de Operaciones'),
     ('tecnologia', 'Tech'),
     ('accounting', 'Accounting'),
     ('finanzas', 'Finance'),
     ('sales', 'Sales'),
-    ('operations', 'Operations (Ops)'),
+    ('logistics', 'Logistics'),
     ('procurement', 'Procurement'),
     ('trade', 'Trade Marketing'),
     ('brands', 'Brands'),

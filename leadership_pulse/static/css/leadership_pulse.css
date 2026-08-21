@@ -250,10 +250,23 @@ body {
 .lp-up { color: #79f2a8; font-weight: 700; }
 .lp-down { color: #ff9d9d; font-weight: 700; }
 
+/* ---- Registro de retos: participo / cumplio ---- */
+.lp-registro { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; border: 1px solid rgba(172, 170, 173, 0.2); }
+.lp-registro--sin_registro         { background: rgba(172, 170, 173, 0.25); color: #f7f7ff; }
+.lp-registro--cumplio              { background: rgba(0, 160, 60, 0.28); color: #d6ffe5; }
+.lp-registro--participo_no_cumplio { background: rgba(255, 176, 0, 0.28); color: #ffeec2; }
+.lp-registro--no_participo         { background: rgba(214, 40, 40, 0.28); color: #ffd6d6; }
+
+.lp-table--registro td { vertical-align: middle; }
+.lp-table--registro .lp-form__input { margin: 0; }
+.lp-col-check { text-align: center; width: 90px; }
+.lp-col-check input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: #5934bc; }
+
 /* ---- Responsive ---- */
 @media (max-width: 600px) {
   .lp-page { padding: 16px; }
   .lp-hero { padding: 16px; }
   .lp-stats { grid-template-columns: repeat(2, 1fr); }
   .lp-bar { grid-template-columns: 1fr; gap: 4px; }
+  .lp-col-check { width: auto; }
 }

@@ -23,8 +23,6 @@ from .models import (
     PUNTAJE_MAXIMO_MENSUAL,
     PUNTAJE_MAXIMO_RETO,
     PUNTOS_CUMPLIMIENTO,
-    PUNTOS_EVIDENCIA,
-    PUNTOS_IMPACTO,
     SEMAFORO_CHOICES,
     SEMAFORO_EMOJI,
     SEMANAS_CHOICES,
@@ -207,6 +205,7 @@ def _consolidar_ciclo(ciclo):
     for m in _miembros_activos():
         por_lider.setdefault(m.usuario, [])
 
+    total_retos = len(retos)
     resultados = []
     for lider, items in por_lider.items():
         detalle = OrderedDict()
@@ -218,37 +217,59 @@ def _consolidar_ciclo(ciclo):
             }
 
         puntaje_total = 0
+        retos_registrados = 0
+        retos_participados = 0
         retos_cumplidos = 0
         for p in items:
-            if p.estado != "validado":
+            if not p.esta_registrado:
                 continue
-            puntaje_total += p.puntaje_total
-            if p.pts_cumplimiento:
+            retos_registrados += 1
+            if p.participo:
+                retos_participados += 1
+            if p.cumplio:
                 retos_cumplidos += 1
-            codigo = p.reto.pilar.codigo
-            if codigo in detalle:
-                detalle[codigo]["puntaje"] += p.puntaje_total
+                puntaje_total += p.puntaje_total
+                codigo = p.reto.pilar.codigo
+                if codigo in detalle:
+                    detalle[codigo]["puntaje"] += p.puntaje_total
 
         puntaje_total = min(puntaje_total, ciclo.puntaje_max)
+        pct_participacion = _porcentaje(retos_participados, total_retos)
+        pct_cumplimiento = _porcentaje(retos_cumplidos, total_retos)
         registro, _ = PuntajeMensual.objects.update_or_create(
             ciclo=ciclo,
             lider=lider,
             defaults={
                 "puntaje_total": puntaje_total,
                 "detalle_pilares": detalle,
-                "retos_evaluados": len(retos),
+                "retos_evaluados": total_retos,
+                "retos_registrados": retos_registrados,
+                "retos_participados": retos_participados,
                 "retos_cumplidos": retos_cumplidos,
-                "semaforo": calcular_semaforo(puntaje_total),
+                "pct_participacion": pct_participacion,
+                "pct_cumplimiento": pct_cumplimiento,
+                # El semaforo se lee sobre el % de cumplimiento para que sea
+                # comparable aunque el ciclo aun no tenga sus 4 retos cargados.
+                "semaforo": calcular_semaforo(pct_cumplimiento),
             },
         )
         resultados.append(registro)
 
-    resultados.sort(key=lambda r: (-r.puntaje_total, str(r.lider)))
+    resultados.sort(
+        key=lambda r: (-r.pct_cumplimiento, -r.pct_participacion, str(r.lider))
+    )
     for posicion, registro in enumerate(resultados, start=1):
         if registro.posicion != posicion:
             registro.posicion = posicion
             registro.save(update_fields=["posicion"])
     return len(resultados)
+
+
+def _porcentaje(parte, total):
+    """Porcentaje 0-100 con un decimal; 0 si no hay retos asignados."""
+    if not total:
+        return 0.0
+    return round(parte * 100.0 / total, 1)
 
 
 def _decorar_puntajes(queryset):
@@ -260,6 +281,12 @@ def _decorar_puntajes(queryset):
             "lider": p.lider,
             "puntaje": p.puntaje_total,
             "posicion": p.posicion,
+            "asignados": p.retos_evaluados,
+            "registrados": p.retos_registrados,
+            "participados": p.retos_participados,
+            "cumplidos": p.retos_cumplidos,
+            "pct_participacion": p.pct_participacion,
+            "pct_cumplimiento": p.pct_cumplimiento,
             "semaforo": p.semaforo,
             "semaforo_label": SEMAFORO_LABEL.get(p.semaforo, p.semaforo),
             "emoji": SEMAFORO_EMOJI.get(p.semaforo, ""),
@@ -284,7 +311,7 @@ def home_leadership_pulse(request):
     ciclo = _ciclo_vigente()
     mi_puntaje = None
     mis_pendientes = 0
-    por_validar = 0
+    por_registrar = 0
 
     if ciclo:
         mi_puntaje = PuntajeMensual.objects.filter(ciclo=ciclo, lider=user).first()
@@ -293,8 +320,9 @@ def home_leadership_pulse(request):
             estado__in=["pendiente", "devuelto"],
         ).count()
         if _puede_validar(user):
-            por_validar = ParticipacionReto.objects.filter(
-                reto__ciclo=ciclo, estado="en_revision"
+            por_registrar = ParticipacionReto.objects.filter(
+                reto__ciclo=ciclo, reto__activo=True,
+                estado__in=["pendiente", "en_revision"],
             ).count()
 
     top3 = []
@@ -310,9 +338,10 @@ def home_leadership_pulse(request):
         "mi_semaforo_label": SEMAFORO_LABEL.get(mi_puntaje.semaforo) if mi_puntaje else None,
         "mi_semaforo_emoji": SEMAFORO_EMOJI.get(mi_puntaje.semaforo, "") if mi_puntaje else "",
         "mis_pendientes": mis_pendientes,
-        "por_validar": por_validar,
+        "por_registrar": por_registrar,
         "top3": top3,
         "puntaje_maximo": PUNTAJE_MAXIMO_MENSUAL,
+        "puntaje_reto": PUNTAJE_MAXIMO_RETO,
     }
     ctx.update(_context_perms(user))
     return render(request, "home_pulse.html", ctx)
@@ -606,8 +635,6 @@ def _guardar_reto(reto, post, ciclo):
     reto.titulo = titulo
     reto.descripcion = descripcion
     reto.criterio_cumplimiento = post.get("criterio_cumplimiento", "").strip()
-    reto.criterio_evidencia = post.get("criterio_evidencia", "").strip()
-    reto.criterio_impacto = post.get("criterio_impacto", "").strip()
     reto.fecha_inicio = fecha_inicio
     reto.fecha_cierre = fecha_cierre
     reto.puntaje_max = PUNTAJE_MAXIMO_RETO
@@ -638,8 +665,6 @@ def crear_reto(request, ciclo_id):
         "semanas_choices": SEMANAS_CHOICES,
         "puntaje_reto": PUNTAJE_MAXIMO_RETO,
         "pts_cumplimiento": PUNTOS_CUMPLIMIENTO,
-        "pts_evidencia": PUNTOS_EVIDENCIA,
-        "pts_impacto": PUNTOS_IMPACTO,
         **_context_perms(user),
     })
 
@@ -664,8 +689,6 @@ def editar_reto(request, reto_id):
         "semanas_choices": SEMANAS_CHOICES,
         "puntaje_reto": PUNTAJE_MAXIMO_RETO,
         "pts_cumplimiento": PUNTOS_CUMPLIMIENTO,
-        "pts_evidencia": PUNTOS_EVIDENCIA,
-        "pts_impacto": PUNTOS_IMPACTO,
         **_context_perms(user),
     })
 
@@ -794,15 +817,26 @@ def mis_retos(request):
             .order_by("reto__semana")
         )
 
-    acumulado = sum(p.puntaje_total for p in participaciones if p.estado == "validado")
+    participaciones = list(participaciones)
+    asignados = len(participaciones)
+    participados = sum(1 for p in participaciones if p.esta_registrado and p.participo)
+    cumplidos = sum(1 for p in participaciones if p.esta_registrado and p.cumplio)
+    acumulado = sum(p.puntaje_total for p in participaciones if p.esta_registrado)
+    pct_cumplimiento = _porcentaje(cumplidos, asignados)
+
     ctx = {
         "ciclo": ciclo,
         "ciclos": CicloPulse.objects.all()[:12],
         "participaciones": participaciones,
         "acumulado": acumulado,
+        "asignados": asignados,
+        "participados": participados,
+        "cumplidos": cumplidos,
+        "pct_participacion": _porcentaje(participados, asignados),
+        "pct_cumplimiento": pct_cumplimiento,
         "puntaje_maximo": ciclo.puntaje_max if ciclo else PUNTAJE_MAXIMO_MENSUAL,
-        "semaforo_label": SEMAFORO_LABEL.get(calcular_semaforo(acumulado)),
-        "semaforo_codigo": calcular_semaforo(acumulado),
+        "semaforo_label": SEMAFORO_LABEL.get(calcular_semaforo(pct_cumplimiento)),
+        "semaforo_codigo": calcular_semaforo(pct_cumplimiento),
         "success": request.session.pop("pulse_reporte_ok", None),
     }
     ctx.update(_context_perms(user))
@@ -827,7 +861,7 @@ def _asegurar_participaciones_usuario(ciclo, user):
 
 
 def reportar_reto(request, participacion_id):
-    """El lider reporta cumplimiento, evidencia e impacto."""
+    """El lider declara si participo y si cumplio el reto, con soporte opcional."""
     user, redir = _require_login(request)
     if redir:
         return redir
@@ -844,31 +878,25 @@ def reportar_reto(request, participacion_id):
 
     if request.method == "POST" and not bloqueado:
         declara = request.POST.get("declara_cumplimiento") == "on"
-        evidencia_url = request.POST.get("evidencia_url", "").strip()
-        evidencia_descripcion = request.POST.get("evidencia_descripcion", "").strip()
-        impacto_descripcion = request.POST.get("impacto_descripcion", "").strip()
-
-        if declara and not (evidencia_url or evidencia_descripcion):
-            error = "Para reportar cumplimiento debes soportar la evidencia (enlace o descripcion)."
-        else:
-            participacion.declara_cumplimiento = declara
-            participacion.evidencia_url = evidencia_url
-            participacion.evidencia_descripcion = evidencia_descripcion
-            participacion.impacto_descripcion = impacto_descripcion
-            participacion.estado = "en_revision"
-            participacion.fecha_reporte = timezone.now()
-            participacion.save()
-            request.session["pulse_reporte_ok"] = "Reporte enviado a validacion."
-            return redirect("leadership_pulse:mis_retos")
+        participacion.participo = request.POST.get("participo") == "on"
+        participacion.declara_cumplimiento = declara and participacion.participo
+        participacion.evidencia_url = request.POST.get("evidencia_url", "").strip()
+        participacion.evidencia_descripcion = request.POST.get(
+            "evidencia_descripcion", ""
+        ).strip()
+        participacion.estado = "en_revision"
+        participacion.fecha_reporte = timezone.now()
+        participacion.save()
+        request.session["pulse_reporte_ok"] = (
+            "Reporte enviado. People confirmara el registro del reto."
+        )
+        return redirect("leadership_pulse:mis_retos")
 
     ctx = {
         "participacion": participacion,
         "reto": participacion.reto,
         "error": error,
         "bloqueado": bloqueado,
-        "pts_cumplimiento": PUNTOS_CUMPLIMIENTO,
-        "pts_evidencia": PUNTOS_EVIDENCIA,
-        "pts_impacto": PUNTOS_IMPACTO,
         "puntaje_reto": participacion.reto.puntaje_max,
     }
     ctx.update(_context_perms(user))
@@ -876,16 +904,31 @@ def reportar_reto(request, participacion_id):
 
 
 # ----------------------------------------
-# Validacion (People / Admin)
+# Registro de retos (People / Admin)
 # ----------------------------------------
 
+def _aplicar_registro(participacion, post, user, sufijo=""):
+    """Aplica participo / cumplio / observaciones sobre una participacion."""
+    participacion.participo = post.get("participo" + sufijo) == "on"
+    participacion.cumplio = post.get("cumplio" + sufijo) == "on"
+    participacion.observaciones = post.get("observaciones" + sufijo, "").strip()
+    participacion.recalcular_puntaje()
+    participacion.estado = "validado"
+    participacion.validado_por = user
+    participacion.fecha_validacion = timezone.now()
+    participacion.save()
+    return participacion
+
+
 def bandeja_validacion(request):
+    """Seguimiento individual: una fila por persona y reto del ciclo."""
     user, resp = _require_role(request, _puede_validar)
     if resp:
         return resp
 
     ciclo_id = request.GET.get("ciclo", "")
-    estado = request.GET.get("estado", "en_revision")
+    estado = request.GET.get("estado", "")
+    reto_id = request.GET.get("reto", "")
     ciclo = CicloPulse.objects.filter(pk=ciclo_id).first() if ciclo_id else _ciclo_vigente()
 
     participaciones = ParticipacionReto.objects.select_related(
@@ -895,23 +938,89 @@ def bandeja_validacion(request):
         participaciones = participaciones.filter(reto__ciclo=ciclo)
     if estado in {k for k, _ in ESTADO_PARTICIPACION_CHOICES}:
         participaciones = participaciones.filter(estado=estado)
-    participaciones = participaciones.order_by("reto__semana", "lider__nombre")
+    if reto_id:
+        participaciones = participaciones.filter(reto_id=reto_id)
+    participaciones = list(
+        participaciones.order_by("reto__semana", "lider__nombre", "lider__apellido")
+    )
+
+    total = len(participaciones)
+    registrados = sum(1 for p in participaciones if p.esta_registrado)
 
     return render(request, "pulse_validacion.html", {
         "ciclo": ciclo,
         "ciclos": CicloPulse.objects.all()[:12],
+        "retos_ciclo": ciclo.retos.filter(activo=True).select_related("pilar") if ciclo else [],
+        "reto_filtro": reto_id,
         "participaciones": participaciones,
         "estado_filtro": estado,
         "estado_choices": ESTADO_PARTICIPACION_CHOICES,
-        "pts_cumplimiento": PUNTOS_CUMPLIMIENTO,
-        "pts_evidencia": PUNTOS_EVIDENCIA,
-        "pts_impacto": PUNTOS_IMPACTO,
+        "total_registros": total,
+        "registrados": registrados,
+        "pendientes": total - registrados,
+        "pct_avance": _porcentaje(registrados, total),
+        "puntaje_reto": PUNTAJE_MAXIMO_RETO,
+        "success": request.session.pop("pulse_validacion_ok", None),
+        **_context_perms(user),
+    })
+
+
+def registro_reto(request, reto_id):
+    """Grilla masiva: registra a todo el Leadership Team en un mismo reto."""
+    user, resp = _require_role(request, _puede_validar)
+    if resp:
+        return resp
+
+    reto = get_object_or_404(
+        RetoSemanal.objects.select_related("ciclo", "pilar"), pk=reto_id
+    )
+    _asegurar_participaciones(reto)
+
+    if request.method == "POST":
+        por_id = {
+            p.id: p
+            for p in ParticipacionReto.objects.filter(reto=reto).select_related("reto")
+        }
+        guardados = 0
+        with transaction.atomic():
+            for pid in request.POST.getlist("participacion_id"):
+                participacion = por_id.get(int(pid))
+                if participacion is None:
+                    continue
+                _aplicar_registro(participacion, request.POST, user, sufijo="_" + str(pid))
+                guardados += 1
+        request.session["pulse_validacion_ok"] = (
+            "Registro guardado para %s lider(es) en la semana %s." % (guardados, reto.semana)
+        )
+        return redirect("leadership_pulse:registro_reto", reto_id=reto.id)
+
+    participaciones = list(
+        ParticipacionReto.objects.filter(reto=reto)
+        .select_related("lider")
+        .order_by("lider__nombre", "lider__apellido")
+    )
+    total = len(participaciones)
+    participados = sum(1 for p in participaciones if p.esta_registrado and p.participo)
+    cumplidos = sum(1 for p in participaciones if p.esta_registrado and p.cumplio)
+    registrados = sum(1 for p in participaciones if p.esta_registrado)
+
+    return render(request, "pulse_registro_reto.html", {
+        "reto": reto,
+        "ciclo": reto.ciclo,
+        "participaciones": participaciones,
+        "total": total,
+        "registrados": registrados,
+        "participados": participados,
+        "cumplidos": cumplidos,
+        "pct_participacion": _porcentaje(participados, total),
+        "pct_cumplimiento": _porcentaje(cumplidos, total),
         "success": request.session.pop("pulse_validacion_ok", None),
         **_context_perms(user),
     })
 
 
 def validar_participacion(request, participacion_id):
+    """Registro individual: participo / cumplio / observaciones."""
     user, resp = _require_role(request, _puede_validar)
     if resp:
         return resp
@@ -919,40 +1028,22 @@ def validar_participacion(request, participacion_id):
         ParticipacionReto.objects.select_related("reto"), pk=participacion_id
     )
     if request.method == "POST":
-        accion = request.POST.get("accion", "validar")
+        accion = request.POST.get("accion", "registrar")
         if accion == "devolver":
+            participacion.participo = False
+            participacion.cumplio = False
+            participacion.observaciones = request.POST.get("observaciones", "").strip()
+            participacion.recalcular_puntaje()
             participacion.estado = "devuelto"
-            participacion.observaciones_validador = request.POST.get(
-                "observaciones", ""
-            ).strip()
+            participacion.observaciones_validador = participacion.observaciones
             participacion.validado_por = user
             participacion.fecha_validacion = timezone.now()
-            participacion.pts_cumplimiento = 0
-            participacion.pts_evidencia = 0
-            participacion.pts_impacto = 0
-            participacion.puntaje_total = 0
             participacion.save()
             request.session["pulse_validacion_ok"] = "Reporte devuelto al lider."
         else:
-            participacion.pts_cumplimiento = (
-                PUNTOS_CUMPLIMIENTO if request.POST.get("cumplio") == "on" else 0
-            )
-            participacion.pts_evidencia = (
-                PUNTOS_EVIDENCIA if request.POST.get("evidencia") == "on" else 0
-            )
-            participacion.pts_impacto = (
-                PUNTOS_IMPACTO if request.POST.get("impacto") == "on" else 0
-            )
-            participacion.recalcular_puntaje()
-            participacion.estado = "validado"
-            participacion.observaciones_validador = request.POST.get(
-                "observaciones", ""
-            ).strip()
-            participacion.validado_por = user
-            participacion.fecha_validacion = timezone.now()
-            participacion.save()
+            _aplicar_registro(participacion, request.POST, user)
             request.session["pulse_validacion_ok"] = (
-                f"Validado: {participacion.puntaje_total}/{participacion.reto.puntaje_max} pts."
+                "%s: %s." % (participacion.lider, participacion.registro_label)
             )
     destino = request.POST.get("next") or "leadership_pulse:bandeja_validacion"
     return redirect(destino)
@@ -988,7 +1079,12 @@ def ranking(request):
         )
     filas = _decorar_puntajes(puntajes)
 
-    promedio = round(sum(f["puntaje"] for f in filas) / len(filas), 1) if filas else 0
+    promedio = (
+        round(sum(f["pct_cumplimiento"] for f in filas) / len(filas), 1) if filas else 0
+    )
+    promedio_participacion = (
+        round(sum(f["pct_participacion"] for f in filas) / len(filas), 1) if filas else 0
+    )
     distribucion = OrderedDict()
     for codigo in SEMAFORO_ORDEN:
         distribucion[codigo] = {
@@ -1003,6 +1099,7 @@ def ranking(request):
         "top3": filas[:3],
         "filas": filas,
         "promedio": promedio,
+        "promedio_participacion": promedio_participacion,
         "distribucion": list(distribucion.values()),
         "total_lideres": len(filas),
         "no_publicado": False,
@@ -1035,30 +1132,34 @@ def _render_pulse(request, user_actual, lider):
         .order_by("-ciclo__anio", "-ciclo__mes")[:12]
     )
 
-    historico = []
-    for p in puntajes:
-        historico.append({
-            "ciclo": p.ciclo,
-            "puntaje": p.puntaje_total,
-            "posicion": p.posicion,
-            "semaforo": p.semaforo,
-            "semaforo_label": SEMAFORO_LABEL.get(p.semaforo, p.semaforo),
-            "emoji": SEMAFORO_EMOJI.get(p.semaforo, ""),
-            "detalle": list(p.detalle_pilares.values()) if p.detalle_pilares else [],
-        })
+    historico = _decorar_puntajes(puntajes)
+    for fila, registro in zip(historico, puntajes):
+        fila["ciclo"] = registro.ciclo
 
     actual = historico[0] if historico else None
-    promedio = round(sum(h["puntaje"] for h in historico) / len(historico), 1) if historico else 0
+    promedio = (
+        round(sum(h["pct_cumplimiento"] for h in historico) / len(historico), 1)
+        if historico else 0
+    )
 
     tendencia = None
     if len(historico) >= 2:
-        tendencia = historico[0]["puntaje"] - historico[1]["puntaje"]
+        tendencia = round(
+            historico[0]["pct_cumplimiento"] - historico[1]["pct_cumplimiento"], 1
+        )
 
+    # Historial completo de retos registrados (seguimiento individual)
     ultimas = (
-        ParticipacionReto.objects.filter(lider=lider, estado="validado")
+        ParticipacionReto.objects.filter(lider=lider, estado__in=["validado", "devuelto"])
         .select_related("reto", "reto__pilar", "reto__ciclo")
-        .order_by("-fecha_validacion")[:8]
+        .order_by("-reto__ciclo__anio", "-reto__ciclo__mes", "-reto__semana")[:20]
     )
+
+    # Acumulado historico de participacion y cumplimiento
+    todas = ParticipacionReto.objects.filter(lider=lider, reto__activo=True)
+    hist_asignados = todas.count()
+    hist_participados = todas.filter(estado="validado", participo=True).count()
+    hist_cumplidos = todas.filter(estado="validado", cumplio=True).count()
 
     ctx = {
         "lider": lider,
@@ -1069,6 +1170,11 @@ def _render_pulse(request, user_actual, lider):
         "tendencia": tendencia,
         "ultimas": ultimas,
         "puntaje_maximo": PUNTAJE_MAXIMO_MENSUAL,
+        "hist_asignados": hist_asignados,
+        "hist_participados": hist_participados,
+        "hist_cumplidos": hist_cumplidos,
+        "hist_pct_participacion": _porcentaje(hist_participados, hist_asignados),
+        "hist_pct_cumplimiento": _porcentaje(hist_cumplidos, hist_asignados),
         "total_validado": ParticipacionReto.objects.filter(
             lider=lider, estado="validado"
         ).aggregate(t=Sum("puntaje_total"))["t"] or 0,

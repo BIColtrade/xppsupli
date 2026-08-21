@@ -17,9 +17,10 @@ urlpatterns = [
     path("ranking/", views.ranking, name="ranking"),
     path("pulse/<int:usuario_id>/", views.pulse_lider, name="pulse_lider"),
 
-    # Validacion (People / Admin)
+    # Registro de retos (People / Admin)
     path("validacion/", views.bandeja_validacion, name="bandeja_validacion"),
     path("validacion/<int:participacion_id>/", views.validar_participacion, name="validar_participacion"),
+    path("retos/<int:reto_id>/registro/", views.registro_reto, name="registro_reto"),
 
     # Ciclos mensuales
     path("ciclos/", views.gestionar_ciclos, name="gestionar_ciclos"),

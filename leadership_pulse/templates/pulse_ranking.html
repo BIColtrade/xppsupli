@@ -9,7 +9,8 @@
       <h1 class="lp-page__title">Ranking Leadership OS</h1>
       <p class="lp-page__subtitle">
         La clasificacion no busca comparar personas, sino incentivar la mejora continua,
-        compartir buenas practicas y reconocer el liderazgo excepcional.
+        compartir buenas practicas y reconocer el liderazgo excepcional. Se ordena por
+        porcentaje de cumplimiento de los retos asignados.
       </p>
     </div>
   </div>
@@ -44,7 +45,8 @@
       <div class="lp-podio__medal">{% if forloop.counter == 1 %}&#x1F947;{% elif forloop.counter == 2 %}&#x1F948;{% else %}&#x1F949;{% endif %}</div>
       <div class="lp-podio__name">{{ f.lider }}</div>
       <div class="lp-podio__role">{{ f.lider.cargo|default:"Leadership Team" }}</div>
-      <div class="lp-podio__score">{{ f.puntaje }}<span>/{{ puntaje_maximo }}</span></div>
+      <div class="lp-podio__score">{{ f.pct_cumplimiento }}<span>%</span></div>
+      <div class="lp-podio__role">{{ f.cumplidos }}/{{ f.asignados }} retos cumplidos</div>
       <div style="margin-top:10px;"><span class="lp-semaforo lp-semaforo--{{ f.semaforo }}">{{ f.emoji }} {{ f.semaforo_label }}</span></div>
     </div>
     {% endfor %}
@@ -53,12 +55,16 @@
 
   <div class="lp-stats">
     <div class="lp-stat">
-      <div class="lp-stat__value">{{ promedio }}</div>
-      <div class="lp-stat__label">Promedio del Leadership Team</div>
+      <div class="lp-stat__value">{{ promedio }}%</div>
+      <div class="lp-stat__label">Cumplimiento promedio del equipo</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ promedio_participacion }}%</div>
+      <div class="lp-stat__label">Participacion promedio del equipo</div>
     </div>
     <div class="lp-stat">
       <div class="lp-stat__value">{{ total_lideres }}</div>
-      <div class="lp-stat__label">Lideres participando</div>
+      <div class="lp-stat__label">Lideres en el Leadership Team</div>
     </div>
     {% for d in distribucion %}
     <div class="lp-stat">
@@ -75,7 +81,8 @@
           <th>#</th>
           <th>Lider</th>
           <th>Cargo</th>
-          <th>Puntaje</th>
+          <th>Participacion</th>
+          <th>Cumplimiento</th>
           <th>Avance</th>
           <th>Estado</th>
           {% if puede_ver_todo %}<th>Detalle</th>{% endif %}
@@ -87,10 +94,11 @@
           <td>{{ f.posicion|default:forloop.counter }}</td>
           <td>{{ f.lider }}</td>
           <td>{{ f.lider.cargo|default:"-" }}</td>
-          <td><strong>{{ f.puntaje }}</strong> / {{ puntaje_maximo }}</td>
+          <td>{{ f.participados }}/{{ f.asignados }} <strong>({{ f.pct_participacion }}%)</strong></td>
+          <td>{{ f.cumplidos }}/{{ f.asignados }} <strong>({{ f.pct_cumplimiento }}%)</strong></td>
           <td style="min-width:160px;">
             <div class="lp-progress">
-              <div class="lp-progress__fill lp-fill--{{ f.semaforo }}" style="width: {{ f.puntaje }}%;"></div>
+              <div class="lp-progress__fill lp-fill--{{ f.semaforo }}" style="width: {{ f.pct_cumplimiento }}%;"></div>
             </div>
           </td>
           <td><span class="lp-semaforo lp-semaforo--{{ f.semaforo }}">{{ f.emoji }} {{ f.semaforo_label }}</span></td>
@@ -99,7 +107,7 @@
           {% endif %}
         </tr>
         {% empty %}
-        <tr><td colspan="7" class="lp-table__empty">Aun no hay resultados consolidados para este ciclo.</td></tr>
+        <tr><td colspan="8" class="lp-table__empty">Aun no hay resultados consolidados para este ciclo.</td></tr>
         {% endfor %}
       </tbody>
     </table>

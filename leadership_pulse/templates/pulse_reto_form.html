@@ -62,16 +62,7 @@
     <div class="lp-form__group">
       <label class="lp-form__label" for="criterio_cumplimiento">Criterio de cumplimiento ({{ pts_cumplimiento }} pts)</label>
       <textarea id="criterio_cumplimiento" name="criterio_cumplimiento" class="lp-form__textarea">{{ reto.criterio_cumplimiento|default:'' }}</textarea>
-    </div>
-
-    <div class="lp-form__group">
-      <label class="lp-form__label" for="criterio_evidencia">Criterio de evidencia ({{ pts_evidencia }} pts)</label>
-      <textarea id="criterio_evidencia" name="criterio_evidencia" class="lp-form__textarea">{{ reto.criterio_evidencia|default:'' }}</textarea>
-    </div>
-
-    <div class="lp-form__group">
-      <label class="lp-form__label" for="criterio_impacto">Criterio de impacto demostrable ({{ pts_impacto }} pts)</label>
-      <textarea id="criterio_impacto" name="criterio_impacto" class="lp-form__textarea">{{ reto.criterio_impacto|default:'' }}</textarea>
+      <div class="lp-form__hint">Que se considera cumplido. Es el unico criterio que se califica por ahora.</div>
     </div>
 
     <div class="lp-form__group">

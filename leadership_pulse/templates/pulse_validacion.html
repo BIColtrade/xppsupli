@@ -3,11 +3,14 @@
 <link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
 
 <section class="lp-page">
-  <div class="lp-breadcrumb"><a href="{% url 'leadership_pulse:home_leadership_pulse' %}">Leadership Pulse</a> / Validacion</div>
+  <div class="lp-breadcrumb"><a href="{% url 'leadership_pulse:home_leadership_pulse' %}">Leadership Pulse</a> / Seguimiento de retos</div>
   <div class="lp-page__header">
     <div>
-      <h1 class="lp-page__title">Bandeja de Validacion</h1>
-      <p class="lp-page__subtitle">Todos los resultados deben estar respaldados por evidencia objetiva y debidamente soportada.</p>
+      <h1 class="lp-page__title">Seguimiento de Retos</h1>
+      <p class="lp-page__subtitle">
+        Por ahora se mide unicamente si el lider <strong>cumple o no</strong> el reto asignado.
+        Registra si la persona participo, si cumplio, y deja la observacion del seguimiento.
+      </p>
     </div>
   </div>
 
@@ -23,6 +26,17 @@
       </select>
     </div>
     <div class="lp-form__group">
+      <label class="lp-form__label" for="reto">Reto</label>
+      <select name="reto" id="reto" class="lp-form__select">
+        <option value="">Todos los retos</option>
+        {% for r in retos_ciclo %}
+        <option value="{{ r.id }}" {% if reto_filtro == r.id|stringformat:"s" %}selected{% endif %}>
+          S{{ r.semana }} - {{ r.titulo }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="lp-form__group">
       <label class="lp-form__label" for="estado">Estado</label>
       <select name="estado" id="estado" class="lp-form__select">
         <option value="">Todos</option>
@@ -34,6 +48,34 @@
     <button type="submit" class="lp-btn lp-btn--primary">Filtrar</button>
   </form>
 
+  {% if ciclo %}
+  <div class="lp-stats">
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ registrados }}<span style="font-size:.5em;">/{{ total_registros }}</span></div>
+      <div class="lp-stat__label">Registros diligenciados</div>
+      <div class="lp-stat__hint">{{ pct_avance }}% del ciclo</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ pendientes }}</div>
+      <div class="lp-stat__label">Pendientes por registrar</div>
+    </div>
+  </div>
+
+  {% if retos_ciclo %}
+  <div class="lp-section-title">Registro rapido por semana</div>
+  <div class="lp-grid" style="margin-bottom:24px;">
+    {% for r in retos_ciclo %}
+    <a href="{% url 'leadership_pulse:registro_reto' r.id %}" class="lp-card lp-card--leader">
+      <div class="lp-card__icon">S{{ r.semana }}</div>
+      <div class="lp-card__title">{{ r.titulo }}</div>
+      <div class="lp-card__desc">{{ r.pilar.nombre }} &middot; registra a todo el Leadership Team de una vez.</div>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endif %}
+
+  <div class="lp-section-title">Registro individual</div>
   <div class="lp-validacion">
     {% for p in participaciones %}
     <div class="lp-val-item">
@@ -45,51 +87,48 @@
             {% if p.fecha_reporte %}&middot; Reportado {{ p.fecha_reporte|date:"d/m/Y H:i" }}{% endif %}
           </div>
         </div>
-        <span class="lp-badge lp-badge--{{ p.estado }}">{{ p.get_estado_display }}</span>
+        <span class="lp-registro lp-registro--{{ p.registro }}">{{ p.registro_label }}</span>
       </div>
 
+      {% if p.declara_cumplimiento or p.evidencia_url or p.evidencia_descripcion %}
       <dl class="lp-val-item__body">
-        <dt>Declara cumplimiento</dt>
-        <dd>{% if p.declara_cumplimiento %}Si{% else %}No{% endif %}</dd>
-        <dt>Evidencia</dt>
+        <dt>Declara el lider</dt>
+        <dd>{% if p.declara_cumplimiento %}Cumplio el reto{% else %}No declaro cumplimiento{% endif %}</dd>
+        <dt>Soporte</dt>
         <dd>
-          {% if p.evidencia_url %}<a class="lp-link" href="{{ p.evidencia_url }}" target="_blank" rel="noopener">Abrir evidencia</a><br>{% endif %}
-          {{ p.evidencia_descripcion|default:"Sin descripcion de evidencia." }}
+          {% if p.evidencia_url %}<a class="lp-link" href="{{ p.evidencia_url }}" target="_blank" rel="noopener">Abrir soporte</a><br>{% endif %}
+          {{ p.evidencia_descripcion|default:"Sin descripcion." }}
         </dd>
-        <dt>Impacto demostrable</dt>
-        <dd>{{ p.impacto_descripcion|default:"Sin impacto reportado." }}</dd>
       </dl>
+      {% endif %}
 
       <form method="post" action="{% url 'leadership_pulse:validar_participacion' p.id %}">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
         <div class="lp-val-checks">
           <label class="lp-form__checkbox">
-            <input type="checkbox" name="cumplio" {% if p.pts_cumplimiento %}checked{% endif %}>
-            Cumplio el reto ({{ pts_cumplimiento }} pts)
+            <input type="checkbox" name="participo" {% if p.participo %}checked{% endif %}>
+            Participo en el reto
           </label>
           <label class="lp-form__checkbox">
-            <input type="checkbox" name="evidencia" {% if p.pts_evidencia %}checked{% endif %}>
-            Presento evidencia ({{ pts_evidencia }} pts)
-          </label>
-          <label class="lp-form__checkbox">
-            <input type="checkbox" name="impacto" {% if p.pts_impacto %}checked{% endif %}>
-            Impacto demostrable ({{ pts_impacto }} pts)
+            <input type="checkbox" name="cumplio" {% if p.cumplio %}checked{% endif %}>
+            Cumplio el reto ({{ puntaje_reto }} pts)
           </label>
         </div>
         <div class="lp-form__group">
           <label class="lp-form__label" for="obs{{ p.id }}">Observaciones</label>
           <input type="text" id="obs{{ p.id }}" name="observaciones" class="lp-form__input"
-                 value="{{ p.observaciones_validador }}" placeholder="Sustento de la calificacion">
+                 value="{{ p.observaciones }}" placeholder="Seguimiento del reto: contexto, soportes o acuerdos">
         </div>
         <div class="lp-form__actions">
-          <button type="submit" name="accion" value="validar" class="lp-btn lp-btn--success lp-btn--sm">Validar</button>
+          <button type="submit" name="accion" value="registrar" class="lp-btn lp-btn--success lp-btn--sm">Guardar registro</button>
           <button type="submit" name="accion" value="devolver" class="lp-btn lp-btn--warning lp-btn--sm">Devolver al lider</button>
           <span class="lp-form__hint" style="align-self:center;">Actual: {{ p.puntaje_total }}/{{ p.reto.puntaje_max }} pts</span>
         </div>
       </form>
     </div>
     {% empty %}
-    <div class="lp-alert lp-alert--info">No hay reportes con este filtro.</div>
+    <div class="lp-alert lp-alert--info">No hay retos con este filtro.</div>
     {% endfor %}
   </div>
 </section>

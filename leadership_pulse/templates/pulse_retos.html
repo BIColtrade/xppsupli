@@ -10,7 +10,7 @@
   <div class="lp-page__header">
     <div>
       <h1 class="lp-page__title">Retos de {{ ciclo.nombre }}</h1>
-      <p class="lp-page__subtitle">4 retos semanales, uno por pilar, {{ puntaje_reto }} puntos cada uno.</p>
+      <p class="lp-page__subtitle">4 retos semanales, uno por pilar. Cada reto se mide como cumplido o no cumplido ({{ puntaje_reto }} puntos).</p>
     </div>
     <a href="{% url 'leadership_pulse:crear_reto' ciclo.id %}" class="lp-btn lp-btn--primary">+ Nuevo reto</a>
   </div>
@@ -40,6 +40,7 @@
           <td>{{ r.participaciones.count }}</td>
           <td>{% if r.activo %}Activo{% else %}Inactivo{% endif %}</td>
           <td class="lp-actions">
+            <a href="{% url 'leadership_pulse:registro_reto' r.id %}" class="lp-btn lp-btn--primary lp-btn--sm">Registrar</a>
             <a href="{% url 'leadership_pulse:editar_reto' r.id %}" class="lp-btn lp-btn--secondary lp-btn--sm">Editar</a>
             <form method="post" action="{% url 'leadership_pulse:eliminar_reto' r.id %}" style="display:inline;"
                   onsubmit="return confirm('Eliminar este reto?');">

@@ -51,7 +51,7 @@ apellido                VARCHAR (NULL)
 edad                    INTEGER (NULL)
 telefono                VARCHAR (NULL)
 tipo_usuario            VARCHAR (NULL)   -- choices: colaborador | lider | admin
-area                    VARCHAR (NULL)   -- choices: ceo | direccion_comercial | tecnologia | accounting | finanzas | sales | operations | procurement | trade | brands | bi | sales_corporativo | sales_retail | people | quality
+area                    VARCHAR (NULL)   -- choices: ceo | direccion_comercial | direccion_operaciones | tecnologia | accounting | finanzas | sales | logistics | procurement | trade | brands | bi | sales_corporativo | sales_retail | people | quality
 cargo                   VARCHAR (NULL)
 jefe_directo_id         BIGINT (NULL) -> FK: user_usuario.id [SELF] [SET_NULL]
 is_active               BOOLEAN (NOT NULL)

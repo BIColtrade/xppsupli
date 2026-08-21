@@ -1,0 +1,114 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/leadership_pulse.css' %}">
+
+<section class="lp-page">
+  <div class="lp-breadcrumb">
+    <a href="{% url 'leadership_pulse:home_leadership_pulse' %}">Leadership Pulse</a> /
+    <a href="{% url 'leadership_pulse:gestionar_retos' ciclo.id %}">{{ ciclo.nombre }}</a> /
+    Registro semana {{ reto.semana }}
+  </div>
+  <div class="lp-page__header">
+    <div>
+      <h1 class="lp-page__title">{{ reto.titulo }}</h1>
+      <p class="lp-page__subtitle">
+        Semana {{ reto.semana }} &middot; {{ reto.pilar.nombre }} &middot;
+        Cierre {{ reto.fecha_cierre|date:"d/m/Y" }}
+      </p>
+    </div>
+    <a href="{% url 'leadership_pulse:bandeja_validacion' %}?ciclo={{ ciclo.id }}" class="lp-btn lp-btn--secondary">Ver seguimiento</a>
+  </div>
+
+  {% if success %}<div class="lp-alert lp-alert--success">{{ success }}</div>{% endif %}
+
+  {% if reto.descripcion or reto.criterio_cumplimiento %}
+  <div class="lp-alert lp-alert--info">
+    {% if reto.descripcion %}{{ reto.descripcion }}{% endif %}
+    {% if reto.criterio_cumplimiento %}
+    <div style="margin-top:8px;"><strong>Se considera cumplido cuando:</strong> {{ reto.criterio_cumplimiento }}</div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="lp-stats">
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ participados }}<span style="font-size:.5em;">/{{ total }}</span></div>
+      <div class="lp-stat__label">Participaron</div>
+      <div class="lp-stat__hint">{{ pct_participacion }}% de participacion</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ cumplidos }}<span style="font-size:.5em;">/{{ total }}</span></div>
+      <div class="lp-stat__label">Cumplieron el reto</div>
+      <div class="lp-stat__hint">{{ pct_cumplimiento }}% de cumplimiento</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ registrados }}<span style="font-size:.5em;">/{{ total }}</span></div>
+      <div class="lp-stat__label">Registros diligenciados</div>
+    </div>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="lp-table-wrap">
+      <table class="lp-table lp-table--registro">
+        <thead>
+          <tr>
+            <th>Lider</th>
+            <th>Cargo</th>
+            <th class="lp-col-check">Participo</th>
+            <th class="lp-col-check">Cumplio</th>
+            <th>Observaciones</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in participaciones %}
+          <tr>
+            <td>
+              <input type="hidden" name="participacion_id" value="{{ p.id }}">
+              <strong>{{ p.lider }}</strong>
+              {% if p.declara_cumplimiento %}
+              <div class="lp-form__hint">El lider declaro cumplimiento</div>
+              {% endif %}
+              {% if p.evidencia_url %}
+              <div><a class="lp-link" href="{{ p.evidencia_url }}" target="_blank" rel="noopener">Ver soporte</a></div>
+              {% endif %}
+            </td>
+            <td>{{ p.lider.cargo|default:"-" }}</td>
+            <td class="lp-col-check">
+              <input type="checkbox" name="participo_{{ p.id }}" {% if p.participo %}checked{% endif %}>
+            </td>
+            <td class="lp-col-check">
+              <input type="checkbox" name="cumplio_{{ p.id }}" {% if p.cumplio %}checked{% endif %}>
+            </td>
+            <td>
+              <input type="text" name="observaciones_{{ p.id }}" class="lp-form__input"
+                     value="{{ p.observaciones }}" placeholder="Seguimiento del reto">
+            </td>
+            <td>
+              <span class="lp-registro lp-registro--{{ p.registro }}">{{ p.registro_label }}</span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="6" class="lp-table__empty">
+            No hay lideres inscritos en el Leadership Team. Sincroniza los miembros primero.
+          </td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if participaciones %}
+    <div class="lp-form__actions">
+      <button type="submit" class="lp-btn lp-btn--primary">Guardar registro de la semana</button>
+      <a href="{% url 'leadership_pulse:gestionar_retos' ciclo.id %}" class="lp-btn lp-btn--secondary">Volver a los retos</a>
+      <span class="lp-form__hint" style="align-self:center;">
+        Marcar "Cumplio" sin "Participo" no suma: quien no participa no puede cumplir.
+      </span>
+    </div>
+    {% endif %}
+  </form>
+</section>
+
+    </main>
+  </div>

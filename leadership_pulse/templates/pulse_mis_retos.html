@@ -7,7 +7,7 @@
   <div class="lp-page__header">
     <div>
       <h1 class="lp-page__title">Mis Retos</h1>
-      <p class="lp-page__subtitle">Cada reto semanal vale 25 puntos: 10 cumplimiento + 5 evidencia + 10 impacto.</p>
+      <p class="lp-page__subtitle">Cada reto semanal se mide como cumplido o no cumplido ({{ puntaje_maximo }} puntos al mes).</p>
     </div>
     <a href="{% url 'leadership_pulse:mi_pulse' %}" class="lp-btn lp-btn--secondary">Ver mi Pulse</a>
   </div>
@@ -29,13 +29,18 @@
   {% if ciclo %}
   <div class="lp-stats">
     <div class="lp-stat">
-      <div class="lp-stat__value">{{ acumulado }}</div>
-      <div class="lp-stat__label">Puntaje validado / {{ puntaje_maximo }}</div>
+      <div class="lp-stat__value">{{ pct_participacion }}%</div>
+      <div class="lp-stat__label">Mi participacion</div>
+      <div class="lp-stat__hint">{{ participados }} de {{ asignados }} retos asignados</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ pct_cumplimiento }}%</div>
+      <div class="lp-stat__label">Mi cumplimiento</div>
       <div class="lp-stat__hint"><span class="lp-semaforo lp-semaforo--{{ semaforo_codigo }}">{{ semaforo_label }}</span></div>
     </div>
     <div class="lp-stat">
-      <div class="lp-stat__value">{{ participaciones|length }}</div>
-      <div class="lp-stat__label">Retos del ciclo</div>
+      <div class="lp-stat__value">{{ acumulado }}</div>
+      <div class="lp-stat__label">Puntaje / {{ puntaje_maximo }}</div>
     </div>
   </div>
 
@@ -48,22 +53,21 @@
           <div class="lp-reto__title">{{ p.reto.titulo }}</div>
           <div class="lp-reto__pilar">{{ p.reto.pilar.nombre }}</div>
         </div>
-        <span class="lp-badge lp-badge--{{ p.estado }}">{{ p.get_estado_display }}</span>
+        <span class="lp-registro lp-registro--{{ p.registro }}">{{ p.registro_label }}</span>
       </div>
       {% if p.reto.descripcion %}<div class="lp-reto__desc">{{ p.reto.descripcion }}</div>{% endif %}
       <div class="lp-reto__meta">
         <span>Cierre: {{ p.reto.fecha_cierre|date:"d/m/Y" }}</span>
-        <span>Maximo: {{ p.reto.puntaje_max }} pts</span>
+        <span>Estado: {{ p.get_estado_display }}</span>
       </div>
-      {% if p.estado == 'validado' %}
+      {% if p.esta_registrado %}
       <div class="lp-reto__meta">
-        <span>Cumplimiento: {{ p.pts_cumplimiento }}</span>
-        <span>Evidencia: {{ p.pts_evidencia }}</span>
-        <span>Impacto: {{ p.pts_impacto }}</span>
+        <span>Participo: {% if p.participo %}Si{% else %}No{% endif %}</span>
+        <span>Cumplio: {% if p.cumplio %}Si{% else %}No{% endif %}</span>
       </div>
       {% endif %}
-      {% if p.observaciones_validador %}
-      <div class="lp-reto__desc"><strong>Observacion:</strong> {{ p.observaciones_validador }}</div>
+      {% if p.observaciones %}
+      <div class="lp-reto__desc"><strong>Observacion:</strong> {{ p.observaciones }}</div>
       {% endif %}
       <div class="lp-reto__footer">
         <div class="lp-reto__score">{{ p.puntaje_total }}<span>/{{ p.reto.puntaje_max }}</span></div>

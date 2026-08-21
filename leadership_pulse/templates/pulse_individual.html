@@ -16,10 +16,18 @@
     <a href="{% url 'leadership_pulse:mis_retos' %}" class="lp-btn lp-btn--secondary">Ir a mis retos</a>
   </div>
 
+  <div class="lp-section-title">Ultimo ciclo{% if actual %} - {{ actual.ciclo.nombre }}{% endif %}</div>
   <div class="lp-stats">
     <div class="lp-stat">
-      <div class="lp-stat__value">{% if actual %}{{ actual.puntaje }}{% else %}0{% endif %}</div>
-      <div class="lp-stat__label">Puntaje del ultimo ciclo / {{ puntaje_maximo }}</div>
+      <div class="lp-stat__value">{% if actual %}{{ actual.pct_participacion }}{% else %}0{% endif %}%</div>
+      <div class="lp-stat__label">Participacion</div>
+      {% if actual %}
+      <div class="lp-stat__hint">{{ actual.participados }} de {{ actual.asignados }} retos asignados</div>
+      {% endif %}
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{% if actual %}{{ actual.pct_cumplimiento }}{% else %}0{% endif %}%</div>
+      <div class="lp-stat__label">Cumplimiento</div>
       {% if actual %}
       <div class="lp-stat__hint"><span class="lp-semaforo lp-semaforo--{{ actual.semaforo }}">{{ actual.emoji }} {{ actual.semaforo_label }}</span></div>
       {% endif %}
@@ -29,19 +37,33 @@
       <div class="lp-stat__label">Posicion en el ranking</div>
     </div>
     <div class="lp-stat">
-      <div class="lp-stat__value">{{ promedio }}</div>
-      <div class="lp-stat__label">Promedio historico</div>
-    </div>
-    <div class="lp-stat">
       <div class="lp-stat__value">
         {% if tendencia is None %}-{% elif tendencia >= 0 %}<span class="lp-up">+{{ tendencia }}</span>{% else %}<span class="lp-down">{{ tendencia }}</span>{% endif %}
       </div>
-      <div class="lp-stat__label">Variacion vs. mes anterior</div>
+      <div class="lp-stat__label">Variacion de cumplimiento vs. mes anterior</div>
+    </div>
+  </div>
+
+  <div class="lp-section-title">Acumulado historico</div>
+  <div class="lp-stats">
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ hist_pct_participacion }}%</div>
+      <div class="lp-stat__label">Participacion historica</div>
+      <div class="lp-stat__hint">{{ hist_participados }} de {{ hist_asignados }} retos</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ hist_pct_cumplimiento }}%</div>
+      <div class="lp-stat__label">Cumplimiento historico</div>
+      <div class="lp-stat__hint">{{ hist_cumplidos }} de {{ hist_asignados }} retos</div>
+    </div>
+    <div class="lp-stat">
+      <div class="lp-stat__value">{{ promedio }}%</div>
+      <div class="lp-stat__label">Promedio mensual de cumplimiento</div>
     </div>
   </div>
 
   {% if actual and actual.detalle %}
-  <div class="lp-section-title">Puntaje por pilar - {{ actual.ciclo.nombre }}</div>
+  <div class="lp-section-title">Cumplimiento por pilar - {{ actual.ciclo.nombre }}</div>
   <div style="margin-bottom: 24px;">
     {% for d in actual.detalle %}
     <div class="lp-bar">
@@ -61,7 +83,8 @@
       <thead>
         <tr>
           <th>Ciclo</th>
-          <th>Puntaje</th>
+          <th>Participacion</th>
+          <th>Cumplimiento</th>
           <th>Avance</th>
           <th>Estado</th>
           <th>Posicion</th>
@@ -71,23 +94,24 @@
         {% for h in historico %}
         <tr>
           <td>{{ h.ciclo.nombre }}</td>
-          <td><strong>{{ h.puntaje }}</strong> / {{ puntaje_maximo }}</td>
+          <td>{{ h.participados }}/{{ h.asignados }} <strong>({{ h.pct_participacion }}%)</strong></td>
+          <td>{{ h.cumplidos }}/{{ h.asignados }} <strong>({{ h.pct_cumplimiento }}%)</strong></td>
           <td style="min-width:160px;">
             <div class="lp-progress">
-              <div class="lp-progress__fill lp-fill--{{ h.semaforo }}" style="width: {{ h.puntaje }}%;"></div>
+              <div class="lp-progress__fill lp-fill--{{ h.semaforo }}" style="width: {{ h.pct_cumplimiento }}%;"></div>
             </div>
           </td>
           <td><span class="lp-semaforo lp-semaforo--{{ h.semaforo }}">{{ h.emoji }} {{ h.semaforo_label }}</span></td>
           <td>{% if h.posicion %}#{{ h.posicion }}{% else %}-{% endif %}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="5" class="lp-table__empty">Aun no hay ciclos consolidados.</td></tr>
+        <tr><td colspan="6" class="lp-table__empty">Aun no hay ciclos consolidados.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 
-  <div class="lp-section-title">Ultimos retos validados</div>
+  <div class="lp-section-title">Detalle reto a reto</div>
   <div class="lp-table-wrap">
     <table class="lp-table">
       <thead>
@@ -96,10 +120,9 @@
           <th>Semana</th>
           <th>Reto</th>
           <th>Pilar</th>
+          <th>Participo</th>
           <th>Cumplio</th>
-          <th>Evidencia</th>
-          <th>Impacto</th>
-          <th>Total</th>
+          <th>Observaciones</th>
         </tr>
       </thead>
       <tbody>
@@ -109,13 +132,12 @@
           <td>S{{ p.reto.semana }}</td>
           <td>{{ p.reto.titulo }}</td>
           <td>{{ p.reto.pilar.nombre }}</td>
-          <td>{{ p.pts_cumplimiento }}</td>
-          <td>{{ p.pts_evidencia }}</td>
-          <td>{{ p.pts_impacto }}</td>
-          <td><strong>{{ p.puntaje_total }}</strong>/{{ p.reto.puntaje_max }}</td>
+          <td>{% if p.participo %}Si{% else %}No{% endif %}</td>
+          <td>{% if p.cumplio %}Si{% else %}No{% endif %}</td>
+          <td>{{ p.observaciones|default:"-" }}</td>
         </tr>
         {% empty %}
-        <tr><td colspan="8" class="lp-table__empty">Sin retos validados por ahora.</td></tr>
+        <tr><td colspan="7" class="lp-table__empty">Sin retos registrados por ahora.</td></tr>
         {% endfor %}
       </tbody>
     </table>
