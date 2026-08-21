@@ -212,66 +212,16 @@ def _send_reset_code_email(to_email, code):
 
 
 def crear_usuario(request):
+    """Ruta historica. La creacion de usuarios vive en *Listado de usuarios*
+    (bloque `action="create"` de `listado_usuarios`), que es la pantalla que se
+    mantiene. Esta vista nunca tuvo plantilla propia, asi que se redirige alla
+    en lugar de duplicar el formulario y su validacion."""
     user = get_user_from_request(request)
     if user is None:
         return redirect("login")
     if not _is_admin_user(user):
         return redirect("home_autenticado")
-
-    context = {
-        "grupos": Group.objects.order_by("name"),
-        "tipo_usuario_choices": TIPO_USUARIO_CHOICES,
-        "area_choices": AREA_CHOICES,
-    }
-    if request.method == "POST":
-        email = request.POST.get("email", "").strip()
-        username = request.POST.get("username", "").strip()
-        nombre = request.POST.get("nombre", "").strip()
-        apellido = request.POST.get("apellido", "").strip()
-        edad_raw = request.POST.get("edad", "").strip()
-        telefono = request.POST.get("telefono", "").strip()
-        tipo_usuario = request.POST.get("tipo_usuario", "").strip() or None
-        area = request.POST.get("area", "").strip() or None
-        password = request.POST.get("password", "")
-        grupos_ids = request.POST.getlist("grupos")
-        valid_tipo_usuario = {key for key, _ in TIPO_USUARIO_CHOICES}
-        valid_area = {key for key, _ in AREA_CHOICES}
-
-        if not email or not username or not nombre or not password:
-            context["error"] = "Email, usuario, nombre y contraseña son obligatorios."
-        else:
-            edad_val = None
-            if edad_raw:
-                if edad_raw.isdigit():
-                    edad_val = int(edad_raw)
-                else:
-                    context["error"] = "La edad debe ser un numero."
-
-            if tipo_usuario and tipo_usuario not in valid_tipo_usuario:
-                context["error"] = "El tipo de usuario no es valido."
-            if area and area not in valid_area:
-                context["error"] = "El area no es valida."
-
-            if "error" not in context:
-                try:
-                    new_user = Usuario.objects.create_user(
-                        email=email, username=username, password=password
-                    )
-                    new_user.nombre = nombre
-                    new_user.apellido = apellido
-                    new_user.edad = edad_val
-                    new_user.telefono = telefono or None
-                    new_user.tipo_usuario = tipo_usuario
-                    new_user.area = area
-                    new_user.save()
-                    if grupos_ids:
-                        grupos_validos = Group.objects.filter(id__in=grupos_ids)
-                        new_user.groups.set(grupos_validos)
-                    context["success"] = "Usuario creado correctamente."
-                except IntegrityError:
-                    context["error"] = "El email o usuario ya existe."
-
-    return render(request, "crear_usuarios.html", context)
+    return redirect("listado_usuarios")
 
 
 def login_view(request):
