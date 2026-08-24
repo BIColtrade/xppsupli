@@ -167,6 +167,20 @@ class CicloEvaluacion(models.Model):
     def __str__(self):
         return f"{self.nombre} ({self.get_estado_display()})"
 
+    @staticmethod
+    def filtro_abiertos(prefijo='', ahora=None):
+        """Filtro Q para quedarse solo con los ciclos que admiten respuestas.
+
+        `estado='activo'` por si solo no basta: hay que cruzarlo con la ventana
+        de fechas. `prefijo` permite usarlo desde otro modelo, p.ej. 'ciclo__'.
+        """
+        ahora = ahora or timezone.now()
+        return models.Q(**{
+            f'{prefijo}estado': 'activo',
+            f'{prefijo}fecha_inicio__lte': ahora,
+            f'{prefijo}fecha_cierre__gte': ahora,
+        })
+
     def esta_activo(self, ahora=None):
         return self.motivo_no_disponible(ahora) is None
 

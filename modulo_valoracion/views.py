@@ -3,7 +3,7 @@ from collections import Counter, defaultdict
 from urllib.parse import quote
 
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Case, IntegerField, Q, Value, When
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -149,8 +149,15 @@ def _puede_ver_resultados(user):
 
 
 def _progreso_evaluaciones():
-    """Avance de respuestas de los ciclos activos (para habilitar al 100%)."""
-    qs = AsignacionEvaluacion.objects.filter(activa=True, ciclo__estado="activo")
+    """Avance de respuestas de los ciclos en curso (para habilitar al 100%).
+
+    Incluye los ciclos que ya vencieron pero siguen marcados 'activo': es
+    justo cuando el admin necesita ver el avance para decidir si publica.
+    Excluye los que aun no arrancan, que solo diluirian el porcentaje.
+    """
+    qs = AsignacionEvaluacion.objects.filter(
+        activa=True, ciclo__estado="activo", ciclo__fecha_inicio__lte=timezone.now()
+    )
     total = qs.count()
     completadas = qs.filter(estado="completada").count()
     porcentaje = round(completadas * 100.0 / total, 1) if total else 0.0
@@ -206,8 +213,11 @@ def home_modulo_valoracion(request):
     if redir:
         return redir
 
+    # Solo cuentan las que el usuario todavia puede responder: un ciclo cerrado
+    # o vencido no debe dejar tareas "pendientes" colgadas para siempre.
     asignaciones_pendientes = AsignacionEvaluacion.objects.filter(
-        evaluador=user, estado__in=["pendiente", "en_progreso"], activa=True
+        CicloEvaluacion.filtro_abiertos("ciclo__"),
+        evaluador=user, estado__in=["pendiente", "en_progreso"], activa=True,
     ).count()
     mis_resultados = ResultadoEvaluacion.objects.filter(evaluado=user).count()
 
@@ -491,7 +501,11 @@ def gestionar_ciclos(request):
     user, resp = _require_role(request, _puede_configurar)
     if resp:
         return resp
-    ciclos = CicloEvaluacion.objects.all()
+    ciclos = list(CicloEvaluacion.objects.all())
+    # Avisar por ciclo cuantas evaluaciones quedaron en borrador: no se
+    # consolidan, y de otro modo el admin cierra el ciclo sin enterarse.
+    for c in ciclos:
+        c.sin_enviar = _borradores_sin_enviar(c)
     success = request.session.pop("valoracion_ciclo_ok", None)
     return render(request, "valoracion_ciclos.html", {
         "ciclos": ciclos,
@@ -513,23 +527,23 @@ def _guardar_ciclo(ciclo, post, user_actual):
     peso_equipo_raw = post.get("peso_equipo_lider", "40").strip()
 
     if not nombre:
-        return False, "El nombre del ciclo es obligatorio."
+        return False, "El nombre del ciclo es obligatorio.", []
     if not fecha_inicio or not fecha_cierre:
-        return False, "Las fechas de inicio y cierre son obligatorias."
+        return False, "Las fechas de inicio y cierre son obligatorias.", []
     if fecha_inicio > fecha_cierre:
-        return False, "La fecha de inicio no puede ser posterior al cierre."
+        return False, "La fecha de inicio no puede ser posterior al cierre.", []
     if tipo not in {k for k, _ in TIPO_EVALUACION_CHOICES} | {"mixta"}:
-        return False, "Tipo de ciclo no valido."
+        return False, "Tipo de ciclo no valido.", []
     if estado not in {k for k, _ in ESTADO_CICLO_CHOICES}:
-        return False, "Estado no valido."
+        return False, "Estado no valido.", []
 
     try:
         peso_jefe = int(peso_jefe_raw)
         peso_equipo = int(peso_equipo_raw)
     except ValueError:
-        return False, "Los pesos deben ser numeros enteros."
+        return False, "Los pesos deben ser numeros enteros.", []
     if peso_jefe + peso_equipo != 100:
-        return False, "Los pesos de jefe + equipo deben sumar 100."
+        return False, "Los pesos de jefe + equipo deben sumar 100.", []
 
     ciclo.nombre = nombre
     ciclo.descripcion = descripcion
@@ -542,17 +556,99 @@ def _guardar_ciclo(ciclo, post, user_actual):
     ciclo.peso_jefe_lider = peso_jefe
     ciclo.peso_equipo_lider = peso_equipo
 
-    # Preguntas excluidas: las activas que NO vienen marcadas como incluidas.
-    incluidas = {int(x) for x in post.getlist("preguntas_incluidas") if x.isdigit()}
-    todas_activas = set(
-        Pregunta.objects.filter(activa=True).values_list("id", flat=True)
-    )
-    ciclo.preguntas_excluidas = sorted(todas_activas - incluidas)
+    ciclo.preguntas_excluidas, avisos = _preguntas_excluidas_ciclo(ciclo, post)
 
     if ciclo.pk is None:
         ciclo.creado_por = user_actual
     ciclo.save()
-    return True, None
+    return True, None, avisos
+
+
+def _respuestas_con_contenido(ciclo):
+    """Respuestas reales del ciclo (ignora las filas vacias que crea el borrador)."""
+    return RespuestaEvaluacion.objects.filter(
+        Q(valor__isnull=False) | ~Q(respuesta_abierta=""),
+        asignacion__ciclo=ciclo,
+    )
+
+
+def _borradores_sin_enviar(ciclo):
+    """Asignaciones con respuestas escritas que el evaluador nunca envio.
+
+    No entran al consolidado (solo cuenta estado='completada'), asi que hay que
+    avisarlas explicitamente antes de cerrar un ciclo.
+    """
+    return (
+        AsignacionEvaluacion.objects.filter(
+            ciclo=ciclo, activa=True,
+            id__in=_respuestas_con_contenido(ciclo).values("asignacion_id"),
+        )
+        .exclude(estado="completada")
+        .count()
+    )
+
+
+def _preguntas_excluidas_ciclo(ciclo, post):
+    """Calcula `preguntas_excluidas` sin descuadrar un ciclo ya en curso.
+
+    Antes esta lista se recalculaba desde cero en cada guardado, con dos efectos
+    feos sobre un ciclo que ya tenia respuestas: se podia sacar una pregunta ya
+    respondida (dejando esas respuestas huerfanas) y toda pregunta creada
+    despues se colaba sola al cuestionario, aunque quien ya envio nunca la vio.
+
+    Devuelve (lista_excluidas, avisos).
+    """
+    incluidas = {int(x) for x in post.getlist("preguntas_incluidas") if x.isdigit()}
+    todas_activas = set(
+        Pregunta.objects.filter(activa=True).values_list("id", flat=True)
+    )
+    excluidas = todas_activas - incluidas
+    avisos = []
+
+    if ciclo.pk is None:
+        return sorted(excluidas), avisos
+
+    respondidas = set(
+        _respuestas_con_contenido(ciclo)
+        .values_list("pregunta_id", flat=True).distinct()
+    )
+    if not respondidas:
+        return sorted(excluidas), avisos
+
+    # 1. Una pregunta ya respondida no se puede sacar del ciclo.
+    protegidas = excluidas & respondidas
+    if protegidas:
+        excluidas -= protegidas
+        avisos.append(
+            f"{len(protegidas)} pregunta(s) siguen en el ciclo porque ya tienen "
+            "respuestas registradas; quitarlas dejaria esas respuestas huerfanas."
+        )
+
+    # 2. Las preguntas creadas despues de que arrancaran las respuestas se
+    #    quedan fuera, salvo que ya tengan respuestas propias.
+    inicio_respuestas = (
+        AsignacionEvaluacion.objects.filter(
+            ciclo=ciclo, fecha_inicio_respuesta__isnull=False
+        )
+        .order_by("fecha_inicio_respuesta")
+        .values_list("fecha_inicio_respuesta", flat=True)
+        .first()
+    ) or ciclo.fecha_inicio
+
+    tardias = set(
+        Pregunta.objects.filter(activa=True, fecha_creacion__gt=inicio_respuestas)
+        .exclude(id__in=respondidas)
+        .values_list("id", flat=True)
+    )
+    nuevas = tardias - excluidas
+    if nuevas:
+        excluidas |= nuevas
+        avisos.append(
+            f"{len(nuevas)} pregunta(s) creada(s) despues de que empezaran las "
+            "respuestas quedaron fuera: quien ya envio nunca las vio."
+        )
+
+    return sorted(excluidas), avisos
 
 
 def _preguntas_por_tipo():
@@ -644,14 +740,15 @@ def crear_ciclo(request):
     error = None
     if request.method == "POST":
         ciclo = CicloEvaluacion()
-        ok, error = _guardar_ciclo(ciclo, request.POST, user)
+        ok, error, avisos = _guardar_ciclo(ciclo, request.POST, user)
         if ok:
             areas = [a for a in request.POST.getlist("areas") if a in {k for k, _ in AREA_CHOICES}]
             if areas:
                 creadas, _ = _generar_por_jerarquia(ciclo, areas)
-                request.session["valoracion_ciclo_ok"] = f"Ciclo creado con {creadas} asignacion(es) generada(s)."
+                msg = f"Ciclo creado con {creadas} asignacion(es) generada(s)."
             else:
-                request.session["valoracion_ciclo_ok"] = "Ciclo creado."
+                msg = "Ciclo creado."
+            request.session["valoracion_ciclo_ok"] = " ".join([msg] + avisos)
             _aplicar_toggles_asignaciones(ciclo, request.POST)
             return redirect("modulo_valoracion:gestionar_ciclos")
     return render(request, "valoracion_ciclo_form.html", {
@@ -674,14 +771,15 @@ def editar_ciclo(request, ciclo_id):
     ciclo = get_object_or_404(CicloEvaluacion, pk=ciclo_id)
     error = None
     if request.method == "POST":
-        ok, error = _guardar_ciclo(ciclo, request.POST, user)
+        ok, error, avisos = _guardar_ciclo(ciclo, request.POST, user)
         if ok:
             areas = [a for a in request.POST.getlist("areas") if a in {k for k, _ in AREA_CHOICES}]
             if areas:
                 creadas, _ = _generar_por_jerarquia(ciclo, areas)
-                request.session["valoracion_ciclo_ok"] = f"Ciclo actualizado con {creadas} asignacion(es) generada(s)."
+                msg = f"Ciclo actualizado con {creadas} asignacion(es) generada(s)."
             else:
-                request.session["valoracion_ciclo_ok"] = "Ciclo actualizado."
+                msg = "Ciclo actualizado."
+            request.session["valoracion_ciclo_ok"] = " ".join([msg] + avisos)
             _aplicar_toggles_asignaciones(ciclo, request.POST)
             return redirect("modulo_valoracion:gestionar_ciclos")
     return render(request, "valoracion_ciclo_form.html", {
@@ -814,10 +912,20 @@ def mis_evaluaciones(request):
     if redir:
         return redir
 
+    # Ordenar por el campo `estado` a secas es alfabetico: dejaba las
+    # 'completada' arriba y enterraba abajo lo que falta por responder.
+    orden_estado = Case(
+        When(estado="pendiente", then=Value(0)),
+        When(estado="en_progreso", then=Value(1)),
+        When(estado="completada", then=Value(2)),
+        default=Value(3),
+        output_field=IntegerField(),
+    )
     asignaciones = (
         AsignacionEvaluacion.objects.filter(evaluador=user, activa=True)
         .select_related("ciclo", "evaluado")
-        .order_by("estado", "ciclo__fecha_cierre")
+        .annotate(orden_estado=orden_estado)
+        .order_by("orden_estado", "ciclo__fecha_cierre")
     )
     return render(request, "valoracion_mis_evaluaciones.html", {
         "asignaciones": asignaciones,
@@ -1097,9 +1205,16 @@ def consolidar_ciclo(request, ciclo_id):
         if _recalcular_resultado_evaluado(ciclo, evaluado) is not None:
             procesados += 1
 
-    request.session["valoracion_ciclo_ok"] = (
-        f"Resultados consolidados: {procesados} evaluado(s)."
-    )
+    msg = f"Resultados consolidados: {procesados} evaluado(s)."
+    sin_enviar = _borradores_sin_enviar(ciclo)
+    if sin_enviar:
+        # Solo se consolida lo que se envio: los borradores quedan por fuera y
+        # el admin tiene que enterarse antes de dar el ciclo por cerrado.
+        msg += (
+            f" Atencion: {sin_enviar} evaluacion(es) tienen respuestas guardadas "
+            "pero nunca se enviaron, asi que NO entraron en el consolidado."
+        )
+    request.session["valoracion_ciclo_ok"] = msg
     return redirect("modulo_valoracion:gestionar_ciclos")
 
 
@@ -1268,6 +1383,7 @@ def responder_evaluacion(request, asignacion_id):
     }
 
     error = None
+    enviado = {}
     success = request.session.pop("valoracion_responder_ok", None)
 
     if request.method == "POST":
@@ -1280,75 +1396,88 @@ def responder_evaluacion(request, asignacion_id):
             observaciones = request.POST.get("observaciones_acuerdos", "").strip()
             faltantes_obligatorias = []
 
-            with transaction.atomic():
-                for pregunta in preguntas:
-                    valor_raw = request.POST.get(f"valor_{pregunta.id}", "").strip()
-                    texto_raw = request.POST.get(f"texto_{pregunta.id}", "").strip()
+            # Se parsea TODO el formulario antes de tocar la base de datos, para
+            # poder devolverle al usuario lo que acaba de escribir si la validacion
+            # falla (antes se re-leia de BD tras el rollback y se perdia todo).
+            for pregunta in preguntas:
+                valor_raw = request.POST.get(f"valor_{pregunta.id}", "").strip()
+                texto_raw = request.POST.get(f"texto_{pregunta.id}", "").strip()
 
-                    valor = None
-                    if pregunta.tipo_pregunta == "likert" and valor_raw:
-                        try:
-                            valor_int = int(valor_raw)
-                            if 1 <= valor_int <= 5:
-                                valor = valor_int
-                        except ValueError:
-                            valor = None
+                valor = None
+                if pregunta.tipo_pregunta == "likert" and valor_raw:
+                    try:
+                        valor_int = int(valor_raw)
+                        if 1 <= valor_int <= 5:
+                            valor = valor_int
+                    except ValueError:
+                        valor = None
 
-                    if accion == "enviar" and pregunta.obligatoria:
-                        if pregunta.tipo_pregunta == "likert" and valor is None:
-                            faltantes_obligatorias.append(pregunta.id)
-                        elif pregunta.tipo_pregunta == "abierta" and not texto_raw:
-                            faltantes_obligatorias.append(pregunta.id)
+                if accion == "enviar" and pregunta.obligatoria:
+                    if pregunta.tipo_pregunta == "likert" and valor is None:
+                        faltantes_obligatorias.append(pregunta.id)
+                    elif pregunta.tipo_pregunta == "abierta" and not texto_raw:
+                        faltantes_obligatorias.append(pregunta.id)
 
-                    RespuestaEvaluacion.objects.update_or_create(
-                        asignacion=asignacion,
-                        pregunta=pregunta,
-                        defaults={"valor": valor, "respuesta_abierta": texto_raw},
-                    )
+                enviado[pregunta.id] = (valor, texto_raw)
 
-                if accion == "enviar" and faltantes_obligatorias:
-                    transaction.set_rollback(True)
-                    error = (
-                        f"Faltan {len(faltantes_obligatorias)} pregunta(s) obligatorias por responder."
-                    )
-                else:
+            if accion == "enviar" and faltantes_obligatorias:
+                error = (
+                    f"Faltan {len(faltantes_obligatorias)} pregunta(s) obligatorias por responder."
+                )
+            elif accion == "enviar" and ciclo.comentarios_obligatorios and not observaciones:
+                error = "Las observaciones y acuerdos son obligatorios."
+            else:
+                # Un borrador sin una sola respuesta no debe mover el estado:
+                # de lo contrario aparece "En progreso" sin haber respondido nada.
+                hay_contenido = any(
+                    valor is not None or texto for valor, texto in enviado.values()
+                ) or bool(observaciones)
+
+                with transaction.atomic():
+                    for pregunta in preguntas:
+                        valor, texto_raw = enviado[pregunta.id]
+                        RespuestaEvaluacion.objects.update_or_create(
+                            asignacion=asignacion,
+                            pregunta=pregunta,
+                            defaults={"valor": valor, "respuesta_abierta": texto_raw},
+                        )
+
                     asignacion.observaciones_acuerdos = observaciones
-                    if asignacion.fecha_inicio_respuesta is None:
+                    if hay_contenido and asignacion.fecha_inicio_respuesta is None:
                         asignacion.fecha_inicio_respuesta = ahora
                     if accion == "enviar":
-                        if ciclo.comentarios_obligatorios and not observaciones:
-                            transaction.set_rollback(True)
-                            error = "Las observaciones y acuerdos son obligatorios."
-                        else:
-                            asignacion.estado = "completada"
-                            asignacion.fecha_completada = ahora
-                            asignacion.save()
-                            request.session["valoracion_responder_ok"] = (
-                                "Evaluacion enviada. Gracias por completarla."
-                            )
-                            return redirect("modulo_valoracion:mis_evaluaciones")
-                    else:
+                        asignacion.estado = "completada"
+                        asignacion.fecha_completada = ahora
+                    elif hay_contenido:
                         asignacion.estado = "en_progreso"
-                        asignacion.save()
-                        request.session["valoracion_responder_ok"] = (
-                            "Borrador guardado. Puedes continuar mas tarde."
-                        )
-                        return redirect(
-                            "modulo_valoracion:responder_evaluacion",
-                            asignacion_id=asignacion.id,
-                        )
+                    asignacion.save()
 
-        respuestas_existentes = {
-            r.pregunta_id: r
-            for r in RespuestaEvaluacion.objects.filter(asignacion=asignacion)
-        }
+                if accion == "enviar":
+                    request.session["valoracion_responder_ok"] = (
+                        "Evaluacion enviada. Gracias por completarla."
+                    )
+                    return redirect("modulo_valoracion:mis_evaluaciones")
+                request.session["valoracion_responder_ok"] = (
+                    "Borrador guardado. Puedes continuar mas tarde."
+                )
+                return redirect(
+                    "modulo_valoracion:responder_evaluacion",
+                    asignacion_id=asignacion.id,
+                )
+
+    # Lo que se pinta en el formulario: si la validacion fallo, lo que el usuario
+    # acaba de escribir; si no, lo guardado en base de datos.
+    valores_form = {
+        pid: (r.valor, r.respuesta_abierta)
+        for pid, r in respuestas_existentes.items()
+    }
+    if error and enviado:
+        valores_form.update(enviado)
 
     preguntas_data = []
     respondidas = 0
     for pregunta in preguntas:
-        r = respuestas_existentes.get(pregunta.id)
-        valor_actual = r.valor if r else None
-        texto_actual = r.respuesta_abierta if r else ""
+        valor_actual, texto_actual = valores_form.get(pregunta.id, (None, ""))
         respondida = valor_actual is not None or bool(texto_actual)
         if respondida:
             respondidas += 1

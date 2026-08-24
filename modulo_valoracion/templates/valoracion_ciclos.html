@@ -34,7 +34,12 @@
           <td><span class="status-badge status-badge--{{ c.estado_efectivo }}">{{ c.estado_efectivo_display }}</span></td>
           <td>{{ c.fecha_inicio|date:"d/m/Y H:i" }}</td>
           <td>{{ c.fecha_cierre|date:"d/m/Y H:i" }}</td>
-          <td>{{ c.asignaciones.count }}</td>
+          <td>
+            {{ c.asignaciones.count }}
+            {% if c.sin_enviar %}
+              <br><small style="color:#ffcc80;" title="Tienen respuestas guardadas pero nunca se enviaron, asi que no entran al consolidado.">{{ c.sin_enviar }} sin enviar</small>
+            {% endif %}
+          </td>
           <td class="val-actions">
             <a href="{% url 'modulo_valoracion:editar_ciclo' c.id %}" class="val-btn val-btn--secondary val-btn--sm">Editar</a>
 <form method="post" action="{% url 'modulo_valoracion:consolidar_ciclo' c.id %}" style="display:inline;"
