@@ -20,6 +20,7 @@ from .models import (
     RespuestaEvaluacion,
     ResultadoEvaluacion,
     PlanAccion,
+    ConfiguracionValoracion,
     TIPO_EVALUACION_CHOICES,
     TIPO_PREGUNTA_CHOICES,
     ESTADO_CICLO_CHOICES,
@@ -121,6 +122,56 @@ def _puede_gestionar_planes(user):
     return _puede_ver_dashboard(user) or _es_lider(user)
 
 
+# Areas que pueden habilitar/bloquear Mis Resultados y Planes de Accion.
+# Cualquier persona de estas areas puede hacerlo, sin importar su rol.
+AREAS_PUBLICACION_RESULTADOS = {"people", "bi", "tecnologia"}
+
+
+def _puede_publicar_resultados(user):
+    """People / Data (BI) / Tech / Admin: habilitan o bloquean los resultados."""
+    if user is None:
+        return False
+    if _es_admin_global(user):
+        return True
+    return getattr(user, "area", None) in AREAS_PUBLICACION_RESULTADOS
+
+
+def _resultados_publicados():
+    return ConfiguracionValoracion.get_solo().resultados_publicados
+
+
+def _puede_ver_resultados(user):
+    """Mis Resultados y Planes de Accion estan bloqueados para el equipo
+    hasta que People / Data / Tech / Admin los habilite."""
+    if _puede_publicar_resultados(user):
+        return True
+    return _resultados_publicados()
+
+
+def _progreso_evaluaciones():
+    """Avance de respuestas de los ciclos activos (para habilitar al 100%)."""
+    qs = AsignacionEvaluacion.objects.filter(activa=True, ciclo__estado="activo")
+    total = qs.count()
+    completadas = qs.filter(estado="completada").count()
+    porcentaje = round(completadas * 100.0 / total, 1) if total else 0.0
+    return {
+        "total": total,
+        "completadas": completadas,
+        "pendientes": total - completadas,
+        "porcentaje": porcentaje,
+        "completo": total > 0 and completadas == total,
+    }
+
+
+def _bloqueo_resultados(request, user, seccion):
+    """Devuelve la pantalla de bloqueo si el usuario aun no puede ver resultados."""
+    if _puede_ver_resultados(user):
+        return None
+    ctx = {"seccion": seccion, "progreso": _progreso_evaluaciones()}
+    ctx.update(_context_perms(user))
+    return render(request, "valoracion_bloqueado.html", ctx, status=403)
+
+
 def _require_role(request, predicate):
     user, redir = _require_login(request)
     if redir:
@@ -140,6 +191,9 @@ def _context_perms(user):
         "puede_ver_todo": _puede_ver_todo(user),
         "puede_ver_dashboard": _puede_ver_dashboard(user),
         "puede_gestionar_planes": _puede_gestionar_planes(user),
+        "puede_publicar_resultados": _puede_publicar_resultados(user),
+        "resultados_publicados": _resultados_publicados(),
+        "puede_ver_resultados": _puede_ver_resultados(user),
     }
 
 
@@ -157,12 +211,40 @@ def home_modulo_valoracion(request):
     ).count()
     mis_resultados = ResultadoEvaluacion.objects.filter(evaluado=user).count()
 
+    config = ConfiguracionValoracion.get_solo()
     ctx = {
         "asignaciones_pendientes": asignaciones_pendientes,
         "mis_resultados": mis_resultados,
+        "config_valoracion": config,
+        "progreso": _progreso_evaluaciones(),
+        "publicacion_msg": request.session.pop("valoracion_publicacion_ok", None),
     }
     ctx.update(_context_perms(user))
     return render(request, "home_valoracion.html", ctx)
+
+
+def toggle_publicacion_resultados(request):
+    """Habilita o bloquea Mis Resultados y Planes de Accion para todo el equipo.
+    Solo People / Data (BI) / Tech / Admin."""
+    user, resp = _require_role(request, _puede_publicar_resultados)
+    if resp:
+        return resp
+    if request.method != "POST":
+        return redirect("modulo_valoracion:home_modulo_valoracion")
+
+    habilitar = request.POST.get("accion") == "habilitar"
+    config = ConfiguracionValoracion.get_solo()
+    config.resultados_publicados = habilitar
+    config.fecha_publicacion = timezone.now() if habilitar else None
+    config.actualizado_por = user
+    config.save()
+
+    request.session["valoracion_publicacion_ok"] = (
+        "Mis Resultados y Planes de Accion quedaron habilitados para todo el equipo."
+        if habilitar else
+        "Mis Resultados y Planes de Accion quedaron bloqueados para el equipo."
+    )
+    return redirect("modulo_valoracion:home_modulo_valoracion")
 
 
 # ----------------------------------------
@@ -1030,6 +1112,10 @@ def detalle_resultado(request, resultado_id):
     if redir:
         return redir
 
+    bloqueo = _bloqueo_resultados(request, user, "Mis Resultados")
+    if bloqueo:
+        return bloqueo
+
     resultado = get_object_or_404(
         ResultadoEvaluacion.objects.select_related("ciclo", "evaluado"),
         pk=resultado_id,
@@ -1311,6 +1397,10 @@ def mis_resultados(request):
     if redir:
         return redir
 
+    bloqueo = _bloqueo_resultados(request, user, "Mis Resultados")
+    if bloqueo:
+        return bloqueo
+
     resultados = list(
         ResultadoEvaluacion.objects.filter(evaluado=user)
         .select_related("ciclo", "evaluado", "evaluado__jefe_directo")
@@ -1433,6 +1523,10 @@ def listar_planes_accion(request):
     user, redir = _require_login(request)
     if redir:
         return redir
+
+    bloqueo = _bloqueo_resultados(request, user, "Planes de Accion")
+    if bloqueo:
+        return bloqueo
 
     if _puede_ver_todo(user):
         planes = PlanAccion.objects.all()
@@ -2203,6 +2297,10 @@ def crear_plan_accion(request, resultado_id):
     if not (_puede_gestionar_planes(user) or es_su_jefe):
         return render(request, "acceso_no_permitido.html", status=403)
 
+    bloqueo = _bloqueo_resultados(request, user, "Planes de Accion")
+    if bloqueo:
+        return bloqueo
+
     if request.method != "POST":
         return redirect("modulo_valoracion:dashboard_individual", usuario_id=resultado.evaluado_id)
 
@@ -2249,6 +2347,10 @@ def actualizar_plan_accion(request, plan_id):
     es_su_jefe = getattr(plan.resultado.evaluado, "jefe_directo_id", None) == user.pk
     if not (_puede_gestionar_planes(user) or es_su_jefe or plan.responsable_id == user.pk):
         return render(request, "acceso_no_permitido.html", status=403)
+
+    bloqueo = _bloqueo_resultados(request, user, "Planes de Accion")
+    if bloqueo:
+        return bloqueo
 
     if request.method != "POST":
         return redirect("modulo_valoracion:dashboard_individual", usuario_id=plan.resultado.evaluado_id)

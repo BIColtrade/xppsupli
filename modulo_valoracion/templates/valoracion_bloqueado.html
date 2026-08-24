@@ -1,0 +1,29 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">SUPLI PRIME &middot; {{ seccion }}</h1>
+      <p class="val-page__subtitle">Este espacio esta temporalmente bloqueado.</p>
+    </div>
+  </div>
+
+  <div class="val-lock-panel">
+    <div class="val-lock-panel__icon">&#128274;</div>
+    <div class="val-lock-panel__title">{{ seccion }} aun no esta disponible</div>
+    <p class="val-lock-panel__text">
+      Los resultados se habilitan cuando el 100% del equipo termine sus evaluaciones.
+      El area de People / Data / Tech activara este espacio para todos.
+    </p>
+    <div class="val-lock-panel__progress">
+      Avance de evaluaciones: <strong>{{ progreso.porcentaje }}%</strong>
+      ({{ progreso.completadas }} de {{ progreso.total }} respondidas)
+    </div>
+    <a href="{% url 'modulo_valoracion:home_modulo_valoracion' %}" class="val-btn val-btn--secondary">Volver al inicio</a>
+  </div>
+</section>
+
+    </main>
+  </div>

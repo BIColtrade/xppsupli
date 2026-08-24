@@ -303,3 +303,38 @@ class PlanAccion(models.Model):
 
     def __str__(self):
         return f"{self.descripcion[:50]} ({self.get_estado_display()})"
+
+
+class ConfiguracionValoracion(models.Model):
+    """Interruptor global del modulo (fila unica, pk=1).
+
+    Mientras 'resultados_publicados' este en False, las tarjetas de
+    Mis Resultados y Planes de Accion quedan bloqueadas para todo el equipo.
+    Solo People / Data (BI) / Tech / Admin pueden habilitarlas o volver a
+    bloquearlas, idealmente cuando el 100% de las evaluaciones este respondido.
+    """
+    resultados_publicados = models.BooleanField(
+        default=False,
+        help_text="Si esta activo, el equipo puede ver Mis Resultados y Planes de Accion",
+    )
+    fecha_publicacion = models.DateTimeField(null=True, blank=True)
+    actualizado_por = models.ForeignKey(
+        Usuario, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='configuraciones_valoracion',
+    )
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'valoracion_configuracion'
+        verbose_name = 'Configuracion del modulo'
+        verbose_name_plural = 'Configuracion del modulo'
+
+    def __str__(self):
+        estado = 'habilitados' if self.resultados_publicados else 'bloqueados'
+        return f"Resultados {estado}"
+
+    @classmethod
+    def get_solo(cls):
+        """Devuelve (creando si hace falta) la unica fila de configuracion."""
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj

@@ -8,6 +8,7 @@ from .models import (
     RespuestaEvaluacion,
     ResultadoEvaluacion,
     PlanAccion,
+    ConfiguracionValoracion,
 )
 
 
@@ -118,3 +119,14 @@ class PlanAccionAdmin(admin.ModelAdmin):
         "resultado__evaluado__email",
     )
     autocomplete_fields = ("responsable", "creado_por")
+
+
+@admin.register(ConfiguracionValoracion)
+class ConfiguracionValoracionAdmin(admin.ModelAdmin):
+    list_display = (
+        "resultados_publicados",
+        "fecha_publicacion",
+        "actualizado_por",
+        "fecha_actualizacion",
+    )
+    autocomplete_fields = ("actualizado_por",)

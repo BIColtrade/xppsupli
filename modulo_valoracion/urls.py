@@ -8,6 +8,13 @@ urlpatterns = [
     # Home
     path("home/", views.home_modulo_valoracion, name="home_modulo_valoracion"),
 
+    # Habilitar / bloquear Mis Resultados y Planes de Accion (People / Data / Tech / Admin)
+    path(
+        "publicacion-resultados/",
+        views.toggle_publicacion_resultados,
+        name="toggle_publicacion_resultados",
+    ),
+
     # Configuracion: Competencias
     path("competencias/", views.gestionar_competencias, name="gestionar_competencias"),
     path("competencias/crear/", views.crear_competencia, name="crear_competencia"),

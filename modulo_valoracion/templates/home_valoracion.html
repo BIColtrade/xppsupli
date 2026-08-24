@@ -17,6 +17,43 @@
     </div>
   </div>
 
+  {% if publicacion_msg %}
+  <div class="val-alert val-alert--success">{{ publicacion_msg }}</div>
+  {% endif %}
+
+  {% if puede_publicar_resultados %}
+  <div class="val-publicacion">
+    <div class="val-publicacion__info">
+      <div class="val-publicacion__title">
+        Mis Resultados y Planes de Accion:
+        {% if resultados_publicados %}
+        <span class="val-publicacion__estado val-publicacion__estado--on">Habilitados para todo el equipo</span>
+        {% else %}
+        <span class="val-publicacion__estado val-publicacion__estado--off">Bloqueados para el equipo</span>
+        {% endif %}
+      </div>
+      <div class="val-publicacion__hint">
+        Avance de evaluaciones: <strong>{{ progreso.porcentaje }}%</strong>
+        ({{ progreso.completadas }} de {{ progreso.total }} respondidas{% if progreso.pendientes %}, {{ progreso.pendientes }} pendientes{% endif %}).
+        {% if progreso.completo %}El 100% del equipo ya termino.{% else %}Se recomienda habilitar cuando llegue al 100%.{% endif %}
+        {% if config_valoracion.fecha_publicacion %}
+        <br>Habilitado el {{ config_valoracion.fecha_publicacion|date:"d/m/Y H:i" }}{% if config_valoracion.actualizado_por %} por {{ config_valoracion.actualizado_por }}{% endif %}.
+        {% endif %}
+      </div>
+    </div>
+    <form method="post" action="{% url 'modulo_valoracion:toggle_publicacion_resultados' %}">
+      {% csrf_token %}
+      {% if resultados_publicados %}
+      <input type="hidden" name="accion" value="bloquear">
+      <button type="submit" class="val-btn val-btn--danger">Bloquear resultados</button>
+      {% else %}
+      <input type="hidden" name="accion" value="habilitar">
+      <button type="submit" class="val-btn val-btn--primary">Habilitar resultados al equipo</button>
+      {% endif %}
+    </form>
+  </div>
+  {% endif %}
+
   <div class="val-section-title">Mi participacion</div>
   <div class="home-cards__grid">
     <a href="{% url 'modulo_valoracion:mis_evaluaciones' %}" class="home-card home-card--primary">
@@ -24,16 +61,42 @@
       <div class="home-card__title">Mis Evaluaciones</div>
       <div class="home-card__desc">Responde las evaluaciones que tienes asignadas en ciclos activos.</div>
     </a>
+
+    {% if puede_ver_resultados %}
     <a href="{% url 'modulo_valoracion:mis_resultados' %}" class="home-card home-card--info">
       <div class="home-card__icon">MR</div>
       <div class="home-card__title">Mis Resultados</div>
       <div class="home-card__desc">Consulta tu resultado, semaforo, fortalezas y brechas.</div>
+      {% if puede_publicar_resultados and not resultados_publicados %}
+      <span class="home-card__badge">Solo People / Data / Tech</span>
+      {% endif %}
     </a>
+    {% else %}
+    <div class="home-card home-card--info home-card--locked" aria-disabled="true">
+      <div class="home-card__icon">&#128274;</div>
+      <div class="home-card__title">Mis Resultados</div>
+      <div class="home-card__desc">Se habilita cuando el 100% del equipo termine las evaluaciones.</div>
+      <span class="home-card__badge">Bloqueado</span>
+    </div>
+    {% endif %}
+
+    {% if puede_ver_resultados %}
     <a href="{% url 'modulo_valoracion:listar_planes_accion' %}" class="home-card home-card--purple">
       <div class="home-card__icon">PA</div>
       <div class="home-card__title">Planes de Accion</div>
       <div class="home-card__desc">Acciones de mejora asignadas a ti o a tu equipo.</div>
+      {% if puede_publicar_resultados and not resultados_publicados %}
+      <span class="home-card__badge">Solo People / Data / Tech</span>
+      {% endif %}
     </a>
+    {% else %}
+    <div class="home-card home-card--purple home-card--locked" aria-disabled="true">
+      <div class="home-card__icon">&#128274;</div>
+      <div class="home-card__title">Planes de Accion</div>
+      <div class="home-card__desc">Se habilita cuando el 100% del equipo termine las evaluaciones.</div>
+      <span class="home-card__badge">Bloqueado</span>
+    </div>
+    {% endif %}
   </div>
 
   {% if es_lider or puede_ver_todo %}

@@ -244,6 +244,22 @@ Cuando una persona tiene resultados en varios ciclos, SUPLI PRIME **no los muest
 
 ## 5. Ver los resultados (tres perspectivas)
 
+### 5.0 Candado de publicación (importante)
+
+Las tarjetas **"Mis Resultados"** y **"Planes de Acción"** nacen **bloqueadas** para todo el equipo.
+Aparecen en gris con un candado y no se pueden abrir; si alguien entra por el enlace directo ve la
+pantalla "aún no está disponible" con el avance de evaluaciones.
+
+Quién lo destraba: **cualquier persona de las áreas People, Business Intelligence (Data) o Tech**,
+más los usuarios admin/staff. En el home de SUPLI PRIME esas personas ven un panel con el estado
+actual, el porcentaje de evaluaciones respondidas y el botón **"Habilitar resultados al equipo"**
+(y luego **"Bloquear resultados"** para volver a cerrarlo). La recomendación es habilitar cuando el
+avance llegue al 100%.
+
+El interruptor es global (una sola fila en `valoracion_configuracion`) y queda registrado con la
+fecha y la persona que lo cambió.
+
+
 ### 5.1 Como **Colaborador o Líder evaluado**
 
 > 📍 Tarjeta **"Mis Resultados"**

@@ -32,3 +32,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+
+# === CREDENCIALES (nunca versionar) ===
+credenciales_*.xlsx
+backups/credenciales_*.xlsx
