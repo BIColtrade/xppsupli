@@ -31,10 +31,17 @@
           <td>{{ a.get_tipo_evaluacion_display }}</td>
           <td>{{ a.get_rol_evaluador_display }}</td>
           <td><span class="status-badge status-badge--{{ a.estado }}">{{ a.get_estado_display }}</span></td>
-          <td>{{ a.ciclo.fecha_cierre|date:"d/m/Y" }}</td>
+          <td>
+            {{ a.ciclo.fecha_cierre|date:"d/m/Y H:i" }}
+            {% if not a.ciclo.esta_activo %}
+              <br><small style="color:var(--val-muted);">{{ a.ciclo.estado_efectivo_display }}</small>
+            {% endif %}
+          </td>
           <td>
             {% if a.estado == 'completada' %}
               <a href="{% url 'modulo_valoracion:responder_evaluacion' a.id %}" class="val-btn val-btn--secondary val-btn--sm">Ver respuestas</a>
+            {% elif not a.ciclo.esta_activo %}
+              <a href="{% url 'modulo_valoracion:responder_evaluacion' a.id %}" class="val-btn val-btn--secondary val-btn--sm">Ver (cerrado)</a>
             {% else %}
               <a href="{% url 'modulo_valoracion:responder_evaluacion' a.id %}" class="val-btn val-btn--primary val-btn--sm">Responder</a>
             {% endif %}

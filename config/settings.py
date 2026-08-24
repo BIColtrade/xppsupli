@@ -168,7 +168,10 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# Zona horaria del negocio. Las fechas se guardan en UTC (USE_TZ=True) pero se
+# leen y se muestran en hora local, que es como el usuario llena los campos
+# datetime-local de los formularios (ciclos, retos, etc.).
+TIME_ZONE = os.environ.get('TIME_ZONE', 'America/Bogota')
 
 USE_I18N = True
 

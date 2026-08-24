@@ -21,7 +21,7 @@
 
   {% if not ciclo_disponible and asignacion.estado != 'completada' %}
     <div class="val-alert val-alert--info">
-      Este ciclo no esta activo en este momento. No puedes responder hasta que se reactive.
+      {{ motivo_bloqueo }}
     </div>
   {% endif %}
 

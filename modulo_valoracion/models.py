@@ -168,11 +168,51 @@ class CicloEvaluacion(models.Model):
         return f"{self.nombre} ({self.get_estado_display()})"
 
     def esta_activo(self, ahora=None):
+        return self.motivo_no_disponible(ahora) is None
+
+    def motivo_no_disponible(self, ahora=None):
+        """Devuelve None si el ciclo admite respuestas, o el texto de la razon."""
         ahora = ahora or timezone.now()
-        return (
-            self.estado == 'activo'
-            and self.fecha_inicio <= ahora <= self.fecha_cierre
-        )
+        if self.estado != 'activo':
+            return (
+                "Este ciclo esta en estado "
+                f"'{self.get_estado_display()}'. Solo los ciclos en estado "
+                "'Activo' admiten respuestas."
+            )
+        if ahora < self.fecha_inicio:
+            return (
+                "Este ciclo aun no ha iniciado. Abre el "
+                f"{timezone.localtime(self.fecha_inicio):%d/%m/%Y %H:%M}."
+            )
+        if ahora > self.fecha_cierre:
+            return (
+                "Este ciclo ya cerro el "
+                f"{timezone.localtime(self.fecha_cierre):%d/%m/%Y %H:%M}. "
+                "Pide al admin que amplie la fecha de cierre para reabrirlo."
+            )
+        return None
+
+    @property
+    def estado_efectivo(self):
+        """Estado real combinando el campo `estado` con la ventana de fechas.
+
+        El campo `estado` por si solo miente: un ciclo marcado 'activo' cuya
+        fecha de cierre ya paso sigue mostrandose como Activo en los listados.
+        """
+        if self.estado != 'activo':
+            return self.estado
+        ahora = timezone.now()
+        if ahora < self.fecha_inicio:
+            return 'programado'
+        if ahora > self.fecha_cierre:
+            return 'vencido'
+        return 'activo'
+
+    @property
+    def estado_efectivo_display(self):
+        if self.estado_efectivo == 'vencido':
+            return 'Vencido'
+        return self.get_estado_display()
 
 
 class AsignacionEvaluacion(models.Model):

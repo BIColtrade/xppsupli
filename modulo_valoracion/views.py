@@ -1245,11 +1245,14 @@ def responder_evaluacion(request, asignacion_id):
 
     ciclo = asignacion.ciclo
     ahora = timezone.now()
-    ciclo_disponible = (
-        asignacion.activa
-        and ciclo.estado == "activo"
-        and ciclo.fecha_inicio <= ahora <= ciclo.fecha_cierre
-    )
+    if not asignacion.activa:
+        motivo_bloqueo = (
+            "Esta asignacion fue desactivada por el admin del modulo. "
+            "No puedes responderla."
+        )
+    else:
+        motivo_bloqueo = ciclo.motivo_no_disponible(ahora)
+    ciclo_disponible = motivo_bloqueo is None
 
     preguntas = list(
         Pregunta.objects.filter(
@@ -1271,7 +1274,7 @@ def responder_evaluacion(request, asignacion_id):
         if asignacion.estado == "completada":
             error = "Esta evaluacion ya fue enviada y no se puede modificar."
         elif not ciclo_disponible:
-            error = "El ciclo no esta disponible para responder en este momento."
+            error = motivo_bloqueo
         else:
             accion = request.POST.get("accion", "borrador")
             observaciones = request.POST.get("observaciones_acuerdos", "").strip()
@@ -1377,6 +1380,7 @@ def responder_evaluacion(request, asignacion_id):
         "asignacion": asignacion,
         "ciclo": ciclo,
         "ciclo_disponible": ciclo_disponible,
+        "motivo_bloqueo": motivo_bloqueo,
         "preguntas_data": preguntas_data,
         "total": total,
         "respondidas": respondidas,

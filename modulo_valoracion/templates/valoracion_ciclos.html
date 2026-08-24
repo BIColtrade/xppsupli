@@ -31,7 +31,7 @@
         <tr>
           <td>{{ c.nombre }}</td>
           <td>{{ c.get_tipo_display }}</td>
-          <td><span class="status-badge status-badge--{{ c.estado }}">{{ c.get_estado_display }}</span></td>
+          <td><span class="status-badge status-badge--{{ c.estado_efectivo }}">{{ c.estado_efectivo_display }}</span></td>
           <td>{{ c.fecha_inicio|date:"d/m/Y H:i" }}</td>
           <td>{{ c.fecha_cierre|date:"d/m/Y H:i" }}</td>
           <td>{{ c.asignaciones.count }}</td>
