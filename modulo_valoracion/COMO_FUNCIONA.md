@@ -1,6 +1,6 @@
-# SUPLI PRIME — Guía de uso
+# SUPLI PERFORMANCE — Guía de uso
 
-> **SUPLI PRIME** es el nombre del módulo de valoración de SUPLI OS.
+> **SUPLI PERFORMANCE** es el nombre del módulo de valoración de SUPLI OS.
 
 Esta guía explica, paso a paso y sin tecnicismos, cómo se usa el módulo. Está pensada para que cualquier persona del equipo (People, Líderes, Colaboradores, CEO) entienda qué hacer y dónde hacerlo.
 
@@ -238,7 +238,7 @@ Para cada persona evaluada en ese ciclo:
 
 ### El consolidado entre ciclos
 
-Cuando una persona tiene resultados en varios ciclos, SUPLI PRIME **no los muestra como filas independientes**: los pondera por la cantidad de calificaciones que aportó cada ciclo y entrega un único **% consolidado** por persona. Ejemplo: 1 calificación al 60% en el ciclo 1 y 4 calificaciones al 90% en el ciclo 2 → consolidado **84%** con 5 calificaciones.
+Cuando una persona tiene resultados en varios ciclos, SUPLI PERFORMANCE **no los muestra como filas independientes**: los pondera por la cantidad de calificaciones que aportó cada ciclo y entrega un único **% consolidado** por persona. Ejemplo: 1 calificación al 60% en el ciclo 1 y 4 calificaciones al 90% en el ciclo 2 → consolidado **84%** con 5 calificaciones.
 
 ---
 
@@ -251,7 +251,7 @@ Aparecen en gris con un candado y no se pueden abrir; si alguien entra por el en
 pantalla "aún no está disponible" con el avance de evaluaciones.
 
 Quién lo destraba: **cualquier persona de las áreas People, Business Intelligence (Data) o Tech**,
-más los usuarios admin/staff. En el home de SUPLI PRIME esas personas ven un panel con el estado
+más los usuarios admin/staff. En el home de SUPLI PERFORMANCE esas personas ven un panel con el estado
 actual, el porcentaje de evaluaciones respondidas y el botón **"Habilitar resultados al equipo"**
 (y luego **"Bloquear resultados"** para volver a cerrarlo). La recomendación es habilitar cuando el
 avance llegue al 100%.

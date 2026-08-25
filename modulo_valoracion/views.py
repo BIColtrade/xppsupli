@@ -2252,7 +2252,7 @@ def exportar_consolidado_csv(request):
     _resultados, consolidado, _filtros = _resultados_filtrados(request)
 
     response = HttpResponse(content_type="text/csv; charset=utf-8")
-    response["Content-Disposition"] = 'attachment; filename="supli_prime_consolidado.csv"'
+    response["Content-Disposition"] = 'attachment; filename="supli_performance_consolidado.csv"'
     response.write("\ufeff")
     writer = csv.writer(response, delimiter=";")
     writer.writerow([
@@ -2285,7 +2285,7 @@ def exportar_items_csv(request):
     semaforo_display = dict(SEMAFORO_CHOICES)
 
     response = HttpResponse(content_type="text/csv; charset=utf-8")
-    response["Content-Disposition"] = 'attachment; filename="supli_prime_detalle_items.csv"'
+    response["Content-Disposition"] = 'attachment; filename="supli_performance_detalle_items.csv"'
     response.write("\ufeff")
     writer = csv.writer(response, delimiter=";")
     writer.writerow([

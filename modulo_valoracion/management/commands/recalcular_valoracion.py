@@ -6,7 +6,7 @@ from modulo_valoracion.views import _recalcular_resultado_evaluado
 
 class Command(BaseCommand):
     help = (
-        "Recalcula el consolidado (SUPLI PRIME) de todos los ciclos: puntajes por "
+        "Recalcula el consolidado (SUPLI PERFORMANCE) de todos los ciclos: puntajes por "
         "rol, numero de evaluadores y detalle por competencia."
     )
 
