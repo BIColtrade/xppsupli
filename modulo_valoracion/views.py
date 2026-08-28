@@ -1384,6 +1384,8 @@ def responder_evaluacion(request, asignacion_id):
 
     error = None
     enviado = {}
+    faltantes_obligatorias = []
+    faltan_observaciones = False
     success = request.session.pop("valoracion_responder_ok", None)
 
     if request.method == "POST":
@@ -1395,6 +1397,7 @@ def responder_evaluacion(request, asignacion_id):
             accion = request.POST.get("accion", "borrador")
             observaciones = request.POST.get("observaciones_acuerdos", "").strip()
             faltantes_obligatorias = []
+            faltan_observaciones = False
 
             # Se parsea TODO el formulario antes de tocar la base de datos, para
             # poder devolverle al usuario lo que acaba de escribir si la validacion
@@ -1420,43 +1423,59 @@ def responder_evaluacion(request, asignacion_id):
 
                 enviado[pregunta.id] = (valor, texto_raw)
 
-            if accion == "enviar" and faltantes_obligatorias:
-                error = (
-                    f"Faltan {len(faltantes_obligatorias)} pregunta(s) obligatorias por responder."
-                )
-            elif accion == "enviar" and ciclo.comentarios_obligatorios and not observaciones:
-                error = "Las observaciones y acuerdos son obligatorios."
-            else:
-                # Un borrador sin una sola respuesta no debe mover el estado:
-                # de lo contrario aparece "En progreso" sin haber respondido nada.
-                hay_contenido = any(
-                    valor is not None or texto for valor, texto in enviado.values()
-                ) or bool(observaciones)
+            if accion == "enviar" and ciclo.comentarios_obligatorios and not observaciones:
+                faltan_observaciones = True
 
-                with transaction.atomic():
-                    for pregunta in preguntas:
-                        valor, texto_raw = enviado[pregunta.id]
-                        RespuestaEvaluacion.objects.update_or_create(
-                            asignacion=asignacion,
-                            pregunta=pregunta,
-                            defaults={"valor": valor, "respuesta_abierta": texto_raw},
-                        )
+            # Un envio incompleto NO se rechaza: se guarda igual como borrador.
+            # Antes se hacia rollback de todo y el evaluador perdia el trabajo de
+            # llenar decenas de preguntas, y la evaluacion volvia a "pendiente".
+            completar = accion == "enviar" and not faltantes_obligatorias and not faltan_observaciones
 
-                    asignacion.observaciones_acuerdos = observaciones
-                    if hay_contenido and asignacion.fecha_inicio_respuesta is None:
-                        asignacion.fecha_inicio_respuesta = ahora
-                    if accion == "enviar":
-                        asignacion.estado = "completada"
-                        asignacion.fecha_completada = ahora
-                    elif hay_contenido:
-                        asignacion.estado = "en_progreso"
-                    asignacion.save()
-
-                if accion == "enviar":
-                    request.session["valoracion_responder_ok"] = (
-                        "Evaluacion enviada. Gracias por completarla."
+            if accion == "enviar" and not completar:
+                partes = []
+                if faltantes_obligatorias:
+                    partes.append(
+                        f"{len(faltantes_obligatorias)} pregunta(s) sin responder"
                     )
-                    return redirect("modulo_valoracion:mis_evaluaciones")
+                if faltan_observaciones:
+                    partes.append("las observaciones y acuerdos")
+                error = (
+                    "Guardamos todo lo que llevas, pero aun falta " + " y ".join(partes)
+                    + ". Lo que ya respondiste quedo guardado: completa lo que falta "
+                    "(marcado en rojo) y vuelve a enviar."
+                )
+
+            # Un borrador sin una sola respuesta no debe mover el estado:
+            # de lo contrario aparece "En progreso" sin haber respondido nada.
+            hay_contenido = any(
+                valor is not None or texto for valor, texto in enviado.values()
+            ) or bool(observaciones)
+
+            with transaction.atomic():
+                for pregunta in preguntas:
+                    valor, texto_raw = enviado[pregunta.id]
+                    RespuestaEvaluacion.objects.update_or_create(
+                        asignacion=asignacion,
+                        pregunta=pregunta,
+                        defaults={"valor": valor, "respuesta_abierta": texto_raw},
+                    )
+
+                asignacion.observaciones_acuerdos = observaciones
+                if hay_contenido and asignacion.fecha_inicio_respuesta is None:
+                    asignacion.fecha_inicio_respuesta = ahora
+                if completar:
+                    asignacion.estado = "completada"
+                    asignacion.fecha_completada = ahora
+                elif hay_contenido:
+                    asignacion.estado = "en_progreso"
+                asignacion.save()
+
+            if completar:
+                request.session["valoracion_responder_ok"] = (
+                    "Evaluacion enviada. Gracias por completarla."
+                )
+                return redirect("modulo_valoracion:mis_evaluaciones")
+            if not error:
                 request.session["valoracion_responder_ok"] = (
                     "Borrador guardado. Puedes continuar mas tarde."
                 )
@@ -1464,6 +1483,8 @@ def responder_evaluacion(request, asignacion_id):
                     "modulo_valoracion:responder_evaluacion",
                     asignacion_id=asignacion.id,
                 )
+            # Envio incompleto: ya quedo guardado, pero se re-pinta la pagina
+            # con el detalle de lo que falta en vez de redirigir.
 
     # Lo que se pinta en el formulario: si la validacion fallo, lo que el usuario
     # acaba de escribir; si no, lo guardado en base de datos.
@@ -1499,6 +1520,7 @@ def responder_evaluacion(request, asignacion_id):
             "valor_actual": valor_actual,
             "texto_actual": texto_actual,
             "opciones_likert": opciones,
+            "falta": pregunta.id in faltantes_obligatorias,
         })
 
     total = len(preguntas)
@@ -1515,6 +1537,8 @@ def responder_evaluacion(request, asignacion_id):
         "respondidas": respondidas,
         "progreso_pct": progreso_pct,
         "bloquear_inputs": bloquear_inputs,
+        "faltan_observaciones": faltan_observaciones,
+        "total_faltantes": len(faltantes_obligatorias),
         "error": error,
         "success": success,
         **_context_perms(user),

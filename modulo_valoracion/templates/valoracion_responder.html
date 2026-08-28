@@ -17,7 +17,16 @@
   </div>
 
   {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
-  {% if error %}<div class="val-alert val-alert--error">{{ error }}</div>{% endif %}
+  {% if error %}
+    <div class="val-alert val-alert--error" id="val-error">
+      {{ error }}
+      {% if total_faltantes %}
+        <div style="margin-top:8px;">
+          <a href="#preg-primera-falta" class="val-btn val-btn--secondary val-btn--sm">Ir a la primera pregunta que falta</a>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
 
   {% if not ciclo_disponible and asignacion.estado != 'completada' %}
     <div class="val-alert val-alert--info">
@@ -40,6 +49,10 @@
       <div class="val-stat__value">{{ progreso_pct }}%</div>
       <div class="val-stat__label">Progreso</div>
     </div>
+    <div class="val-stat">
+      <div class="val-stat__value" id="val-contador-falta">-</div>
+      <div class="val-stat__label">Obligatorias sin responder</div>
+    </div>
   </div>
 
   {% if total == 0 %}
@@ -51,10 +64,13 @@
     {% csrf_token %}
 
     {% for p in preguntas_data %}
-    <div class="val-form__group" style="border-bottom: 1px solid var(--val-border); padding-bottom: 18px; margin-bottom: 18px;">
+    <div class="val-form__group{% if p.falta %} val-falta{% endif %}" id="preg-{{ p.id }}"
+         data-obligatoria="{% if p.obligatoria %}1{% else %}0{% endif %}"
+         style="border-bottom: 1px solid var(--val-border); padding-bottom: 18px; margin-bottom: 18px;">
       <label class="val-form__label">
         {{ forloop.counter }}. {{ p.enunciado }}
         {% if p.obligatoria %}<span style="color:#ff8a8a;">*</span>{% endif %}
+        {% if p.falta %}<span class="val-falta__tag">Falta responder</span>{% endif %}
       </label>
 
       {% if p.tipo_pregunta == 'likert' %}
@@ -76,10 +92,12 @@
     </div>
     {% endfor %}
 
-    <div class="val-form__group">
+    <div class="val-form__group{% if faltan_observaciones %} val-falta{% endif %}" id="preg-observaciones"
+         data-obligatoria="{% if ciclo.comentarios_obligatorios %}1{% else %}0{% endif %}">
       <label class="val-form__label">
         Observaciones y acuerdos
         {% if ciclo.comentarios_obligatorios %}<span style="color:#ff8a8a;">*</span>{% endif %}
+        {% if faltan_observaciones %}<span class="val-falta__tag">Falta responder</span>{% endif %}
       </label>
       <textarea class="val-form__textarea" name="observaciones_acuerdos"
         {% if bloquear_inputs %}disabled{% endif %}
@@ -91,13 +109,152 @@
     <div class="val-form__actions">
       <button class="val-btn val-btn--secondary" name="accion" value="borrador" type="submit">Guardar borrador</button>
       <button class="val-btn val-btn--primary" name="accion" value="enviar" type="submit"
-        onclick="return confirm('Enviar evaluacion definitiva? Despues no podras modificarla.');">
+        id="btn-enviar">
         Enviar evaluacion
       </button>
     </div>
     {% endif %}
   </form>
   {% endif %}
+
+{% if asignacion.estado == 'completada' %}
+<script>
+  // Ya se envio: el respaldo local de este equipo deja de ser necesario.
+  try { localStorage.removeItem('valoracion_borrador_{{ asignacion.id }}'); } catch (e) {}
+</script>
+{% endif %}
+
+{% if not bloquear_inputs %}
+<script>
+(function () {
+  var form = document.querySelector('.val-form');
+  if (!form) return;
+  var contador = document.getElementById('val-contador-falta');
+  var btnEnviar = document.getElementById('btn-enviar');
+
+  // Bloques obligatorios: los marca el servidor con data-obligatoria
+  var grupos = Array.prototype.slice.call(
+    form.querySelectorAll('.val-form__group[data-obligatoria="1"]'));
+
+  function faltantes() {
+    return grupos.filter(function (g) {
+      var radios = g.querySelectorAll('input[type=radio]');
+      if (radios.length) {
+        return !Array.prototype.some.call(radios, function (r) { return r.checked; });
+      }
+      var ta = g.querySelector('textarea');
+      return ta ? ta.value.trim() === '' : false;
+    });
+  }
+
+  function pintar() {
+    var f = faltantes();
+    grupos.forEach(function (g) { g.classList.remove('val-falta'); });
+    f.forEach(function (g) { g.classList.add('val-falta'); });
+    if (contador) {
+      contador.textContent = f.length;
+      contador.style.color = f.length ? '#ff8a8a' : '#7ee787';
+    }
+    return f;
+  }
+
+  form.addEventListener('change', pintar);
+  form.addEventListener('input', pintar);
+  pintar();
+
+  // Enlace "ir a la primera que falta" del banner de error
+  var link = document.querySelector('a[href="#preg-primera-falta"]');
+  if (link) {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var f = pintar();
+      if (f.length) f[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
+
+  if (btnEnviar) {
+    btnEnviar.addEventListener('click', function (e) {
+      var f = pintar();
+      if (f.length) {
+        e.preventDefault();
+        alert('Te faltan ' + f.length + ' pregunta(s) obligatoria(s). '
+          + 'Te llevamos a la primera. Tranquilo: lo que ya respondiste no se pierde, '
+          + 'puedes usar "Guardar borrador" cuando quieras.');
+        f[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+      }
+      return confirm('Enviar evaluacion definitiva? Despues no podras modificarla.');
+    });
+  }
+
+  // ---- Respaldo local ----
+  // Ultima red de seguridad: si la sesion caduca, se va la luz o se cierra el
+  // navegador, lo escrito se recupera del propio equipo del evaluador.
+  var CLAVE = 'valoracion_borrador_{{ asignacion.id }}';
+
+  function respaldar() {
+    try {
+      var datos = {};
+      form.querySelectorAll('input[type=radio]:checked').forEach(function (r) {
+        datos[r.name] = r.value;
+      });
+      form.querySelectorAll('textarea').forEach(function (t) {
+        if (t.value.trim()) datos[t.name] = t.value;
+      });
+      localStorage.setItem(CLAVE, JSON.stringify({ t: Date.now(), d: datos }));
+    } catch (err) { /* modo privado o sin espacio: seguimos igual */ }
+  }
+
+  function restaurar() {
+    var crudo;
+    try { crudo = localStorage.getItem(CLAVE); } catch (err) { return; }
+    if (!crudo) return;
+    var datos;
+    try { datos = JSON.parse(crudo).d || {}; } catch (err) { return; }
+
+    var recuperados = 0;
+    Object.keys(datos).forEach(function (nombre) {
+      var campo = form.elements[nombre];
+      if (!campo) return;
+      if (campo.length && campo[0] && campo[0].type === 'radio') {
+        Array.prototype.forEach.call(campo, function (r) {
+          if (r.value === datos[nombre] && !r.checked) { r.checked = true; recuperados++; }
+        });
+      } else if (campo.tagName === 'TEXTAREA' && !campo.value.trim()) {
+        campo.value = datos[nombre];
+        recuperados++;
+      }
+    });
+    if (recuperados) {
+      var aviso = document.createElement('div');
+      aviso.className = 'val-alert val-alert--info';
+      aviso.textContent = 'Recuperamos ' + recuperados + ' respuesta(s) que habias '
+        + 'escrito en este equipo y no alcanzaron a guardarse. Revisalas y envia la evaluacion.';
+      form.parentNode.insertBefore(aviso, form);
+      pintar();
+    }
+  }
+
+  restaurar();
+  form.addEventListener('change', respaldar);
+  form.addEventListener('input', respaldar);
+
+  // Aviso si intenta salir con cambios sin guardar
+  var sucio = false;
+  form.addEventListener('change', function () { sucio = true; });
+  form.addEventListener('submit', function () {
+    sucio = false;
+    // El respaldo local solo se borra cuando el servidor confirma el guardado,
+    // asi que se limpia al cargar la pagina de vuelta, no aqui.
+  });
+  window.addEventListener('beforeunload', function (e) {
+    if (!sucio) return;
+    e.preventDefault();
+    e.returnValue = '';
+  });
+})();
+</script>
+{% endif %}
 </section>
 
     </main>

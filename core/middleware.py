@@ -1,6 +1,8 @@
 from django.shortcuts import redirect, render
 
-from user.jwt_utils import get_user_from_request
+from user.jwt_utils import (
+    UMBRAL_RENOVACION, create_jwt, get_user_from_request, segundos_restantes,
+)
 
 
 class GroupAccessMiddleware:
@@ -129,4 +131,32 @@ class GroupAccessMiddleware:
             ):
                 return render(request, "acceso_no_permitido.html", status=403)
 
-        return self.get_response(request)
+        response = self.get_response(request)
+        self._renovar_sesion(request, response, user)
+        return response
+
+    @staticmethod
+    def _renovar_sesion(request, response, user):
+        """Renueva el JWT si esta por vencer (sesion deslizante).
+
+        Sin esto el token moria a las 8 horas exactas sin importar que la
+        persona estuviera trabajando: al enviar un formulario largo la peticion
+        rebotaba al login y se perdia todo lo escrito.
+        """
+        if user is None:
+            return
+        token = request.COOKIES.get("jwt")
+        if not token:
+            return
+        restantes = segundos_restantes(token)
+        if restantes is None or restantes > UMBRAL_RENOVACION.total_seconds():
+            return
+        response.set_cookie(
+            "jwt",
+            create_jwt(user),
+            httponly=True,
+            samesite="Lax",
+            secure=request.is_secure(),
+            max_age=None,
+        )
+

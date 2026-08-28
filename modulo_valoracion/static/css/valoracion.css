@@ -381,3 +381,24 @@ body {
   .val-stats { grid-template-columns: repeat(2, 1fr); }
   .dash-bar { grid-template-columns: 1fr; gap: 4px; }
 }
+
+/* ---- Preguntas obligatorias sin responder (envio incompleto) ---- */
+.val-form__group.val-falta {
+  background: rgba(255, 90, 90, 0.10);
+  border-left: 3px solid #ff5a5a;
+  padding-left: 12px;
+  border-radius: 6px;
+  scroll-margin-top: 80px;
+}
+.val-falta__tag {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  border-radius: 999px;
+  background: #ff5a5a;
+  color: #fff;
+  vertical-align: middle;
+}

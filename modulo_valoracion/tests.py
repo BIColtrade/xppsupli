@@ -8,6 +8,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.utils import timezone
 from user.models import Usuario
+from user.jwt_utils import segundos_restantes
 from modulo_valoracion.models import (
     CicloEvaluacion, AsignacionEvaluacion, Competencia, Pregunta,
     RespuestaEvaluacion,
@@ -151,3 +152,165 @@ class GuardarCicloTest(Base):
                 "fecha_inicio": "2026-09-01T08:00", "fecha_cierre": "2026-09-30T20:00",
                 "peso_jefe_lider": "70", "peso_equipo_lider": "40"})
         self.assertIn("100", r.context["error"])
+
+
+class ReproJulioTest(TestCase):
+    """Caso real reportado: 52 likert + 2 abiertas obligatorias.
+
+    El evaluador llenaba los 52 radios, no veia las 2 textareas del final,
+    enviaba, y perdia TODO: la evaluacion volvia a aparecer 'pendiente'.
+    """
+
+    def setUp(self):
+        self.jefe = Usuario.objects.create_user("j@x.com", "jefe", "x")
+        self.jefe.nombre = "Julio"
+        self.jefe.tipo_usuario = "colaborador"
+        self.jefe.save()
+        self.emp = Usuario.objects.create_user("e@x.com", "emp", "x")
+        self.emp.nombre = "Fabio"
+        self.emp.tipo_usuario = "lider"
+        self.emp.jefe_directo = self.jefe
+        self.emp.save()
+
+        comp = Competencia.objects.create(nombre="C1", orden=1)
+        self.likert = [
+            Pregunta.objects.create(
+                competencia=comp, enunciado="L%d" % i, tipo_evaluacion="lider",
+                tipo_pregunta="likert", obligatoria=True, activa=True, orden=i)
+            for i in range(52)
+        ]
+        self.abiertas = [
+            Pregunta.objects.create(
+                competencia=comp, enunciado="A%d" % i, tipo_evaluacion="lider",
+                tipo_pregunta="abierta", obligatoria=True, activa=True, orden=90 + i)
+            for i in range(2)
+        ]
+
+        ahora = timezone.now()
+        self.ciclo = CicloEvaluacion.objects.create(
+            nombre="Agosto", tipo="lider", estado="activo",
+            fecha_inicio=ahora - datetime.timedelta(days=1),
+            fecha_cierre=ahora + datetime.timedelta(days=4))
+        self.asig = AsignacionEvaluacion.objects.create(
+            ciclo=self.ciclo, evaluador=self.jefe, evaluado=self.emp,
+            rol_evaluador="equipo", tipo_evaluacion="lider")
+
+        self.c = Client()
+        self.c.cookies["jwt"] = jwt.encode(
+            {"user_id": self.jefe.pk}, settings.SECRET_KEY, algorithm="HS256")
+        self.url = reverse(
+            "modulo_valoracion:responder_evaluacion", args=[self.asig.id])
+
+    def _post_likert_solamente(self):
+        data = {"accion": "enviar"}
+        for p in self.likert:
+            data["valor_%d" % p.id] = "4"
+        return self.c.post(self.url, data)
+
+    def test_envio_incompleto_no_pierde_nada(self):
+        r = self._post_likert_solamente()
+        self.asig.refresh_from_db()
+        guardadas = RespuestaEvaluacion.objects.filter(
+            asignacion=self.asig, valor__isnull=False).count()
+        self.assertEqual(guardadas, 52, "no persistio el avance")
+        self.assertEqual(self.asig.estado, "en_progreso")
+        self.assertEqual(r.context["total_faltantes"], 2)
+
+    def test_avance_sobrevive_si_cierra_el_navegador(self):
+        self._post_likert_solamente()
+        # Vuelve a entrar desde cero (nuevo GET, como si reabriera el navegador)
+        g = self.c.get(self.url)
+        pintadas = sum(
+            1 for p in g.context["preguntas_data"] if p["valor_actual"] is not None)
+        self.assertEqual(pintadas, 52, "al volver a entrar se perdio el avance")
+
+    def test_marca_cuales_faltan(self):
+        r = self._post_likert_solamente()
+        faltan = [p["id"] for p in r.context["preguntas_data"] if p["falta"]]
+        self.assertEqual(sorted(faltan), sorted(p.id for p in self.abiertas))
+
+    def test_completar_lo_que_falta_cierra_la_evaluacion(self):
+        self._post_likert_solamente()
+        # Ahora solo manda lo que faltaba (mas lo ya guardado, como hace el form)
+        data = {"accion": "enviar"}
+        for p in self.likert:
+            data["valor_%d" % p.id] = "4"
+        for p in self.abiertas:
+            data["texto_%d" % p.id] = "mi comentario"
+        r = self.c.post(self.url, data)
+        self.asig.refresh_from_db()
+        self.assertEqual(self.asig.estado, "completada")
+
+    def test_observaciones_obligatorias_tampoco_pierden_nada(self):
+        self.ciclo.comentarios_obligatorios = True
+        self.ciclo.save()
+        data = {"accion": "enviar"}
+        for p in self.likert:
+            data["valor_%d" % p.id] = "4"
+        for p in self.abiertas:
+            data["texto_%d" % p.id] = "texto"
+        r = self.c.post(self.url, data)
+        self.asig.refresh_from_db()
+        guardadas = RespuestaEvaluacion.objects.filter(
+            asignacion=self.asig, valor__isnull=False).count()
+        self.assertEqual(guardadas, 52)
+        self.assertTrue(r.context["faltan_observaciones"])
+        self.assertEqual(self.asig.estado, "en_progreso")
+
+    def test_completada_no_se_puede_reescribir(self):
+        data = {"accion": "enviar"}
+        for p in self.likert:
+            data["valor_%d" % p.id] = "5"
+        for p in self.abiertas:
+            data["texto_%d" % p.id] = "ok"
+        self.c.post(self.url, data)
+        self.asig.refresh_from_db()
+        self.assertEqual(self.asig.estado, "completada")
+        # Segundo intento con otros valores: debe rebotar
+        data2 = dict(data)
+        for p in self.likert:
+            data2["valor_%d" % p.id] = "1"
+        r = self.c.post(self.url, data2)
+        vals = set(RespuestaEvaluacion.objects.filter(
+            asignacion=self.asig, pregunta__in=self.likert
+        ).values_list("valor", flat=True))
+        self.assertEqual(vals, {5}, "una evaluacion enviada fue sobreescrita")
+
+
+class SesionDeslizanteTest(TestCase):
+    def setUp(self):
+        self.u = Usuario.objects.create_user("u@x.com", "u", "x")
+        self.u.nombre = "Ana"
+        self.u.tipo_usuario = "colaborador"
+        self.u.save()
+        self.url = reverse("modulo_valoracion:mis_evaluaciones")
+
+    def _token(self, horas_restantes):
+        ahora = datetime.datetime.now(datetime.timezone.utc)
+        return jwt.encode({
+            "user_id": self.u.pk, "email": self.u.email,
+            "iat": int(ahora.timestamp()),
+            "exp": int((ahora + datetime.timedelta(hours=horas_restantes)).timestamp()),
+        }, settings.SECRET_KEY, algorithm="HS256")
+
+    def test_token_por_vencer_se_renueva(self):
+        c = Client()
+        c.cookies["jwt"] = self._token(1)
+        r = c.get(self.url)
+        nuevo = r.cookies.get("jwt")
+        if nuevo:
+            print("  nuevas horas:", round(segundos_restantes(nuevo.value) / 3600, 1))
+        self.assertIsNotNone(nuevo, "no renovo un token a punto de vencer")
+        self.assertGreater(segundos_restantes(nuevo.value), 7 * 3600)
+
+    def test_token_fresco_no_se_toca(self):
+        c = Client()
+        c.cookies["jwt"] = self._token(7)
+        r = c.get(self.url)
+        self.assertIsNone(r.cookies.get("jwt"), "renovo sin necesidad")
+
+    def test_token_vencido_manda_a_login(self):
+        c = Client()
+        c.cookies["jwt"] = self._token(-1)
+        r = c.get(self.url)
+        self.assertEqual(r.status_code, 302)

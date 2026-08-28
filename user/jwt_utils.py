@@ -16,6 +16,23 @@ def create_jwt(user):
     return jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
 
 
+# Si al token le queda menos que esto, se reemite en la respuesta para que la
+# sesion no se caiga mientras la persona sigue usando la plataforma.
+UMBRAL_RENOVACION = timedelta(hours=4)
+
+
+def segundos_restantes(token):
+    """Segundos que le quedan al token, o None si no es valido."""
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+    except jwt.PyJWTError:
+        return None
+    exp = payload.get("exp")
+    if not exp:
+        return None
+    return exp - int(datetime.now(timezone.utc).timestamp())
+
+
 def get_user_from_request(request):
     token = request.COOKIES.get("jwt")
     if not token:

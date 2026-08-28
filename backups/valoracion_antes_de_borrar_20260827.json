@@ -1,0 +1,6831 @@
+[
+{
+  "model": "modulo_valoracion.competencia",
+  "pk": 1,
+  "fields": {
+    "codigo": "001",
+    "nombre": "DIMENSIÓN 1: CULTURA",
+    "descripcion": "Evalúa el grado en que la persona vive y demuestra los principios de la Cultura SUPLI en su forma de trabajar, tomar decisiones y relacionarse con clientes, compañeros y el negocio. Esta dimensión mide comportamientos orientados a generar valor, asumir responsabilidad, simplificar la ejecución, adaptarse al cambio y contribuir al crecimiento sostenible de la organización.",
+    "orden": 0,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:35:32.304Z"
+  }
+},
+{
+  "model": "modulo_valoracion.competencia",
+  "pk": 2,
+  "fields": {
+    "codigo": "002",
+    "nombre": "DIMENSIÓN 2: RITMO SUPLI",
+    "descripcion": "Evalúa la capacidad para ejecutar el trabajo de manera disciplinada, alineada y enfocada en resultados, mediante el cumplimiento de responsabilidades, la gestión de prioridades, la participación en los rituales operativos y el uso de indicadores para dar seguimiento a los objetivos del área, dirección y del negocio.",
+    "orden": 0,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:38:19.381Z"
+  }
+},
+{
+  "model": "modulo_valoracion.competencia",
+  "pk": 3,
+  "fields": {
+    "codigo": "003",
+    "nombre": "DIMENSIÓN 3: INFRAESTRUCTURA TECNOLÓGICA",
+    "descripcion": "Evalúa el nivel de adopción y uso efectivo de las herramientas tecnológicas definidas por SUPLI, asegurando la calidad, actualización y disponibilidad de la información necesaria para soportar la operación, la toma de decisiones y la mejora continua.",
+    "orden": 0,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:39:49.725Z"
+  }
+},
+{
+  "model": "modulo_valoracion.competencia",
+  "pk": 5,
+  "fields": {
+    "codigo": "004",
+    "nombre": "DIMENSIÓN 4: KMS- GESTIÓN DEL CONOCIMIENTO",
+    "descripcion": "Evalúa la capacidad para gestionar, documentar, aplicar y compartir el conocimiento organizacional, promoviendo la estandarización de procesos, la transferencia de buenas prácticas y el fortalecimiento de la base de conocimiento de SUPLI.",
+    "orden": 0,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:51:01.394Z"
+  }
+},
+{
+  "model": "modulo_valoracion.competencia",
+  "pk": 6,
+  "fields": {
+    "codigo": "005",
+    "nombre": "DIMENSIÓN 5: IMPACTO Y EJECUCIÓN",
+    "descripcion": "Evalúa la capacidad para cumplir consistentemente las responsabilidades del rol, generar resultados de alto impacto y contribuir al logro de los objetivos estratégicos de SUPLI mediante una ejecución efectiva y orientada al negocio.",
+    "orden": 0,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:52:32.149Z"
+  }
+},
+{
+  "model": "modulo_valoracion.competencia",
+  "pk": 7,
+  "fields": {
+    "codigo": "006",
+    "nombre": "DIMENSIÓN 6: LIDERAZGO Y DESARROLLO DE PERSONAS",
+    "descripcion": "Evalúa la capacidad del líder para orientar, desarrollar y potenciar el desempeño de su equipo, promoviendo una cultura de responsabilidad, aprendizaje continuo, retroalimentación, alineación estratégica y adopción de SUPLI OS, con el fin de alcanzar resultados sostenibles para el equipo y el negocio.",
+    "orden": 0,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:54:50.717Z"
+  }
+},
+{
+  "model": "modulo_valoracion.competencia",
+  "pk": 8,
+  "fields": {
+    "codigo": "007",
+    "nombre": "RETROALIMENTACIÓN ABIERTA",
+    "descripcion": "Espacio para compartir comentarios, fortalezas, oportunidades de mejora y recomendaciones que contribuyan al desarrollo profesional y al fortalecimiento del desempeño de la persona evaluada.",
+    "orden": 0,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T22:25:59.085Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 1,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Comprende las necesidades del cliente antes de tomar decisiones.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:56:01.822Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 2,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Actúa con sentido de urgencia frente a solicitudes o situaciones que impactan al cliente.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:57:08.733Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 3,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Genera soluciones que aportan valor al cliente y al negocio.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:57:26.307Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 4,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Asume la responsabilidad por los resultados de su trabajo de principio a fin.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:58:06.449Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 5,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Hace seguimiento a sus compromisos hasta asegurar su cumplimiento.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:59:08.571Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 6,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Anticipa riesgos y propone soluciones antes de que se conviertan en problemas.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T20:59:29.919Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 7,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Cumple los objetivos establecidos para su cargo.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:04:52.190Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 8,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Entrega resultados con calidad y dentro de los tiempos acordados.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:05:22.071Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 9,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Prioriza actividades que generan mayor impacto para el negocio.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:05:46.997Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 10,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Busca simplificar procesos y formas de trabajo.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:06:10.042Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 11,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Comunica la información de manera clara, concreta y estructurada.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:06:29.752Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 12,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Documenta y estandariza procesos  que tiene a cargo.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:06:50.957Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 13,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Demuestra apertura al cambio y capacidad de adaptación.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:07:14.514Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 14,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Busca desarrollar continuamente nuevas habilidades y conocimientos.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:09:48.404Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 15,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Propone mejoras pensando en soluciones escalables y sostenibles.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:10:14.397Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 16,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Comprende cómo SUPLI genera valor para sus clientes.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:10:35.980Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 17,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Entiende cómo su trabajo impacta los resultados del negocio.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:11:03.635Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 18,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Identifica oportunidades para generar valor o crecimiento desde su rol.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:11:33.498Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 19,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Tiene claridad sobre las responsabilidades y expectativas de su rol.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:11:54.911Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 20,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Participa activamente en los rituales operativos definidos por SUPLI.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:12:10.074Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 21,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Cumple los compromisos adquiridos durante los espacios de seguimiento.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:12:29.144Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 22,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Gestiona adecuadamente sus prioridades de acuerdo con los objetivos del área.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:12:45.023Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 24,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Conoce los indicadores (KPIs) asociados a su cargo.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:13:01.252Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 25,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Utiliza los indicadores para orientar su gestión y tomar decisiones.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:13:17.894Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 26,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Mantiene visibilidad sobre el avance de sus compromisos.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:13:33.387Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 27,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Contribuye al cumplimiento de los objetivos del equipo mediante una ejecución disciplinada.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:13:50.158Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 28,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Utiliza correctamente las herramientas tecnológicas definidas por SUPLI.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:14:09.358Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 29,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Mantiene actualizada la información en las plataformas corporativas.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:14:36.820Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 30,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Registra oportunamente la información requerida para la operación.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:14:54.603Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 31,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Aprovecha las herramientas tecnológicas para mejorar su productividad.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:15:12.478Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 32,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Cumple los procesos digitales establecidos por la organización.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:15:43.737Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 33,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Consulta la documentación disponible antes de solicitar apoyo.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:16:08.027Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 35,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Comparte conocimiento y buenas prácticas con otros miembros del equipo.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:20:23.054Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 36,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Aplica los procesos y estándares documentados por otras áreas y direcciones de SUPLI.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:21:21.145Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 39,
+  "fields": {
+    "competencia": 6,
+    "enunciado": "Entrega resultados que generan impacto para el área, dirección y el negocio.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:24:50.698Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 40,
+  "fields": {
+    "competencia": 6,
+    "enunciado": "Mantiene organización y control sobre sus actividades y prioridades.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:25:15.335Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 41,
+  "fields": {
+    "competencia": 6,
+    "enunciado": "Contribuye al logro de los objetivos estratégicos de SUPLI.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:25:36.537Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 42,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Toma decisiones considerando las necesidades del cliente y del negocio.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:37:28.313Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 43,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Actúa con sentido de urgencia frente a situaciones que impactan al cliente.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:37:48.682Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 44,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Promueve en el equipo soluciones que generan valor para el cliente y el negocio.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:38:05.825Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 45,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Asume la responsabilidad por los resultados de su área de principio a fin.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:38:21.131Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 46,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Hace seguimiento a los compromisos del equipo hasta asegurar su cumplimiento.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:38:41.306Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 47,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Anticipa riesgos y toma acciones oportunas para prevenir su impacto.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:39:08.332Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 48,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Orienta al equipo al cumplimiento de los objetivos establecidos.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:39:26.863Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 49,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Asegura que el equipo entregue resultados con calidad y dentro de los tiempos acordados.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:39:41.398Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 50,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Prioriza las actividades que generan mayor impacto para el negocio.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:39:56.794Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 51,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Promueve la simplificación y mejora continua de los procesos.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:40:12.413Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 52,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Comunica de manera clara, concreta y oportuna las prioridades del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:40:28.618Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 53,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Mantiene documentados, estandarizados y actualizados los procesos bajo su responsabilidad.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:40:42.725Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 54,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Lidera el cambio con apertura y capacidad de adaptación.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:41:00.710Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 55,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Promueve el aprendizaje y desarrollo continuo del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:41:15.817Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 56,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Impulsa mejoras con una visión escalable y sostenible.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:41:29.310Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 57,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Comprende cómo su área genera valor para los clientes de SUPLI.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:41:43.621Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 58,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Toma decisiones considerando su impacto en los resultados del negocio.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:41:57.208Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 59,
+  "fields": {
+    "competencia": 1,
+    "enunciado": "Identifica oportunidades para generar valor o crecimiento desde su área.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:42:17.729Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 60,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Comunica con claridad las responsabilidades y expectativas del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:42:44.110Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 61,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Lidera activamente los rituales operativos definidos por SUPLI.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:43:01.231Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 62,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Hace seguimiento a los compromisos adquiridos durante los espacios de gestión.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:43:15.964Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 63,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Gestiona las prioridades del equipo de acuerdo con los objetivos del área.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:43:30.337Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 64,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Da visibilidad a los indicadores (KPIs) del equipo y promueve su cumplimiento.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:43:44.664Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 65,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Utiliza los indicadores para orientar la gestión y la toma de decisiones.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:44:02.069Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 66,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Mantiene seguimiento permanente al avance de los compromisos del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:44:19.705Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 67,
+  "fields": {
+    "competencia": 2,
+    "enunciado": "Promueve una ejecución disciplinada para alcanzar los objetivos del área.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:44:33.711Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 68,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Promueve el uso adecuado de las herramientas tecnológicas definidas por SUPLI.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:45:01.196Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 69,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Asegura que la información del equipo permanezca actualizada en las plataformas corporativas.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:45:16.133Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 70,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Promueve el registro oportuno y confiable de la información requerida para la operación.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:45:30.979Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 71,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Impulsa el uso de herramientas tecnológicas para mejorar la productividad del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:45:46.625Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 72,
+  "fields": {
+    "competencia": 3,
+    "enunciado": "Asegura el cumplimiento de los procesos digitales establecidos por la organización.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:46:03.777Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 73,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Promueve la consulta de la documentación disponible antes de solicitar apoyo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:46:28.258Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 74,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Mantiene documentados y actualizados los procesos bajo su responsabilidad.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:46:46.941Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 75,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Fomenta el intercambio de conocimiento y buenas prácticas dentro del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:47:00.575Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 76,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Promueve el cumplimiento de los procesos y estándares documentados por otras áreas y direcciones de SUPLI.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:47:38.894Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 77,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Contribuye al fortalecimiento de la gestión del conocimiento en la organización.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:48:14.077Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 78,
+  "fields": {
+    "competencia": 6,
+    "enunciado": "Cumple consistentemente con las responsabilidades propias de su rol como líder.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:48:31.363Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 79,
+  "fields": {
+    "competencia": 6,
+    "enunciado": "Genera resultados que aportan valor al equipo, el área/dirección y el negocio.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:49:03.682Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 80,
+  "fields": {
+    "competencia": 6,
+    "enunciado": "Mantiene organización y control sobre las prioridades y compromisos del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:49:29.265Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 81,
+  "fields": {
+    "competencia": 6,
+    "enunciado": "Contribuye al logro de los objetivos estratégicos de SUPLI.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:49:45.957Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 82,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Comunica con claridad las expectativas, prioridades y objetivos del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:50:04.653Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 83,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Realiza seguimiento periódico al desempeño de las personas a su cargo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:50:19.776Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 84,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Brinda retroalimentación oportuna, clara y orientada al desarrollo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:50:37.932Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 85,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Promueve una cultura de responsabilidad y cumplimiento de compromisos.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:50:52.914Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 86,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Toma decisiones oportunamente frente a situaciones que afectan los resultados del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:51:08.234Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 87,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Elimina bloqueos y brinda el apoyo necesario para facilitar la ejecución del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:51:26.247Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 88,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Impulsa el crecimiento y desarrollo de las personas de su equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:51:42.062Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 89,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Reconoce oportunamente los logros y contribuciones de los miembros del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:52:20.739Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 90,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Gestiona de manera oportuna y constructiva las situaciones de bajo desempeño.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:52:35.247Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 91,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Es un ejemplo en la vivencia de los principios de la Cultura SUPLI.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:52:55.555Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 92,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Promueve activamente la adopción de SUPLI OS dentro del equipo.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:53:09.029Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 93,
+  "fields": {
+    "competencia": 7,
+    "enunciado": "Mantiene al equipo alineado con las prioridades estratégicas y los objetivos del negocio.",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T21:53:22.920Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 94,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Documenta información relevante de los procesos bajo su responsabilidad.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T22:02:46.175Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 95,
+  "fields": {
+    "competencia": 5,
+    "enunciado": "Contribuye al fortalecimiento de la base de conocimiento organizacional.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T22:03:19.179Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 96,
+  "fields": {
+    "competencia": 6,
+    "enunciado": "Cumple consistentemente con las responsabilidades de su cargo.",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "likert",
+    "peso": "1.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T22:03:42.530Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 97,
+  "fields": {
+    "competencia": 8,
+    "enunciado": "¿Qué fortaleza o aporte de este miembro del equipo consideras que genera mayor valor para el equipo y que debería seguir potenciando? (Cuéntanos qué hace especialmente bien, cuáles son sus fortalezas)",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "abierta",
+    "peso": "0.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T22:26:38.944Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 98,
+  "fields": {
+    "competencia": 8,
+    "enunciado": "¿Qué fortaleza o aporte de este miembro del equipo consideras que genera mayor valor para el equipo y que debería seguir potenciando? (Cuéntanos qué hace especialmente bien, cuáles son sus fortalezas)",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "abierta",
+    "peso": "0.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-07-27T22:26:58.851Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 99,
+  "fields": {
+    "competencia": 8,
+    "enunciado": "¿Qué podría hacer diferente o fortalecer este miembro del equipo para seguir creciendo y generar un mayor impacto? (Sé específico y constructivo. Piensa en una oportunidad concreta que pueda ayudarle a evolucionar en su rol)",
+    "tipo_evaluacion": "lider",
+    "tipo_pregunta": "abierta",
+    "peso": "0.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-08-26T22:29:22.465Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 100,
+  "fields": {
+    "competencia": 8,
+    "enunciado": "¿Qué podría hacer diferente o fortalecer este miembro del equipo para seguir creciendo y generar un mayor impacto? (Sé específico y constructivo. Piensa en una oportunidad concreta que pueda ayudarle a evolucionar en su rol)",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "abierta",
+    "peso": "0.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-08-26T22:29:49.157Z"
+  }
+},
+{
+  "model": "modulo_valoracion.pregunta",
+  "pk": 101,
+  "fields": {
+    "competencia": 8,
+    "enunciado": "¿Qué te comprometes a aportar como líder para ayudar a este miembro del equipo a crecer, elevar su potencial y seguir evolucionando? (Define una acción concreta de acompañamiento, orientación, formación,apoyo  etc.,que asumirás para contribuir a su desarrollo)",
+    "tipo_evaluacion": "operativo",
+    "tipo_pregunta": "abierta",
+    "peso": "0.00",
+    "orden": 0,
+    "obligatoria": true,
+    "activa": true,
+    "fecha_creacion": "2026-08-26T22:33:18.995Z"
+  }
+},
+{
+  "model": "modulo_valoracion.cicloevaluacion",
+  "pk": 1,
+  "fields": {
+    "nombre": "Prueba",
+    "descripcion": "Prueba",
+    "tipo": "mixta",
+    "fecha_inicio": "2026-07-31T09:11:00Z",
+    "fecha_cierre": "2026-08-08T09:11:00Z",
+    "estado": "cancelado",
+    "anonimato": false,
+    "comentarios_obligatorios": false,
+    "peso_jefe_lider": 60,
+    "peso_equipo_lider": 40,
+    "preguntas_excluidas": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      35,
+      36,
+      39,
+      40,
+      41,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99,
+      100,
+      101
+    ],
+    "creado_por": 146,
+    "fecha_creacion": "2026-07-31T14:11:58.255Z",
+    "fecha_actualizacion": "2026-08-26T22:36:11.476Z"
+  }
+},
+{
+  "model": "modulo_valoracion.cicloevaluacion",
+  "pk": 2,
+  "fields": {
+    "nombre": "prueba2",
+    "descripcion": "prueba2",
+    "tipo": "mixta",
+    "fecha_inicio": "2026-07-23T09:19:00Z",
+    "fecha_cierre": "2026-08-07T09:20:00Z",
+    "estado": "cancelado",
+    "anonimato": false,
+    "comentarios_obligatorios": false,
+    "peso_jefe_lider": 60,
+    "peso_equipo_lider": 40,
+    "preguntas_excluidas": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      35,
+      36,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      97,
+      98,
+      99,
+      100,
+      101
+    ],
+    "creado_por": 194,
+    "fecha_creacion": "2026-07-31T14:20:49.107Z",
+    "fecha_actualizacion": "2026-08-26T22:36:32.137Z"
+  }
+},
+{
+  "model": "modulo_valoracion.cicloevaluacion",
+  "pk": 3,
+  "fields": {
+    "nombre": "PRUEBA 14 DE AGOSTO",
+    "descripcion": "KATHE EVALUA A JOHA",
+    "tipo": "lider",
+    "fecha_inicio": "2026-08-14T10:44:00Z",
+    "fecha_cierre": "2026-08-27T23:45:00Z",
+    "estado": "cancelado",
+    "anonimato": false,
+    "comentarios_obligatorios": true,
+    "peso_jefe_lider": 60,
+    "peso_equipo_lider": 40,
+    "preguntas_excluidas": [],
+    "creado_por": 194,
+    "fecha_creacion": "2026-08-14T15:45:49.197Z",
+    "fecha_actualizacion": "2026-08-26T22:35:44.164Z"
+  }
+},
+{
+  "model": "modulo_valoracion.cicloevaluacion",
+  "pk": 4,
+  "fields": {
+    "nombre": "PRUEBA EVALUAR A KATHE",
+    "descripcion": "PRUEBA EVALUAR A KATHE",
+    "tipo": "operativo",
+    "fecha_inicio": "2026-08-14T10:52:00Z",
+    "fecha_cierre": "2026-08-27T23:54:00Z",
+    "estado": "cancelado",
+    "anonimato": false,
+    "comentarios_obligatorios": false,
+    "peso_jefe_lider": 60,
+    "peso_equipo_lider": 40,
+    "preguntas_excluidas": [
+      99,
+      100,
+      101
+    ],
+    "creado_por": 194,
+    "fecha_creacion": "2026-08-14T15:53:15.144Z",
+    "fecha_actualizacion": "2026-08-26T22:35:11.840Z"
+  }
+},
+{
+  "model": "modulo_valoracion.cicloevaluacion",
+  "pk": 5,
+  "fields": {
+    "nombre": "PRUEBA 24 AGOSTO",
+    "descripcion": "PRUEBA 24 AGOSTO",
+    "tipo": "mixta",
+    "fecha_inicio": "2026-08-24T14:09:00Z",
+    "fecha_cierre": "2026-08-28T20:10:00Z",
+    "estado": "cancelado",
+    "anonimato": false,
+    "comentarios_obligatorios": false,
+    "peso_jefe_lider": 60,
+    "peso_equipo_lider": 40,
+    "preguntas_excluidas": [
+      99,
+      100,
+      101
+    ],
+    "creado_por": 194,
+    "fecha_creacion": "2026-08-24T19:10:31.672Z",
+    "fecha_actualizacion": "2026-08-26T22:35:26.789Z"
+  }
+},
+{
+  "model": "modulo_valoracion.cicloevaluacion",
+  "pk": 6,
+  "fields": {
+    "nombre": "SUPLI PERFORMANCE | VALORACIÓN Y FEEDBACK QUE ELEVAN",
+    "descripcion": "Este es un espacio para reconocer, aportar y crecer juntos.\r\nTe invitamos a realizar este ejercicio con honestidad, objetividad y respeto, entendiendo que cada perspectiva puede ser una oportunidad para aprender, evolucionar y elevar nuestro potencial.",
+    "tipo": "mixta",
+    "fecha_inicio": "2026-08-26T22:50:00Z",
+    "fecha_cierre": "2026-09-01T04:59:00Z",
+    "estado": "cancelado",
+    "anonimato": true,
+    "comentarios_obligatorios": true,
+    "peso_jefe_lider": 60,
+    "peso_equipo_lider": 40,
+    "preguntas_excluidas": [],
+    "creado_por": 194,
+    "fecha_creacion": "2026-08-26T22:46:48.715Z",
+    "fecha_actualizacion": "2026-08-26T23:37:42.809Z"
+  }
+},
+{
+  "model": "modulo_valoracion.cicloevaluacion",
+  "pk": 7,
+  "fields": {
+    "nombre": "AGOSTO 2026: SUPLI PERFORMANCE | VALORACIÓN Y FEEDBACK QUE ELEVAN",
+    "descripcion": "Te invitamos a vivir este ejercicio con honestidad, objetividad y respeto, \r\n\r\nPorque cuando compartimos nuestra perspectiva con generosidad y propósito, todos contribuimos a que otros sigan creciendo y lleguen más lejos.",
+    "tipo": "mixta",
+    "fecha_inicio": "2026-08-26T23:48:00Z",
+    "fecha_cierre": "2026-09-01T04:50:00Z",
+    "estado": "activo",
+    "anonimato": true,
+    "comentarios_obligatorios": true,
+    "peso_jefe_lider": 60,
+    "peso_equipo_lider": 40,
+    "preguntas_excluidas": [],
+    "creado_por": 194,
+    "fecha_creacion": "2026-08-26T23:46:16.881Z",
+    "fecha_actualizacion": "2026-08-26T23:46:16.881Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 1,
+  "fields": {
+    "ciclo": 1,
+    "evaluador": 194,
+    "evaluado": 171,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "completada",
+    "activa": false,
+    "observaciones_acuerdos": "nada, de prueba",
+    "fecha_inicio_respuesta": "2026-07-31T14:15:56.658Z",
+    "fecha_completada": "2026-07-31T14:15:56.658Z",
+    "fecha_creacion": "2026-07-31T14:11:58.425Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 2,
+  "fields": {
+    "ciclo": 1,
+    "evaluador": 171,
+    "evaluado": 194,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "completada",
+    "activa": false,
+    "observaciones_acuerdos": "nd",
+    "fecha_inicio_respuesta": "2026-07-31T14:17:17.420Z",
+    "fecha_completada": "2026-07-31T14:17:17.420Z",
+    "fecha_creacion": "2026-07-31T14:11:58.645Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 3,
+  "fields": {
+    "ciclo": 2,
+    "evaluador": 194,
+    "evaluado": 171,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "completada",
+    "activa": false,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": "2026-07-31T14:21:53.274Z",
+    "fecha_completada": "2026-07-31T14:21:53.274Z",
+    "fecha_creacion": "2026-07-31T14:20:49.281Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 4,
+  "fields": {
+    "ciclo": 2,
+    "evaluador": 171,
+    "evaluado": 194,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "completada",
+    "activa": false,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": "2026-07-31T14:22:07.520Z",
+    "fecha_completada": "2026-07-31T14:22:07.520Z",
+    "fecha_creacion": "2026-07-31T14:20:49.510Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 5,
+  "fields": {
+    "ciclo": 4,
+    "evaluador": 194,
+    "evaluado": 171,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "completada",
+    "activa": false,
+    "observaciones_acuerdos": "PRUEBA",
+    "fecha_inicio_respuesta": "2026-08-14T15:58:49.687Z",
+    "fecha_completada": "2026-08-14T16:00:42.078Z",
+    "fecha_creacion": "2026-08-14T15:56:30.790Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 6,
+  "fields": {
+    "ciclo": 3,
+    "evaluador": 171,
+    "evaluado": 194,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": false,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-14T15:56:50.521Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 7,
+  "fields": {
+    "ciclo": 5,
+    "evaluador": 194,
+    "evaluado": 171,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "completada",
+    "activa": false,
+    "observaciones_acuerdos": "PRUEBA",
+    "fecha_inicio_respuesta": "2026-08-24T22:10:51.751Z",
+    "fecha_completada": "2026-08-24T22:10:51.751Z",
+    "fecha_creacion": "2026-08-24T19:10:31.828Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 8,
+  "fields": {
+    "ciclo": 5,
+    "evaluador": 171,
+    "evaluado": 194,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "completada",
+    "activa": false,
+    "observaciones_acuerdos": "Ninguna",
+    "fecha_inicio_respuesta": "2026-08-24T21:30:22.329Z",
+    "fecha_completada": "2026-08-24T21:30:22.329Z",
+    "fecha_creacion": "2026-08-24T19:10:32.030Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 9,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 131,
+    "evaluado": 132,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:48.903Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 10,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 132,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:49.105Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 11,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 145,
+    "evaluado": 146,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:49.308Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 12,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 146,
+    "evaluado": 145,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:49.516Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 13,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 131,
+    "evaluado": 135,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:49.722Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 14,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 135,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:49.925Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 15,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 131,
+    "evaluado": 137,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:50.126Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 16,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 137,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:50.329Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 17,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 141,
+    "evaluado": 199,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:50.529Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 18,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 199,
+    "evaluado": 141,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:50.740Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 19,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 157,
+    "evaluado": 134,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:50.954Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 20,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 134,
+    "evaluado": 157,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:51.154Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 21,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 157,
+    "evaluado": 138,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:51.355Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 22,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 138,
+    "evaluado": 157,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:51.555Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 23,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 131,
+    "evaluado": 145,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:51.757Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 24,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 145,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:51.958Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 25,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 137,
+    "evaluado": 141,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:52.164Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 26,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 141,
+    "evaluado": 137,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:52.366Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 27,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 137,
+    "evaluado": 139,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:52.566Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 28,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 139,
+    "evaluado": 137,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:52.767Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 29,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 131,
+    "evaluado": 157,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:52.966Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 30,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 157,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:53.170Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 31,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 131,
+    "evaluado": 136,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:53.371Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 32,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 136,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:53.571Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 33,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 132,
+    "evaluado": 163,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:53.770Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 34,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 163,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:53.972Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 35,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 131,
+    "evaluado": 133,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:54.174Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 36,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 133,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:54.375Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 37,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 132,
+    "evaluado": 140,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:54.578Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 38,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 140,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:54.786Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 39,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 190,
+    "evaluado": 203,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:54.987Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 40,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 203,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:55.187Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 41,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 152,
+    "evaluado": 175,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:55.387Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 42,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 175,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:55.588Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 43,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 140,
+    "evaluado": 197,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:55.790Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 44,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 140,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:55.989Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 45,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 190,
+    "evaluado": 161,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:56.189Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 46,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 161,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:56.391Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 47,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 190,
+    "evaluado": 173,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:56.593Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 48,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 173,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:56.793Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 49,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 190,
+    "evaluado": 147,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:56.992Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 50,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 147,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:57.192Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 51,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 140,
+    "evaluado": 152,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:57.392Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 52,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 152,
+    "evaluado": 140,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:57.592Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 53,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 156,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:57.804Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 54,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 156,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:58.006Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 55,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 194,
+    "evaluado": 171,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:58.205Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 56,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 171,
+    "evaluado": 194,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:58.406Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 57,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 135,
+    "evaluado": 178,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:58.612Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 58,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 178,
+    "evaluado": 135,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:58.810Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 59,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 141,
+    "evaluado": 181,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:59.013Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 60,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 181,
+    "evaluado": 141,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:59.212Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 61,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 132,
+    "evaluado": 192,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:59.425Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 62,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 192,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:59.625Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 63,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 198,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:46:59.826Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 64,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 198,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:00.026Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 65,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 140,
+    "evaluado": 190,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:00.229Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 66,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 190,
+    "evaluado": 140,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:00.428Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 67,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 201,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:00.630Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 68,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 201,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:00.830Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 69,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 189,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:01.028Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 70,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 189,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:01.231Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 71,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 152,
+    "evaluado": 180,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:01.434Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 72,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 180,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:01.633Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 73,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 204,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:01.833Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 74,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 204,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:02.031Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 75,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 202,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:02.230Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 76,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 202,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:02.429Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 77,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 185,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:02.628Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 78,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 185,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:02.829Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 79,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 132,
+    "evaluado": 193,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:03.028Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 80,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 193,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:03.229Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 81,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 152,
+    "evaluado": 154,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:03.428Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 82,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 154,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:03.628Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 83,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 131,
+    "evaluado": 194,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:03.827Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 84,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 194,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:04.026Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 85,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 152,
+    "evaluado": 166,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:04.226Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 86,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 166,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:04.425Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 87,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 190,
+    "evaluado": 174,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:04.624Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 88,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 174,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:04.835Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 89,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 140,
+    "evaluado": 160,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:05.035Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 90,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 160,
+    "evaluado": 140,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:05.234Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 91,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 197,
+    "evaluado": 158,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:05.432Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 92,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 158,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:05.632Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 93,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 190,
+    "evaluado": 205,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:05.832Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 94,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 205,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:06.033Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 95,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 152,
+    "evaluado": 200,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:06.232Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 96,
+  "fields": {
+    "ciclo": 6,
+    "evaluador": 200,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T22:47:06.433Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 97,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 145,
+    "evaluado": 146,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:17.057Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 98,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 146,
+    "evaluado": 145,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:17.253Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 99,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 131,
+    "evaluado": 135,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:17.449Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 100,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 135,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:17.648Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 101,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 131,
+    "evaluado": 132,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:17.844Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 102,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 132,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:18.040Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 103,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 131,
+    "evaluado": 137,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:18.236Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 104,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 137,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:18.431Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 105,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 141,
+    "evaluado": 199,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:18.627Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 106,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 199,
+    "evaluado": 141,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:18.822Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 107,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 157,
+    "evaluado": 134,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:19.020Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 108,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 134,
+    "evaluado": 157,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:19.221Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 109,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 157,
+    "evaluado": 138,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:19.417Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 110,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 138,
+    "evaluado": 157,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:19.616Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 111,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 131,
+    "evaluado": 145,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:19.815Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 112,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 145,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:20.011Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 113,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 137,
+    "evaluado": 141,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:20.208Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 114,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 141,
+    "evaluado": 137,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:20.404Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 115,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 137,
+    "evaluado": 139,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:20.599Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 116,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 139,
+    "evaluado": 137,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:20.795Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 117,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 131,
+    "evaluado": 133,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:20.991Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 118,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 133,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:21.189Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 119,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 132,
+    "evaluado": 140,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:21.388Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 120,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 140,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:21.583Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 121,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 190,
+    "evaluado": 203,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:21.781Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 122,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 203,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:21.976Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 123,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 152,
+    "evaluado": 175,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:22.172Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 124,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 175,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:22.368Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 125,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 140,
+    "evaluado": 197,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:22.565Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 126,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 140,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:22.762Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 127,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 190,
+    "evaluado": 161,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:22.957Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 128,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 161,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:23.154Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 129,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 190,
+    "evaluado": 173,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:23.350Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 130,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 173,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:23.547Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 131,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 190,
+    "evaluado": 147,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:23.743Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 132,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 147,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:23.941Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 133,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 140,
+    "evaluado": 152,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:24.137Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 134,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 152,
+    "evaluado": 140,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:24.334Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 135,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 156,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:24.530Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 136,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 156,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:24.727Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 137,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 194,
+    "evaluado": 171,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:24.922Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 138,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 171,
+    "evaluado": 194,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:25.118Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 139,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 132,
+    "evaluado": 136,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:25.313Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 140,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 136,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:25.509Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 141,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 131,
+    "evaluado": 157,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:25.707Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 142,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 157,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:25.903Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 143,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 132,
+    "evaluado": 163,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:26.098Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 144,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 163,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:26.293Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 145,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 135,
+    "evaluado": 178,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:26.490Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 146,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 178,
+    "evaluado": 135,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:26.686Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 147,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 141,
+    "evaluado": 181,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:26.884Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 148,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 181,
+    "evaluado": 141,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:27.080Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 149,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 132,
+    "evaluado": 192,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:27.278Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 150,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 192,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:27.475Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 151,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 198,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:27.671Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 152,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 198,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:27.867Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 153,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 140,
+    "evaluado": 190,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:28.063Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 154,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 190,
+    "evaluado": 140,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:28.261Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 155,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 201,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:28.456Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 156,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 201,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:28.655Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 157,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 189,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:28.853Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 158,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 189,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:29.048Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 159,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 152,
+    "evaluado": 180,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:29.244Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 160,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 180,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:29.439Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 161,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 204,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:29.638Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 162,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 204,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:29.833Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 163,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 202,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:30.029Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 164,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 202,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:30.225Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 165,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 185,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:30.423Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 166,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 185,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:30.621Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 167,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 132,
+    "evaluado": 193,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:30.819Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 168,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 193,
+    "evaluado": 132,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:31.024Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 169,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 152,
+    "evaluado": 154,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:31.220Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 170,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 154,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:31.418Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 171,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 131,
+    "evaluado": 194,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:31.614Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 172,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 194,
+    "evaluado": 131,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:31.810Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 173,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 152,
+    "evaluado": 166,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:32.005Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 174,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 166,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:32.201Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 175,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 190,
+    "evaluado": 174,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:32.397Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 176,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 174,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:32.593Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 177,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 140,
+    "evaluado": 160,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:32.798Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 178,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 160,
+    "evaluado": 140,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:32.996Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 179,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 197,
+    "evaluado": 158,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:33.191Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 180,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 158,
+    "evaluado": 197,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:33.387Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 181,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 190,
+    "evaluado": 205,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:33.584Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 182,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 205,
+    "evaluado": 190,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:33.780Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 183,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 152,
+    "evaluado": 200,
+    "rol_evaluador": "jefe",
+    "tipo_evaluacion": "operativo",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:33.977Z"
+  }
+},
+{
+  "model": "modulo_valoracion.asignacionevaluacion",
+  "pk": 184,
+  "fields": {
+    "ciclo": 7,
+    "evaluador": 200,
+    "evaluado": 152,
+    "rol_evaluador": "equipo",
+    "tipo_evaluacion": "lider",
+    "estado": "pendiente",
+    "activa": true,
+    "observaciones_acuerdos": "",
+    "fecha_inicio_respuesta": null,
+    "fecha_completada": null,
+    "fecha_creacion": "2026-08-26T23:46:34.174Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 1,
+  "fields": {
+    "asignacion": 1,
+    "pregunta": 1,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-07-31T14:15:56.960Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 2,
+  "fields": {
+    "asignacion": 1,
+    "pregunta": 2,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-07-31T14:15:57.259Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 3,
+  "fields": {
+    "asignacion": 2,
+    "pregunta": 42,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-07-31T14:17:17.717Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 4,
+  "fields": {
+    "asignacion": 2,
+    "pregunta": 43,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-07-31T14:17:18.010Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 5,
+  "fields": {
+    "asignacion": 3,
+    "pregunta": 96,
+    "valor": 1,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-07-31T14:21:53.643Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 6,
+  "fields": {
+    "asignacion": 4,
+    "pregunta": 54,
+    "valor": 3,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-07-31T14:22:07.876Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 7,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 1,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:42.393Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 8,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 2,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:42.599Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 9,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 3,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:42.806Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 10,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 4,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:43.011Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 11,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 5,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:43.217Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 12,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 6,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:43.420Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 13,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 7,
+    "valor": 3,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:43.628Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 14,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 8,
+    "valor": 3,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:43.832Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 15,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 9,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:44.036Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 16,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 10,
+    "valor": 3,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:44.246Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 17,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 11,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:44.450Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 18,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 12,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:44.656Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 19,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 13,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:44.862Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 20,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 14,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:45.073Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 21,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 15,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:45.278Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 22,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 16,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:45.485Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 23,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 17,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:45.689Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 24,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 18,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:45.894Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 25,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 19,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:46.100Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 26,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 20,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:46.306Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 27,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 21,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:46.511Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 28,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 22,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:46.717Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 29,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 24,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:46.929Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 30,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 25,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:47.137Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 31,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 26,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:47.343Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 32,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 27,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:47.552Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 33,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 28,
+    "valor": 1,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:47.786Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 34,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 29,
+    "valor": 1,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:47.996Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 35,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 30,
+    "valor": 1,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:48.208Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 36,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 31,
+    "valor": 1,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:48.414Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 37,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 32,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:48.625Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 38,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 33,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:48.834Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 39,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 35,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:49.041Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 40,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 36,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:49.266Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 41,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 39,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:49.471Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 42,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 40,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:49.676Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 43,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 41,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:49.881Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 44,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 94,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:50.085Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 45,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 95,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:50.295Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 46,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 96,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-14T16:00:50.500Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 47,
+  "fields": {
+    "asignacion": 5,
+    "pregunta": 98,
+    "valor": null,
+    "respuesta_abierta": "PRUEBA",
+    "fecha_respuesta": "2026-08-14T16:00:50.710Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 130,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 42,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:22.625Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 131,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 43,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:22.913Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 132,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 44,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:23.204Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 133,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 45,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:23.500Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 134,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 46,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:23.790Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 135,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 47,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:24.082Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 136,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 48,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:24.375Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 137,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 49,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:24.667Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 138,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 50,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:24.959Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 139,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 51,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:25.248Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 140,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 52,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:25.537Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 141,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 53,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:25.825Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 142,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 54,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:26.118Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 143,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 55,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:26.415Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 144,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 56,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:26.705Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 145,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 57,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:26.994Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 146,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 58,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:27.286Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 147,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 59,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:27.576Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 148,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 60,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:27.865Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 149,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 61,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:28.153Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 150,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 62,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:28.445Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 151,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 63,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:28.743Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 152,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 64,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:29.033Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 153,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 65,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:29.322Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 154,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 66,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:29.611Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 155,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 67,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:29.900Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 156,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 68,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:30.192Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 157,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 69,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:30.479Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 158,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 70,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:30.769Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 159,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 71,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:31.058Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 160,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 72,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:31.347Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 161,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 73,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:31.636Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 162,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 74,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:31.933Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 163,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 75,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:32.225Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 164,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 76,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:32.516Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 165,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 77,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:32.813Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 166,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 78,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:33.102Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 167,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 79,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:33.391Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 168,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 80,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:33.688Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 169,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 81,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:33.979Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 170,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 82,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:34.270Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 171,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 83,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:34.561Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 172,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 84,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:34.850Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 173,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 85,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:35.144Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 174,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 86,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:35.435Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 175,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 87,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:35.725Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 176,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 88,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:36.015Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 177,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 89,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:36.304Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 178,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 90,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:36.591Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 179,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 91,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:36.883Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 180,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 92,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:37.174Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 181,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 93,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T21:30:37.464Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 182,
+  "fields": {
+    "asignacion": 8,
+    "pregunta": 97,
+    "valor": null,
+    "respuesta_abierta": "Es una persona que siempre está dispuesta al diálogo y a escuchar diferentes puntos de vista. Destaca por su actitud colaborativa y su capacidad para buscar soluciones de manera constructiva ante los desafíos.",
+    "fecha_respuesta": "2026-08-24T21:30:37.754Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 183,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 1,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:52.100Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 184,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 2,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:52.397Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 185,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 3,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:52.695Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 186,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 4,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:52.995Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 187,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 5,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:53.291Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 188,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 6,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:53.586Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 189,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 7,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:53.883Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 190,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 8,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:54.179Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 191,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 9,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:54.474Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 192,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 10,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:54.772Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 193,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 11,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:55.071Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 194,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 12,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:55.373Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 195,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 13,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:55.670Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 196,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 14,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:55.967Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 197,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 15,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:56.264Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 198,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 16,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:56.558Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 199,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 17,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:56.854Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 200,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 18,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:57.150Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 201,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 19,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:57.444Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 202,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 20,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:57.743Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 203,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 21,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:58.039Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 204,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 22,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:58.339Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 205,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 24,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:58.637Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 206,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 25,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:58.936Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 207,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 26,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:59.232Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 208,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 27,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:59.528Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 209,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 28,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:10:59.824Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 210,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 29,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:00.124Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 211,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 30,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:00.422Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 212,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 31,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:00.719Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 213,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 32,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:01.015Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 214,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 33,
+    "valor": 4,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:01.311Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 215,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 35,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:01.607Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 216,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 36,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:01.902Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 217,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 39,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:02.197Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 218,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 40,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:02.493Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 219,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 41,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:02.790Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 220,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 94,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:03.093Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 221,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 95,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:03.388Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 222,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 96,
+    "valor": 5,
+    "respuesta_abierta": "",
+    "fecha_respuesta": "2026-08-24T22:11:03.683Z"
+  }
+},
+{
+  "model": "modulo_valoracion.respuestaevaluacion",
+  "pk": 223,
+  "fields": {
+    "asignacion": 7,
+    "pregunta": 98,
+    "valor": null,
+    "respuesta_abierta": "PRUEBA",
+    "fecha_respuesta": "2026-08-24T22:11:03.980Z"
+  }
+},
+{
+  "model": "modulo_valoracion.resultadoevaluacion",
+  "pk": 1,
+  "fields": {
+    "ciclo": 1,
+    "evaluado": 171,
+    "tipo_evaluacion": "operativo",
+    "puntaje_total": "5.00",
+    "porcentaje": "100.00",
+    "semaforo": "referente",
+    "puntaje_jefe": "100.00",
+    "puntaje_equipo": "0.00",
+    "puntaje_autoevaluacion": "0.00",
+    "total_evaluadores": 1,
+    "evaluadores_jefe": 1,
+    "evaluadores_equipo": 0,
+    "evaluadores_auto": 0,
+    "detalle_competencias": [
+      {
+        "items": 2,
+        "orden": 0,
+        "codigo": "001",
+        "nombre": "DIMENSIÓN 1: CULTURA",
+        "etiqueta": "001. DIMENSIÓN 1: CULTURA",
+        "promedio": 5.0,
+        "semaforo": "referente",
+        "porcentaje": 100.0,
+        "respuestas": 2,
+        "semaforo_emoji": "🟢"
+      }
+    ],
+    "fortalezas": [
+      "Comprende las necesidades del cliente antes de tomar decisiones.",
+      "Actúa con sentido de urgencia frente a solicitudes o situaciones que impactan al cliente."
+    ],
+    "brechas": [],
+    "fecha_calculo": "2026-08-18T18:01:48.121Z"
+  }
+},
+{
+  "model": "modulo_valoracion.resultadoevaluacion",
+  "pk": 2,
+  "fields": {
+    "ciclo": 1,
+    "evaluado": 194,
+    "tipo_evaluacion": "lider",
+    "puntaje_total": "5.00",
+    "porcentaje": "100.00",
+    "semaforo": "referente",
+    "puntaje_jefe": "0.00",
+    "puntaje_equipo": "100.00",
+    "puntaje_autoevaluacion": "0.00",
+    "total_evaluadores": 1,
+    "evaluadores_jefe": 0,
+    "evaluadores_equipo": 1,
+    "evaluadores_auto": 0,
+    "detalle_competencias": [
+      {
+        "items": 2,
+        "orden": 0,
+        "codigo": "001",
+        "nombre": "DIMENSIÓN 1: CULTURA",
+        "etiqueta": "001. DIMENSIÓN 1: CULTURA",
+        "promedio": 5.0,
+        "semaforo": "referente",
+        "porcentaje": 100.0,
+        "respuestas": 2,
+        "semaforo_emoji": "🟢"
+      }
+    ],
+    "fortalezas": [
+      "Toma decisiones considerando las necesidades del cliente y del negocio.",
+      "Actúa con sentido de urgencia frente a situaciones que impactan al cliente."
+    ],
+    "brechas": [],
+    "fecha_calculo": "2026-08-18T18:01:49.171Z"
+  }
+},
+{
+  "model": "modulo_valoracion.resultadoevaluacion",
+  "pk": 3,
+  "fields": {
+    "ciclo": 2,
+    "evaluado": 171,
+    "tipo_evaluacion": "operativo",
+    "puntaje_total": "1.00",
+    "porcentaje": "20.00",
+    "semaforo": "intervencion",
+    "puntaje_jefe": "20.00",
+    "puntaje_equipo": "0.00",
+    "puntaje_autoevaluacion": "0.00",
+    "total_evaluadores": 1,
+    "evaluadores_jefe": 1,
+    "evaluadores_equipo": 0,
+    "evaluadores_auto": 0,
+    "detalle_competencias": [
+      {
+        "items": 1,
+        "orden": 0,
+        "codigo": "005",
+        "nombre": "DIMENSIÓN 5: IMPACTO Y EJECUCIÓN",
+        "etiqueta": "005. DIMENSIÓN 5: IMPACTO Y EJECUCIÓN",
+        "promedio": 1.0,
+        "semaforo": "intervencion",
+        "porcentaje": 20.0,
+        "respuestas": 1,
+        "semaforo_emoji": "⚫"
+      }
+    ],
+    "fortalezas": [],
+    "brechas": [
+      "Cumple consistentemente con las responsabilidades de su cargo."
+    ],
+    "fecha_calculo": "2026-08-18T18:01:50.397Z"
+  }
+},
+{
+  "model": "modulo_valoracion.resultadoevaluacion",
+  "pk": 4,
+  "fields": {
+    "ciclo": 2,
+    "evaluado": 194,
+    "tipo_evaluacion": "lider",
+    "puntaje_total": "3.00",
+    "porcentaje": "60.00",
+    "semaforo": "desarrollo",
+    "puntaje_jefe": "0.00",
+    "puntaje_equipo": "60.00",
+    "puntaje_autoevaluacion": "0.00",
+    "total_evaluadores": 1,
+    "evaluadores_jefe": 0,
+    "evaluadores_equipo": 1,
+    "evaluadores_auto": 0,
+    "detalle_competencias": [
+      {
+        "items": 1,
+        "orden": 0,
+        "codigo": "001",
+        "nombre": "DIMENSIÓN 1: CULTURA",
+        "etiqueta": "001. DIMENSIÓN 1: CULTURA",
+        "promedio": 3.0,
+        "semaforo": "desarrollo",
+        "porcentaje": 60.0,
+        "respuestas": 1,
+        "semaforo_emoji": "🟠"
+      }
+    ],
+    "fortalezas": [],
+    "brechas": [],
+    "fecha_calculo": "2026-08-18T18:01:51.590Z"
+  }
+},
+{
+  "model": "modulo_valoracion.resultadoevaluacion",
+  "pk": 5,
+  "fields": {
+    "ciclo": 4,
+    "evaluado": 171,
+    "tipo_evaluacion": "operativo",
+    "puntaje_total": "3.93",
+    "porcentaje": "78.50",
+    "semaforo": "consolidado",
+    "puntaje_jefe": "78.50",
+    "puntaje_equipo": "0.00",
+    "puntaje_autoevaluacion": "0.00",
+    "total_evaluadores": 1,
+    "evaluadores_jefe": 1,
+    "evaluadores_equipo": 0,
+    "evaluadores_auto": 0,
+    "detalle_competencias": [
+      {
+        "items": 19,
+        "orden": 0,
+        "codigo": "001",
+        "nombre": "DIMENSIÓN 1: CULTURA",
+        "etiqueta": "001. DIMENSIÓN 1: CULTURA",
+        "promedio": 4.11,
+        "semaforo": "consolidado",
+        "porcentaje": 82.1,
+        "respuestas": 19,
+        "semaforo_emoji": "🟡"
+      },
+      {
+        "items": 7,
+        "orden": 0,
+        "codigo": "002",
+        "nombre": "DIMENSIÓN 2: RITMO SUPLI",
+        "etiqueta": "002. DIMENSIÓN 2: RITMO SUPLI",
+        "promedio": 5.0,
+        "semaforo": "referente",
+        "porcentaje": 100.0,
+        "respuestas": 7,
+        "semaforo_emoji": "🟢"
+      },
+      {
+        "items": 5,
+        "orden": 0,
+        "codigo": "003",
+        "nombre": "DIMENSIÓN 3: INFRAESTRUCTURA TECNOLÓGICA",
+        "etiqueta": "003. DIMENSIÓN 3: INFRAESTRUCTURA TECNOLÓGICA",
+        "promedio": 1.6,
+        "semaforo": "intervencion",
+        "porcentaje": 32.0,
+        "respuestas": 5,
+        "semaforo_emoji": "⚫"
+      },
+      {
+        "items": 5,
+        "orden": 0,
+        "codigo": "004",
+        "nombre": "DIMENSIÓN 4: KMS- GESTIÓN DEL CONOCIMIENTO",
+        "etiqueta": "004. DIMENSIÓN 4: KMS- GESTIÓN DEL CONOCIMIENTO",
+        "promedio": 4.0,
+        "semaforo": "consolidado",
+        "porcentaje": 80.0,
+        "respuestas": 5,
+        "semaforo_emoji": "🟡"
+      },
+      {
+        "items": 4,
+        "orden": 0,
+        "codigo": "005",
+        "nombre": "DIMENSIÓN 5: IMPACTO Y EJECUCIÓN",
+        "etiqueta": "005. DIMENSIÓN 5: IMPACTO Y EJECUCIÓN",
+        "promedio": 4.0,
+        "semaforo": "consolidado",
+        "porcentaje": 80.0,
+        "respuestas": 4,
+        "semaforo_emoji": "🟡"
+      }
+    ],
+    "fortalezas": [
+      "Comunica la información de manera clara, concreta y estructurada.",
+      "Documenta y estandariza procesos  que tiene a cargo.",
+      "Demuestra apertura al cambio y capacidad de adaptación.",
+      "Busca desarrollar continuamente nuevas habilidades y conocimientos.",
+      "Mantiene visibilidad sobre el avance de sus compromisos."
+    ],
+    "brechas": [
+      "Utiliza correctamente las herramientas tecnológicas definidas por SUPLI.",
+      "Mantiene actualizada la información en las plataformas corporativas.",
+      "Registra oportunamente la información requerida para la operación.",
+      "Aprovecha las herramientas tecnológicas para mejorar su productividad."
+    ],
+    "fecha_calculo": "2026-08-18T18:01:46.611Z"
+  }
+},
+{
+  "model": "modulo_valoracion.planaccion",
+  "pk": 1,
+  "fields": {
+    "resultado": 1,
+    "descripcion": "Prueb",
+    "responsable": 171,
+    "fecha_compromiso": "2026-08-05",
+    "estado": "vencido",
+    "evidencia_url": "",
+    "observaciones": "no se realizo el plan",
+    "creado_por": 194,
+    "fecha_creacion": "2026-07-31T14:27:37.420Z",
+    "fecha_actualizacion": "2026-07-31T14:28:34.756Z"
+  }
+},
+{
+  "model": "modulo_valoracion.configuracionvaloracion",
+  "pk": 1,
+  "fields": {
+    "resultados_publicados": false,
+    "fecha_publicacion": null,
+    "actualizado_por": 171,
+    "fecha_actualizacion": "2026-08-24T15:47:17.985Z"
+  }
+}
+]
