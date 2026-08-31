@@ -402,3 +402,11 @@ body {
   color: #fff;
   vertical-align: middle;
 }
+
+/* ---- Titulo de seccion dentro de una pagina ---- */
+.val-section__title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--val-text);
+  margin: 24px 0 4px;
+}

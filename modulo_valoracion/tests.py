@@ -314,3 +314,76 @@ class SesionDeslizanteTest(TestCase):
         c.cookies["jwt"] = self._token(-1)
         r = c.get(self.url)
         self.assertEqual(r.status_code, 302)
+
+
+class PendientesTest(TestCase):
+    def setUp(self):
+        self.admin = Usuario.objects.create_user("a@x.com", "adm", "x")
+        self.admin.nombre = "Admin"; self.admin.tipo_usuario = "admin"
+        self.admin.is_staff = True; self.admin.save()
+        comp = Competencia.objects.create(nombre="C", orden=1)
+        self.pregs = [Pregunta.objects.create(
+            competencia=comp, enunciado="P%d" % i, tipo_evaluacion="operativo",
+            tipo_pregunta="likert", obligatoria=True, activa=True, orden=i)
+            for i in range(10)]
+        ahora = timezone.now()
+        self.ciclo = CicloEvaluacion.objects.create(
+            nombre="Ciclo", tipo="operativo", estado="activo",
+            fecha_inicio=ahora - datetime.timedelta(days=1),
+            fecha_cierre=ahora + datetime.timedelta(days=2))
+        self.gente = []
+        for i in range(4):
+            u = Usuario.objects.create_user("u%d@x.com" % i, "u%d" % i, "x")
+            u.nombre = "User%d" % i; u.tipo_usuario = "colaborador"
+            u.cargo = "Asesor"; u.save()
+            self.gente.append(u)
+        self.asigs = [AsignacionEvaluacion.objects.create(
+            ciclo=self.ciclo, evaluador=self.gente[i], evaluado=self.admin,
+            rol_evaluador="jefe", tipo_evaluacion="operativo")
+            for i in range(4)]
+        # 0 = completada, 1 = a medias (3/10), 2 y 3 = sin empezar
+        self.asigs[0].estado = "completada"; self.asigs[0].save()
+        for p in self.pregs[:3]:
+            RespuestaEvaluacion.objects.create(
+                asignacion=self.asigs[1], pregunta=p, valor=4)
+        self.asigs[1].estado = "en_progreso"; self.asigs[1].save()
+        self.c = Client()
+        self.c.cookies["jwt"] = jwt.encode(
+            {"user_id": self.admin.pk}, settings.SECRET_KEY, algorithm="HS256")
+
+    def test_pagina(self):
+        r = self.c.get(reverse("modulo_valoracion:pendientes_ciclo", args=[self.ciclo.id]))
+        ctx = r.context
+        self.assertEqual(r.status_code, 200)
+        # Una sola tabla: estan las 4, pendientes primero y la hecha al final.
+        self.assertEqual(len(ctx["filas"]), 4)
+        self.assertEqual(ctx["total_pendientes"], 3)
+        self.assertEqual(ctx["completadas"], 1)
+        self.assertEqual(ctx["avance_pct"], 25)
+        self.assertEqual(ctx["personas_pendientes"], 3)
+        self.assertFalse(ctx["filas"][0]["empezo"], "los sin empezar van primero")
+        self.assertTrue(ctx["filas"][-1]["hecha"], "la completada va al final")
+        # La que va a medias muestra su avance real
+        media = [f for f in ctx["filas"] if f["empezo"] and not f["hecha"]][0]
+        self.assertEqual((media["respondidas"], media["total"], media["pct"]), (3, 10, 30))
+        # La completada se muestra al 100%
+        self.assertEqual(ctx["filas"][-1]["pct"], 100)
+        # Columna "le faltan": cada uno de los 3 debe 1 evaluacion
+        self.assertEqual(ctx["filas"][0]["faltan_persona"], 1)
+        self.assertEqual(len(ctx["correos"]), 3)
+
+    def test_sin_permiso(self):
+        otro = self.gente[0]
+        c = Client()
+        c.cookies["jwt"] = jwt.encode({"user_id": otro.pk}, settings.SECRET_KEY, algorithm="HS256")
+        r = c.get(reverse("modulo_valoracion:pendientes_ciclo", args=[self.ciclo.id]))
+        self.assertEqual(r.status_code, 403)
+
+    def test_ciclo_completo(self):
+        AsignacionEvaluacion.objects.filter(ciclo=self.ciclo).update(estado="completada")
+        r = self.c.get(reverse("modulo_valoracion:pendientes_ciclo", args=[self.ciclo.id]))
+        self.assertEqual(r.context["total_pendientes"], 0)
+        self.assertEqual(r.context["avance_pct"], 100)
+        self.assertEqual(len(r.context["filas"]), 4, "las hechas siguen listadas")
+        self.assertEqual(r.context["correos"], [])
+        self.assertIn("Todo el mundo respondio", r.content.decode("utf8"))

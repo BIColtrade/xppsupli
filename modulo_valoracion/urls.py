@@ -31,6 +31,7 @@ urlpatterns = [
     path("ciclos/", views.gestionar_ciclos, name="gestionar_ciclos"),
     path("ciclos/crear/", views.crear_ciclo, name="crear_ciclo"),
     path("ciclos/editar/<int:ciclo_id>/", views.editar_ciclo, name="editar_ciclo"),
+    path("ciclos/<int:ciclo_id>/pendientes/", views.pendientes_ciclo, name="pendientes_ciclo"),
     path("ciclos/<int:ciclo_id>/consolidar/", views.consolidar_ciclo, name="consolidar_ciclo"),
 
     # Detalle de resultado

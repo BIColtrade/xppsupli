@@ -3,7 +3,7 @@ from collections import Counter, defaultdict
 from urllib.parse import quote
 
 from django.db import transaction
-from django.db.models import Case, IntegerField, Q, Value, When
+from django.db.models import Case, Count, IntegerField, Q, Value, When
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -1181,6 +1181,78 @@ def _recalcular_resultado_evaluado(ciclo, evaluado):
         },
     )
     return resultado
+
+
+def pendientes_ciclo(request, ciclo_id):
+    """Quien falta por responder en un ciclo, con el avance de cada uno."""
+    user, resp = _require_role(request, _puede_configurar)
+    if resp:
+        return resp
+    ciclo = get_object_or_404(CicloEvaluacion, pk=ciclo_id)
+
+    asignaciones = list(
+        AsignacionEvaluacion.objects.filter(ciclo=ciclo, activa=True)
+        .select_related("evaluador", "evaluado")
+        .order_by("evaluador__nombre", "evaluador__apellido", "evaluado__nombre")
+    )
+
+    # Cuantas preguntas le tocan a cada tipo de evaluacion en este ciclo.
+    excluidas = ciclo.preguntas_excluidas or []
+    total_por_tipo = {
+        cod: Pregunta.objects.filter(tipo_evaluacion=cod, activa=True)
+        .exclude(id__in=excluidas).count()
+        for cod, _ in TIPO_EVALUACION_CHOICES
+    }
+
+    # Respuestas con contenido real por asignacion (una sola consulta).
+    respondidas_por_asignacion = dict(
+        _respuestas_con_contenido(ciclo)
+        .values_list("asignacion_id")
+        .annotate(n=Count("id"))
+    )
+
+    # Cuantas evaluaciones le faltan a cada evaluador (para la columna resumen).
+    faltan_por_evaluador = {}
+    for a in asignaciones:
+        if a.estado != "completada":
+            faltan_por_evaluador[a.evaluador_id] = faltan_por_evaluador.get(a.evaluador_id, 0) + 1
+
+    filas = []
+    completadas = 0
+    for a in asignaciones:
+        hecha = a.estado == "completada"
+        if hecha:
+            completadas += 1
+        total = total_por_tipo.get(a.tipo_evaluacion, 0)
+        hechas = total if hecha else respondidas_por_asignacion.get(a.id, 0)
+        filas.append({
+            "asignacion": a,
+            "respondidas": hechas,
+            "total": total,
+            "pct": int(hechas * 100 / total) if total else 0,
+            "empezo": hechas > 0,
+            "hecha": hecha,
+            "faltan_persona": faltan_por_evaluador.get(a.evaluador_id, 0),
+        })
+
+    # Primero lo que falta, y dentro de eso quienes ni siquiera han empezado.
+    filas.sort(key=lambda x: (x["hecha"], x["empezo"], x["pct"]))
+
+    pendientes = [f for f in filas if not f["hecha"]]
+    correos = sorted({f["asignacion"].evaluador.email for f in pendientes})
+
+    total_asignaciones = len(asignaciones)
+    return render(request, "valoracion_pendientes.html", {
+        "ciclo": ciclo,
+        "filas": filas,
+        "total_pendientes": len(pendientes),
+        "personas_pendientes": len(faltan_por_evaluador),
+        "correos": correos,
+        "completadas": completadas,
+        "total_asignaciones": total_asignaciones,
+        "avance_pct": int(completadas * 100 / total_asignaciones) if total_asignaciones else 0,
+        **_context_perms(user),
+    })
 
 
 def consolidar_ciclo(request, ciclo_id):

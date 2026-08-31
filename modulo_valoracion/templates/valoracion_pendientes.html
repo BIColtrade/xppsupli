@@ -1,0 +1,124 @@
+{% load static %}
+{% include "navbar.html" %}
+<link rel="stylesheet" href="{% static 'css/valoracion.css' %}">
+
+<section class="val-page">
+  <div class="val-page__header">
+    <div>
+      <h1 class="val-page__title">Pendientes por responder</h1>
+      <p class="val-page__subtitle">
+        Ciclo: <strong>{{ ciclo.nombre }}</strong> &middot;
+        Estado: {{ ciclo.estado_efectivo_display }} &middot;
+        Cierra: {{ ciclo.fecha_cierre|date:"d/m/Y H:i" }}
+      </p>
+    </div>
+    <a href="{% url 'modulo_valoracion:gestionar_ciclos' %}" class="val-btn val-btn--secondary">Volver a ciclos</a>
+  </div>
+
+  <div class="val-stats">
+    <div class="val-stat">
+      <div class="val-stat__value">{{ total_pendientes }}</div>
+      <div class="val-stat__label">Evaluaciones pendientes</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ completadas }}/{{ total_asignaciones }}</div>
+      <div class="val-stat__label">Completadas</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ avance_pct }}%</div>
+      <div class="val-stat__label">Avance del ciclo</div>
+    </div>
+    <div class="val-stat">
+      <div class="val-stat__value">{{ personas_pendientes }}</div>
+      <div class="val-stat__label">Personas con pendientes</div>
+    </div>
+  </div>
+
+  {% if total_pendientes == 0 and total_asignaciones %}
+    <div class="val-alert val-alert--success">
+      Todo el mundo respondio. No queda ninguna evaluacion pendiente en este ciclo.
+    </div>
+  {% endif %}
+
+  <div class="val-table-wrap">
+    <table class="val-table">
+      <thead>
+        <tr>
+          <th>Quien debe responder</th>
+          <th>A quien evalua</th>
+          <th>Tipo</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Avance</th>
+          <th>Le faltan</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in filas %}
+        <tr{% if f.hecha %} style="opacity:.55;"{% endif %}>
+          <td>
+            {{ f.asignacion.evaluador }}
+            <br><small style="color:var(--val-muted);">{{ f.asignacion.evaluador.email }}</small>
+          </td>
+          <td>{{ f.asignacion.evaluado }}</td>
+          <td>{{ f.asignacion.get_tipo_evaluacion_display }}</td>
+          <td>{{ f.asignacion.get_rol_evaluador_display }}</td>
+          <td>
+            <span class="status-badge status-badge--{{ f.asignacion.estado }}">
+              {{ f.asignacion.get_estado_display }}
+            </span>
+            {% if not f.hecha and not f.empezo %}
+              <br><small style="color:#ff8a8a;">Sin empezar</small>
+            {% endif %}
+          </td>
+          <td>
+            {{ f.respondidas }}/{{ f.total }}
+            <div style="height:6px;background:rgba(255,255,255,.10);border-radius:999px;margin-top:6px;overflow:hidden;">
+              <div style="height:100%;width:{{ f.pct }}%;background:{% if f.hecha %}#7ee787{% elif f.empezo %}#ffcc80{% else %}#ff5a5a{% endif %};"></div>
+            </div>
+          </td>
+          <td>
+            {% if f.faltan_persona %}
+              <strong>{{ f.faltan_persona }}</strong>
+              <br><small style="color:var(--val-muted);">evaluacion(es)</small>
+            {% else %}
+              <small style="color:var(--val-muted);">al dia</small>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" style="text-align:center;color:var(--val-muted);padding:24px;">
+          Este ciclo no tiene asignaciones.
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if correos %}
+  <div style="margin-top:20px;">
+    <button type="button" class="val-btn val-btn--secondary" onclick="copiarCorreos()">
+      Copiar correos de quienes tienen pendientes ({{ correos|length }})
+    </button>
+    <textarea id="lista-correos" readonly
+      style="display:none;width:100%;margin-top:10px;min-height:80px;">{% for c in correos %}{{ c }}{% if not forloop.last %}; {% endif %}{% endfor %}</textarea>
+  </div>
+
+  <script>
+    function copiarCorreos() {
+      var ta = document.getElementById('lista-correos');
+      ta.style.display = 'block';
+      ta.select();
+      try {
+        document.execCommand('copy');
+        alert('Correos copiados. Ya los puedes pegar en el correo de recordatorio.');
+      } catch (e) {
+        alert('Selecciona el texto de abajo y copialo manualmente.');
+      }
+    }
+  </script>
+  {% endif %}
+</section>
+
+    </main>
+  </div>
