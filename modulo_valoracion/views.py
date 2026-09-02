@@ -1183,6 +1183,46 @@ def _recalcular_resultado_evaluado(ciclo, evaluado):
     return resultado
 
 
+def _reabrir_asignacion(asignacion):
+    """Borra las respuestas de una evaluacion y la deja lista para responder de nuevo.
+
+    Se usa cuando alguien califica por error y hay que pedirle que la repita.
+    Tambien recalcula el consolidado del evaluado, porque esa evaluacion ya no
+    debe seguir pesando en su resultado.
+    """
+    with transaction.atomic():
+        borradas = RespuestaEvaluacion.objects.filter(asignacion=asignacion).delete()[0]
+        asignacion.estado = "pendiente"
+        asignacion.fecha_completada = None
+        asignacion.fecha_inicio_respuesta = None
+        asignacion.observaciones_acuerdos = ""
+        asignacion.save()
+        _recalcular_resultado_evaluado(asignacion.ciclo, asignacion.evaluado)
+    return borradas
+
+
+def reabrir_asignacion(request, asignacion_id):
+    """Deja una evaluacion en blanco para que el evaluador la vuelva a responder."""
+    user, resp = _require_role(request, _puede_configurar)
+    if resp:
+        return resp
+    asignacion = get_object_or_404(
+        AsignacionEvaluacion.objects.select_related("ciclo", "evaluador", "evaluado"),
+        pk=asignacion_id,
+    )
+    ciclo_id = asignacion.ciclo_id
+    if request.method != "POST":
+        return redirect("modulo_valoracion:pendientes_ciclo", ciclo_id=ciclo_id)
+
+    borradas = _reabrir_asignacion(asignacion)
+    request.session["valoracion_pendientes_ok"] = (
+        f"Se reabrio la valoracion de {asignacion.evaluador} sobre "
+        f"{asignacion.evaluado}: se borraron {borradas} respuesta(s) y quedo "
+        "pendiente para que la responda de nuevo."
+    )
+    return redirect("modulo_valoracion:pendientes_ciclo", ciclo_id=ciclo_id)
+
+
 def pendientes_ciclo(request, ciclo_id):
     """Quien falta por responder en un ciclo, con el avance de cada uno."""
     user, resp = _require_role(request, _puede_configurar)
@@ -1244,6 +1284,7 @@ def pendientes_ciclo(request, ciclo_id):
     total_asignaciones = len(asignaciones)
     return render(request, "valoracion_pendientes.html", {
         "ciclo": ciclo,
+        "success": request.session.pop("valoracion_pendientes_ok", None),
         "filas": filas,
         "total_pendientes": len(pendientes),
         "personas_pendientes": len(faltan_por_evaluador),

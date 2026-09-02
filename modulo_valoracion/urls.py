@@ -42,6 +42,7 @@ urlpatterns = [
     path("ciclos/<int:ciclo_id>/asignaciones/crear/", views.crear_asignacion, name="crear_asignacion"),
     path("ciclos/<int:ciclo_id>/asignaciones/generar-jerarquia/", views.generar_asignaciones_jerarquia, name="generar_asignaciones_jerarquia"),
     path("asignaciones/<int:asignacion_id>/eliminar/", views.eliminar_asignacion, name="eliminar_asignacion"),
+    path("asignaciones/<int:asignacion_id>/reabrir/", views.reabrir_asignacion, name="reabrir_asignacion"),
 
     # Evaluador
     path("mis-evaluaciones/", views.mis_evaluaciones, name="mis_evaluaciones"),

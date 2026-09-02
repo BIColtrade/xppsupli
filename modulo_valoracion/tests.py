@@ -11,7 +11,7 @@ from user.models import Usuario
 from user.jwt_utils import segundos_restantes
 from modulo_valoracion.models import (
     CicloEvaluacion, AsignacionEvaluacion, Competencia, Pregunta,
-    RespuestaEvaluacion,
+    RespuestaEvaluacion, ResultadoEvaluacion,
 )
 
 
@@ -387,3 +387,91 @@ class PendientesTest(TestCase):
         self.assertEqual(len(r.context["filas"]), 4, "las hechas siguen listadas")
         self.assertEqual(r.context["correos"], [])
         self.assertIn("Todo el mundo respondio", r.content.decode("utf8"))
+
+
+class ReabrirTest(TestCase):
+    def setUp(self):
+        self.admin = Usuario.objects.create_user("a@x.com", "adm", "x")
+        self.admin.nombre = "Admin"; self.admin.tipo_usuario = "admin"
+        self.admin.is_staff = True; self.admin.save()
+        self.jefe = Usuario.objects.create_user("j@x.com", "j", "x")
+        self.jefe.nombre = "Lida"; self.jefe.tipo_usuario = "lider"; self.jefe.save()
+        self.emp = Usuario.objects.create_user("e@x.com", "e", "x")
+        self.emp.nombre = "Marcela"; self.emp.tipo_usuario = "colaborador"
+        self.emp.jefe_directo = self.jefe; self.emp.save()
+
+        comp = Competencia.objects.create(nombre="C", orden=1)
+        self.pregs = [Pregunta.objects.create(
+            competencia=comp, enunciado="P%d" % i, tipo_evaluacion="operativo",
+            tipo_pregunta="likert", obligatoria=True, activa=True, orden=i)
+            for i in range(5)]
+        ahora = timezone.now()
+        self.ciclo = CicloEvaluacion.objects.create(
+            nombre="C", tipo="mixta", estado="activo",
+            fecha_inicio=ahora - datetime.timedelta(days=1),
+            fecha_cierre=ahora + datetime.timedelta(days=2))
+        self.a = AsignacionEvaluacion.objects.create(
+            ciclo=self.ciclo, evaluador=self.jefe, evaluado=self.emp,
+            rol_evaluador="jefe", tipo_evaluacion="operativo",
+            estado="completada", fecha_completada=ahora,
+            fecha_inicio_respuesta=ahora,
+            observaciones_acuerdos="algo")
+        for p in self.pregs:
+            RespuestaEvaluacion.objects.create(asignacion=self.a, pregunta=p, valor=5)
+        from modulo_valoracion.views import _recalcular_resultado_evaluado
+        _recalcular_resultado_evaluado(self.ciclo, self.emp)
+
+        self.c = Client()
+        self.c.cookies["jwt"] = jwt.encode(
+            {"user_id": self.admin.pk}, settings.SECRET_KEY, algorithm="HS256")
+        self.url = reverse("modulo_valoracion:reabrir_asignacion", args=[self.a.id])
+
+    def test_reabre_y_limpia(self):
+        antes = ResultadoEvaluacion.objects.filter(ciclo=self.ciclo, evaluado=self.emp)
+        print("  estado:", self.a.estado, "| respuestas:",
+              RespuestaEvaluacion.objects.filter(asignacion=self.a).count(),
+              "| consolidado:", list(antes.values_list("porcentaje", flat=True)))
+        r = self.c.post(self.url)
+        self.a.refresh_from_db()
+        quedan = RespuestaEvaluacion.objects.filter(asignacion=self.a).count()
+        cons = list(ResultadoEvaluacion.objects.filter(
+            ciclo=self.ciclo, evaluado=self.emp).values_list("porcentaje", flat=True))
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(self.a.estado, "pendiente")
+        self.assertEqual(quedan, 0)
+        self.assertIsNone(self.a.fecha_completada)
+        self.assertIsNone(self.a.fecha_inicio_respuesta)
+        self.assertEqual(self.a.observaciones_acuerdos, "")
+        self.assertEqual(cons, [], "el consolidado viejo siguio en pie")
+
+    def test_evaluador_puede_responder_de_nuevo(self):
+        self.c.post(self.url)
+        c2 = Client()
+        c2.cookies["jwt"] = jwt.encode(
+            {"user_id": self.jefe.pk}, settings.SECRET_KEY, algorithm="HS256")
+        url = reverse("modulo_valoracion:responder_evaluacion", args=[self.a.id])
+        g = c2.get(url)
+        vacias = all(p["valor_actual"] is None for p in g.context["preguntas_data"])
+        self.assertFalse(g.context["bloquear_inputs"])
+        self.assertTrue(vacias)
+        data = {"accion": "enviar"}
+        for p in self.pregs:
+            data["valor_%d" % p.id] = "3"
+        c2.post(url, data)
+        self.a.refresh_from_db()
+        self.assertEqual(self.a.estado, "completada")
+
+    def test_sin_permiso(self):
+        c = Client()
+        c.cookies["jwt"] = jwt.encode(
+            {"user_id": self.jefe.pk}, settings.SECRET_KEY, algorithm="HS256")
+        r = c.post(self.url)
+        self.a.refresh_from_db()
+        self.assertEqual(r.status_code, 403)
+        self.assertEqual(self.a.estado, "completada")
+
+    def test_get_no_borra(self):
+        r = self.c.get(self.url)
+        self.a.refresh_from_db()
+        self.assertEqual(self.a.estado, "completada")
+        self.assertEqual(RespuestaEvaluacion.objects.filter(asignacion=self.a).count(), 5)

@@ -34,6 +34,8 @@
     </div>
   </div>
 
+  {% if success %}<div class="val-alert val-alert--success">{{ success }}</div>{% endif %}
+
   {% if total_pendientes == 0 and total_asignaciones %}
     <div class="val-alert val-alert--success">
       Todo el mundo respondio. No queda ninguna evaluacion pendiente en este ciclo.
@@ -51,6 +53,7 @@
           <th>Estado</th>
           <th>Avance</th>
           <th>Le faltan</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>
@@ -85,9 +88,21 @@
               <small style="color:var(--val-muted);">al dia</small>
             {% endif %}
           </td>
+          <td class="val-actions">
+            {% if f.hecha or f.empezo %}
+            <form method="post" action="{% url 'modulo_valoracion:reabrir_asignacion' f.asignacion.id %}"
+                  style="display:inline;"
+                  onsubmit="return confirm('Se borraran las {{ f.respondidas }} respuesta(s) que {{ f.asignacion.evaluador }} dio sobre {{ f.asignacion.evaluado }}, y la evaluacion quedara pendiente para que la responda de nuevo. Esta accion no se puede deshacer. Continuar?');">
+              {% csrf_token %}
+              <button type="submit" class="val-btn val-btn--secondary val-btn--sm">Reabrir</button>
+            </form>
+            {% else %}
+              <small style="color:var(--val-muted);">-</small>
+            {% endif %}
+          </td>
         </tr>
         {% empty %}
-        <tr><td colspan="7" style="text-align:center;color:var(--val-muted);padding:24px;">
+        <tr><td colspan="8" style="text-align:center;color:var(--val-muted);padding:24px;">
           Este ciclo no tiene asignaciones.
         </td></tr>
         {% endfor %}
