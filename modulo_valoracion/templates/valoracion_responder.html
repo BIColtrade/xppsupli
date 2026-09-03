@@ -55,6 +55,14 @@
     </div>
   </div>
 
+  <div class="val-alert val-alert--info" style="margin-top:-8px;">
+    <strong>Tus respuestas se guardan solas.</strong>
+    Cada vez que marcas una opcion queda guardada al instante; no tienes que
+    pulsar nada para no perderla. Usa <em>Enviar evaluacion</em> solo cuando
+    hayas terminado.
+    <div id="val-autoguardado" style="margin-top:6px;font-weight:700;"></div>
+  </div>
+
   {% if total == 0 %}
     <div class="val-alert val-alert--info">
       Aun no hay preguntas configuradas para este tipo de evaluacion. Pide al admin del modulo que las cree.
@@ -238,6 +246,82 @@
   restaurar();
   form.addEventListener('change', respaldar);
   form.addEventListener('input', respaldar);
+
+  // ---- Guardado automatico en el servidor ----
+  // Cada respuesta se guarda sola apenas se marca. Asi nadie pierde su trabajo
+  // por olvidar el boton, cerrar la pestana o caerse la conexion.
+  var URL_AUTO = '{% url "modulo_valoracion:autoguardar_respuesta" asignacion.id %}';
+  var CSRF = (form.querySelector('[name=csrfmiddlewaretoken]') || {}).value;
+  var aviso = document.getElementById('val-autoguardado');
+  var pendientesEnvio = 0;
+  var colas = {};
+
+  function estado(txto, color) {
+    if (!aviso) return;
+    aviso.textContent = txto;
+    aviso.style.color = color;
+  }
+
+  function enviarCampo(nombre, valor) {
+    if (!CSRF) return;
+    pendientesEnvio++;
+    estado('Guardando...', '#ffcc80');
+    var cuerpo = new URLSearchParams();
+    cuerpo.append('campo', nombre);
+    cuerpo.append('valor', valor);
+    fetch(URL_AUTO, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-CSRFToken': CSRF
+      },
+      body: cuerpo.toString(),
+      credentials: 'same-origin'
+    }).then(function (r) {
+      // Si la sesion caduco, el servidor redirige al login y no devuelve JSON.
+      var tipo = r.headers.get('content-type') || '';
+      if (r.redirected || tipo.indexOf('json') === -1) {
+        return { ok: false, sesion: true };
+      }
+      return r.json().catch(function () { return { ok: false }; });
+    }).then(function (d) {
+      if (d && d.sesion) {
+        pendientesEnvio--;
+        estado('Tu sesion se cerro. NO cierres esta pagina: abre el sistema en '
+          + 'otra pestana, inicia sesion de nuevo y vuelve aqui a enviar.', '#ff8a8a');
+        return;
+      }
+      pendientesEnvio--;
+      if (d && d.ok) {
+        if (pendientesEnvio === 0) {
+          estado('Todo guardado (' + d.guardadas + ' respuestas)', '#7ee787');
+        }
+      } else {
+        estado('No se pudo guardar: ' + ((d && d.error) || 'revisa tu conexion')
+          + '. Tus respuestas siguen en pantalla.', '#ff8a8a');
+      }
+    }).catch(function () {
+      pendientesEnvio--;
+      estado('Sin conexion. Lo escrito sigue en pantalla y en este equipo.', '#ff8a8a');
+    });
+  }
+
+  function programar(nombre, valor, demora) {
+    clearTimeout(colas[nombre]);
+    colas[nombre] = setTimeout(function () { enviarCampo(nombre, valor); }, demora);
+  }
+
+  form.addEventListener('change', function (e) {
+    var el = e.target;
+    if (el.type === 'radio') programar(el.name, el.value, 0);
+  });
+  form.addEventListener('input', function (e) {
+    var el = e.target;
+    if (el.tagName === 'TEXTAREA') {
+      var nombre = el.name === 'observaciones_acuerdos' ? 'observaciones' : el.name;
+      programar(nombre, el.value, 1200);
+    }
+  });
 
   // Aviso si intenta salir con cambios sin guardar
   var sucio = false;

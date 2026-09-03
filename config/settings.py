@@ -124,6 +124,11 @@ else:
             'PASSWORD': os.environ.get('DB_PASSWORD', ''),
             'HOST': os.environ.get('DB_HOST', os.environ.get('DB_HOSTNAME', '')),
             'PORT': os.environ.get('DB_PORT', '5432'),
+            # Reutiliza la conexion entre peticiones: sin esto cada request
+            # abre una conexion nueva a Postgres, lo que en un servidor
+            # pequeno con la base remota agrega cientos de ms a cada guardado.
+            'CONN_MAX_AGE': int(os.environ.get('CONN_MAX_AGE', '600')),
+            'CONN_HEALTH_CHECKS': True,
         }
     }
 

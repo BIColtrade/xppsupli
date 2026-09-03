@@ -4,7 +4,7 @@ from urllib.parse import quote
 
 from django.db import transaction
 from django.db.models import Case, Count, IntegerField, Q, Value, When
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -1458,6 +1458,93 @@ def detalle_resultado(request, resultado_id):
 # Responder evaluacion (formulario dinamico)
 # ----------------------------------------
 
+def autoguardar_respuesta(request, asignacion_id):
+    """Guarda UNA respuesta apenas el evaluador la marca, sin recargar la pagina.
+
+    Es la red principal contra la perdida de trabajo: no depende de que la
+    persona se acuerde de pulsar "Guardar borrador" ni de que llegue al final
+    del formulario. Nunca marca la evaluacion como completada.
+    """
+    user, redir = _require_login(request)
+    if redir:
+        return JsonResponse({"ok": False, "error": "sesion"}, status=401)
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "error": "metodo"}, status=405)
+
+    try:
+        asignacion = AsignacionEvaluacion.objects.select_related("ciclo").get(
+            pk=asignacion_id)
+    except AsignacionEvaluacion.DoesNotExist:
+        return JsonResponse({"ok": False, "error": "no existe"}, status=404)
+
+    if asignacion.evaluador_id != user.pk:
+        return JsonResponse({"ok": False, "error": "no autorizado"}, status=403)
+    if asignacion.estado == "completada":
+        return JsonResponse({"ok": False, "error": "ya enviada"}, status=409)
+    if not asignacion.activa or not asignacion.ciclo.esta_activo():
+        return JsonResponse(
+            {"ok": False, "error": asignacion.ciclo.motivo_no_disponible()
+             or "asignacion inactiva"}, status=409)
+
+    campo = request.POST.get("campo", "").strip()
+    valor_raw = request.POST.get("valor", "").strip()
+
+    if campo == "observaciones":
+        asignacion.observaciones_acuerdos = valor_raw
+        if valor_raw and asignacion.fecha_inicio_respuesta is None:
+            asignacion.fecha_inicio_respuesta = timezone.now()
+        if valor_raw and asignacion.estado == "pendiente":
+            asignacion.estado = "en_progreso"
+        asignacion.save()
+        return JsonResponse({"ok": True, "guardadas": _respondidas(asignacion)})
+
+    # campo viene como "valor_<id>" o "texto_<id>"
+    try:
+        clase, pid = campo.rsplit("_", 1)
+        pregunta = Pregunta.objects.get(pk=int(pid), activa=True)
+    except (ValueError, Pregunta.DoesNotExist):
+        return JsonResponse({"ok": False, "error": "pregunta invalida"}, status=400)
+
+    if pregunta.tipo_evaluacion != asignacion.tipo_evaluacion:
+        return JsonResponse({"ok": False, "error": "pregunta ajena"}, status=400)
+    if pregunta.id in (asignacion.ciclo.preguntas_excluidas or []):
+        return JsonResponse({"ok": False, "error": "pregunta excluida"}, status=400)
+
+    valor, texto = None, ""
+    if clase == "valor":
+        try:
+            v = int(valor_raw)
+            if 1 <= v <= 5:
+                valor = v
+        except ValueError:
+            pass
+    else:
+        texto = valor_raw
+
+    with transaction.atomic():
+        obj, _ = RespuestaEvaluacion.objects.get_or_create(
+            asignacion=asignacion, pregunta=pregunta)
+        if clase == "valor":
+            obj.valor = valor
+        else:
+            obj.respuesta_abierta = texto
+        obj.save()
+
+        if asignacion.fecha_inicio_respuesta is None:
+            asignacion.fecha_inicio_respuesta = timezone.now()
+        if asignacion.estado == "pendiente":
+            asignacion.estado = "en_progreso"
+        asignacion.save()
+
+    return JsonResponse({"ok": True, "guardadas": _respondidas(asignacion)})
+
+
+def _respondidas(asignacion):
+    return RespuestaEvaluacion.objects.filter(
+        Q(valor__isnull=False) | ~Q(respuesta_abierta=""), asignacion=asignacion
+    ).count()
+
+
 def responder_evaluacion(request, asignacion_id):
     user, redir = _require_login(request)
     if redir:
@@ -1565,12 +1652,36 @@ def responder_evaluacion(request, asignacion_id):
             ) or bool(observaciones)
 
             with transaction.atomic():
+                # Guardado en bloque. Un update_or_create por pregunta abria dos
+                # savepoints cada uno: con 54 preguntas eran ~330 consultas y el
+                # envio podia pasarse del timeout del servidor, que aborta la
+                # transaccion y hace perder TODO lo respondido.
+                ya_estan = {
+                    r.pregunta_id: r
+                    for r in RespuestaEvaluacion.objects.filter(asignacion=asignacion)
+                }
+                crear, actualizar = [], []
                 for pregunta in preguntas:
                     valor, texto_raw = enviado[pregunta.id]
-                    RespuestaEvaluacion.objects.update_or_create(
-                        asignacion=asignacion,
-                        pregunta=pregunta,
-                        defaults={"valor": valor, "respuesta_abierta": texto_raw},
+                    r = ya_estan.get(pregunta.id)
+                    if r is None:
+                        crear.append(RespuestaEvaluacion(
+                            asignacion=asignacion, pregunta=pregunta,
+                            valor=valor, respuesta_abierta=texto_raw,
+                            fecha_respuesta=ahora,
+                        ))
+                    elif r.valor != valor or r.respuesta_abierta != texto_raw:
+                        r.valor = valor
+                        r.respuesta_abierta = texto_raw
+                        r.fecha_respuesta = ahora  # auto_now no corre en bulk_update
+                        actualizar.append(r)
+                if crear:
+                    RespuestaEvaluacion.objects.bulk_create(crear, batch_size=200)
+                if actualizar:
+                    RespuestaEvaluacion.objects.bulk_update(
+                        actualizar,
+                        ["valor", "respuesta_abierta", "fecha_respuesta"],
+                        batch_size=200,
                     )
 
                 asignacion.observaciones_acuerdos = observaciones

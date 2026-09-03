@@ -475,3 +475,146 @@ class ReabrirTest(TestCase):
         self.a.refresh_from_db()
         self.assertEqual(self.a.estado, "completada")
         self.assertEqual(RespuestaEvaluacion.objects.filter(asignacion=self.a).count(), 5)
+
+
+class AutoguardadoTest(TestCase):
+    def setUp(self):
+        self.jefe = Usuario.objects.create_user("j@x.com", "j", "x")
+        self.jefe.nombre = "Fabio"
+        self.jefe.tipo_usuario = "colaborador"
+        self.jefe.save()
+        self.emp = Usuario.objects.create_user("e@x.com", "e", "x")
+        self.emp.nombre = "Julian"
+        self.emp.tipo_usuario = "colaborador"
+        self.emp.jefe_directo = self.jefe
+        self.emp.save()
+
+        comp = Competencia.objects.create(nombre="C", orden=1)
+        self.likert = [Pregunta.objects.create(
+            competencia=comp, enunciado="L%d" % i, tipo_evaluacion="operativo",
+            tipo_pregunta="likert", obligatoria=True, activa=True, orden=i)
+            for i in range(5)]
+        self.abierta = Pregunta.objects.create(
+            competencia=comp, enunciado="A", tipo_evaluacion="operativo",
+            tipo_pregunta="abierta", obligatoria=True, activa=True, orden=9)
+        self.otra = Pregunta.objects.create(
+            competencia=comp, enunciado="De lider", tipo_evaluacion="lider",
+            tipo_pregunta="likert", obligatoria=True, activa=True, orden=1)
+
+        ahora = timezone.now()
+        self.ciclo = CicloEvaluacion.objects.create(
+            nombre="C", tipo="mixta", estado="activo",
+            fecha_inicio=ahora - datetime.timedelta(days=1),
+            fecha_cierre=ahora + datetime.timedelta(days=2))
+        self.a = AsignacionEvaluacion.objects.create(
+            ciclo=self.ciclo, evaluador=self.jefe, evaluado=self.emp,
+            rol_evaluador="jefe", tipo_evaluacion="operativo")
+
+        self.c = Client()
+        self.c.cookies["jwt"] = jwt.encode(
+            {"user_id": self.jefe.pk}, settings.SECRET_KEY, algorithm="HS256")
+        self.url = reverse(
+            "modulo_valoracion:autoguardar_respuesta", args=[self.a.id])
+
+    def test_guarda_al_marcar_una_opcion(self):
+        r = self.c.post(self.url, {
+            "campo": "valor_%d" % self.likert[0].id, "valor": "4"})
+        d = r.json()
+        self.a.refresh_from_db()
+        obj = RespuestaEvaluacion.objects.get(
+            asignacion=self.a, pregunta=self.likert[0])
+        self.assertTrue(d["ok"])
+        self.assertEqual(d["guardadas"], 1)
+        self.assertEqual(obj.valor, 4)
+        # el estado se mueve solo a "en progreso"
+        self.assertEqual(self.a.estado, "en_progreso")
+        self.assertIsNotNone(self.a.fecha_inicio_respuesta)
+
+    def test_sobrevive_a_cerrar_el_navegador(self):
+        for i, p in enumerate(self.likert):
+            self.c.post(self.url, {"campo": "valor_%d" % p.id, "valor": "3"})
+        self.c.post(self.url, {
+            "campo": "texto_%d" % self.abierta.id, "valor": "mi comentario"})
+        self.c.post(self.url, {"campo": "observaciones", "valor": "acuerdos"})
+        # nuevo cliente = navegador nuevo, sin nada en pantalla
+        c2 = Client()
+        c2.cookies["jwt"] = jwt.encode(
+            {"user_id": self.jefe.pk}, settings.SECRET_KEY, algorithm="HS256")
+        g = c2.get(reverse(
+            "modulo_valoracion:responder_evaluacion", args=[self.a.id]))
+        marcadas = sum(1 for p in g.context["preguntas_data"]
+                       if p["valor_actual"] is not None)
+        textos = [p["texto_actual"] for p in g.context["preguntas_data"]
+                  if p["texto_actual"]]
+        self.a.refresh_from_db()
+        self.assertEqual(marcadas, 5)
+        self.assertEqual(textos, ["mi comentario"])
+        self.assertEqual(self.a.observaciones_acuerdos, "acuerdos")
+        self.assertEqual(g.context["respondidas"], 6)
+
+    def test_corregir_una_respuesta_la_actualiza(self):
+        p = self.likert[0]
+        self.c.post(self.url, {"campo": "valor_%d" % p.id, "valor": "5"})
+        self.c.post(self.url, {"campo": "valor_%d" % p.id, "valor": "2"})
+        obj = RespuestaEvaluacion.objects.get(asignacion=self.a, pregunta=p)
+        self.assertEqual(obj.valor, 2)
+        self.assertEqual(
+            RespuestaEvaluacion.objects.filter(asignacion=self.a).count(), 1)
+
+    def test_no_marca_completada(self):
+        for p in self.likert:
+            self.c.post(self.url, {"campo": "valor_%d" % p.id, "valor": "5"})
+        self.c.post(self.url, {
+            "campo": "texto_%d" % self.abierta.id, "valor": "x"})
+        self.a.refresh_from_db()
+        self.assertEqual(self.a.estado, "en_progreso",
+                         "el autoguardado no debe cerrar la evaluacion")
+
+    def test_otro_usuario_no_puede_escribir(self):
+        c2 = Client()
+        c2.cookies["jwt"] = jwt.encode(
+            {"user_id": self.emp.pk}, settings.SECRET_KEY, algorithm="HS256")
+        r = c2.post(self.url, {
+            "campo": "valor_%d" % self.likert[0].id, "valor": "1"})
+        self.assertEqual(r.status_code, 403)
+        self.assertEqual(
+            RespuestaEvaluacion.objects.filter(asignacion=self.a).count(), 0)
+
+    def test_no_acepta_pregunta_de_otro_tipo(self):
+        r = self.c.post(self.url, {
+            "campo": "valor_%d" % self.otra.id, "valor": "5"})
+        self.assertEqual(r.status_code, 400)
+        self.assertEqual(
+            RespuestaEvaluacion.objects.filter(asignacion=self.a).count(), 0)
+
+    def test_ciclo_cerrado_rechaza_con_motivo(self):
+        self.ciclo.fecha_cierre = timezone.now() - datetime.timedelta(hours=1)
+        self.ciclo.save()
+        r = self.c.post(self.url, {
+            "campo": "valor_%d" % self.likert[0].id, "valor": "4"})
+        self.assertEqual(r.status_code, 409)
+        self.assertIn("cerro", r.json()["error"])
+
+    def test_ya_enviada_no_se_altera(self):
+        self.a.estado = "completada"
+        self.a.save()
+        r = self.c.post(self.url, {
+            "campo": "valor_%d" % self.likert[0].id, "valor": "1"})
+        self.assertEqual(r.status_code, 409)
+
+    def test_sin_sesion_no_guarda(self):
+        # El middleware corta antes que la vista y manda al login (302).
+        # Lo importante es que no se escriba nada; el JS detecta que no
+        # llego JSON y avisa que la sesion se cerro.
+        r = Client().post(self.url, {
+            "campo": "valor_%d" % self.likert[0].id, "valor": "4"})
+        self.assertIn(r.status_code, (302, 401))
+        self.assertEqual(
+            RespuestaEvaluacion.objects.filter(asignacion=self.a).count(), 0)
+
+    def test_valor_invalido_no_rompe(self):
+        p = self.likert[0]
+        r = self.c.post(self.url, {"campo": "valor_%d" % p.id, "valor": "99"})
+        self.assertTrue(r.json()["ok"])
+        obj = RespuestaEvaluacion.objects.get(asignacion=self.a, pregunta=p)
+        self.assertIsNone(obj.valor)

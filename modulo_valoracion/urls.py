@@ -47,6 +47,7 @@ urlpatterns = [
     # Evaluador
     path("mis-evaluaciones/", views.mis_evaluaciones, name="mis_evaluaciones"),
     path("mis-evaluaciones/<int:asignacion_id>/responder/", views.responder_evaluacion, name="responder_evaluacion"),
+    path("mis-evaluaciones/<int:asignacion_id>/autoguardar/", views.autoguardar_respuesta, name="autoguardar_respuesta"),
 
     # Resultados
     path("mis-resultados/", views.mis_resultados, name="mis_resultados"),
